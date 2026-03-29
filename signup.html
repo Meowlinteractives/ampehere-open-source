@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/logo.png" type="image/png">
+    <title>Ampehere · Create Account</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script src="/os-check.js"></script>
+    <style>
+        :root { --bg:#060606; --surface:#0c0c0c; --border:#1a1a1a; --border-hi:#252525; --blue:#2563c4; --blue-hi:#3b7de0; --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677; --red:#c0392b; --green:#27ae60; }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; border-radius:0 !important; }
+        body { font-family:'Exo 2',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1.5rem; }
+        a { color:var(--blue); text-decoration:none; }
+        a:hover { color:var(--blue-hi); text-decoration:underline; }
+
+        .card { width:100%; max-width:400px; background:var(--surface); border:1px solid var(--border); }
+        .card-header { padding:1.5rem 1.75rem 1.25rem; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:.75rem; }
+        .card-header img { width:32px; height:32px; object-fit:contain; }
+        .card-header .brand { font-size:.65rem; font-weight:800; text-transform:uppercase; letter-spacing:.12em; color:var(--text-muted); }
+        .card-header .title { font-size:1.1rem; font-weight:800; color:var(--text); }
+        .card-body { padding:1.5rem 1.75rem; }
+
+        .notice { background:#050505; border:1px solid var(--border); padding:.65rem .85rem; font-size:.75rem; color:var(--text-dim); margin-bottom:1.1rem; line-height:1.55; }
+
+        label { display:block; font-size:.65rem; font-weight:800; text-transform:uppercase; letter-spacing:.1em; color:var(--text-dim); margin-bottom:.4rem; margin-top:1rem; }
+        label:first-of-type { margin-top:0; }
+
+        input[type=text], input[type=password] {
+            width:100%; background:#050505; border:1px solid var(--border);
+            color:var(--text); font-family:'Exo 2',sans-serif; font-size:.9rem;
+            padding:.65rem .85rem; outline:none; transition:border-color .15s;
+        }
+        input:focus { border-color:var(--blue); }
+        input::placeholder { color:var(--text-dim); }
+        input:disabled { opacity:.4; }
+
+        .captcha-wrap { display:flex; justify-content:center; margin-top:1.1rem; }
+
+        .btn {
+            width:100%; margin-top:1.1rem;
+            padding:.7rem; background:var(--blue); border:none;
+            color:#fff; font-family:'Exo 2',sans-serif; font-size:.8rem;
+            font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+            cursor:pointer; transition:background .12s;
+        }
+        .btn:hover { background:var(--blue-hi); }
+        .btn:disabled { opacity:.4; cursor:not-allowed; }
+
+        .err { color:#ff7070; font-size:.75rem; text-align:center; margin-top:.65rem; min-height:1em; }
+        .success-msg { background:rgba(39,174,96,.08); border:1px solid rgba(39,174,96,.25); padding:.75rem .85rem; color:#5dca8a; font-size:.8rem; text-align:center; margin-top:.75rem; line-height:1.5; display:none; }
+        .footer-link { text-align:center; margin-top:1.25rem; font-size:.75rem; color:var(--text-dim); }
+        .site-footer { margin-top:1.5rem; font-size:.65rem; color:var(--text-dim); }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="card-header">
+        <img src="/logo.png" alt="Ampehere" onerror="this.style.display='none'">
+        <div>
+            <div class="brand">Ampehere</div>
+            <div class="title">Create Account</div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="notice">All accounts require admin approval before they become active.</div>
+
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="3–20 chars, letters/numbers/_" autocomplete="username">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="At least 6 characters" autocomplete="new-password">
+
+        <div class="captcha-wrap">
+            <div class="cf-turnstile"
+                 data-sitekey="0x4AAAAAACr0y0UJiVXRQ9qU"
+                 data-theme="dark"
+                 data-callback="onTurnstileDone"
+                 data-expired-callback="onTurnstileExpired"
+                 data-error-callback="onTurnstileError">
+            </div>
+        </div>
+
+        <div class="err" id="errMsg"></div>
+        <button class="btn" id="signupBtn" onclick="doSignup()"><i class="fas fa-user-plus"></i> Create Account</button>
+        <div class="success-msg" id="successMsg"></div>
+        <div class="footer-link">Already have an account? <a href="/login.html">Log in</a></div>
+    </div>
+</div>
+
+<div class="site-footer">© 2026 Ampehere</div>
+
+<script>
+var _captchaToken = null;
+function onTurnstileDone(token)  { _captchaToken = token; }
+function onTurnstileExpired()    { _captchaToken = null; }
+function onTurnstileError()      { _captchaToken = null; }
+
+(async () => {
+    try {
+        const res = await fetch('/api/owner/registrations');
+        const data = await res.json();
+        if (data.success && !data.enabled) {
+            document.getElementById('signupBtn').disabled = true;
+            document.getElementById('username').disabled = true;
+            document.getElementById('password').disabled = true;
+            const e = document.getElementById('errMsg');
+            e.style.color = 'var(--text-muted)';
+            e.textContent = '⚠️ Registrations are currently closed. Check back later!';
+        }
+    } catch {}
+})();
+
+async function doSignup() {
+    const btn = document.getElementById('signupBtn');
+    const errMsg = document.getElementById('errMsg');
+    const success = document.getElementById('successMsg');
+    errMsg.textContent = ''; success.style.display = 'none';
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    if (!username || !password) { errMsg.textContent = 'Please fill in all fields.'; return; }
+    if (!_captchaToken) { errMsg.textContent = 'Please wait for the security check to complete.'; return; }
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account…';
+    try {
+        const res = await fetch('/api/signup', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ username, password, captchaToken: _captchaToken }) });
+        const data = await res.json();
+        if (data.success) {
+            success.innerHTML = '✅ <strong>Account created!</strong> Waiting for admin approval.';
+            success.style.display = 'block';
+            btn.innerHTML = '<i class="fas fa-check"></i> Done';
+        } else {
+            errMsg.textContent = data.error || 'Signup failed.';
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+            _captchaToken = null;
+            if (window.turnstile) turnstile.reset();
+        }
+    } catch {
+        errMsg.textContent = 'Network error. Please try again.';
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+        _captchaToken = null;
+        if (window.turnstile) turnstile.reset();
+    }
+}
+document.addEventListener('keydown', e => { if (e.key === 'Enter') doSignup(); });
+</script>
+<script src="/sidebar.js"></script>
+</body>
+</html>

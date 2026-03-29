@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+    <title>Ampehere · Forum</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            overflow-x: hidden;
+            background: #060606;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(126,184,212,0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(126,184,212,0.08) 0%, transparent 20%),
+                linear-gradient(45deg, #111111 1px, transparent 1px),
+                linear-gradient(-45deg, #111111 1px, transparent 1px);
+            background-size: 30px 30px, 30px 30px, 30px 30px, 30px 30px;
+            font-family: 'Exo 2', sans-serif;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(14, 30, 60, 0.92);
+            border: 1px solid rgba(126,184,212,0.28);
+            padding: 2rem;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.55), ;
+            border-radius: 0;
+}
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 1rem;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            color: #d0d8e0;
+            text-transform: uppercase;
+            text-shadow: 0 2px 20px rgba(126,184,212,0.25);
+        }
+        
+        .back-button {
+            background: rgba(12,12,12,0.5);
+            color: #8899aa;
+            text-decoration: none;
+            padding: 0.6rem 1.5rem;
+            border: 1px solid rgba(37,99,196,0.18);
+            border-radius: 0;
+            font-weight: 900;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        
+        .back-button:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        
+        .new-topic-btn {
+            background: rgba(12,12,12,0.5);
+            border: 1px solid rgba(126,184,212,0.25);
+            border-radius: 0;
+            color: #8899aa;
+            padding: 1rem;
+            font-weight: 900;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .new-topic-btn:hover {
+            background: rgba(15,15,15,0.65);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+        }
+        
+        .topic-item {
+            background: linear-gradient(145deg,rgba(26,48,96,.85),rgba(10,10,10,.92));
+            border: 1px solid rgba(126,184,212,0.18);
+            border-radius: 0;
+            padding: 1rem 1.25rem;
+            margin-bottom: .6rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.18s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .topic-item:hover {
+            transform: translateX(4px);
+            border-color: rgba(126,184,212,0.4);
+            background: linear-gradient(145deg,rgba(15,15,15,.5),rgba(22,40,80,.9));
+        }
+        .topic-main { flex: 1; min-width: 0; }
+        .topic-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #d0d8e0;
+            margin-bottom: .3rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .topic-meta {
+            display: flex;
+            gap: .75rem;
+            flex-wrap: wrap;
+            color: #8a95a3;
+            font-size: .75rem;
+            font-weight: 600;
+            align-items: center;
+        }
+        .topic-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: .2rem;
+            flex-shrink: 0;
+            min-width: 90px;
+            text-align: right;
+        }
+        .topic-stat-count {
+            font-family: 'Exo 2', sans-serif;
+            font-weight: 900;
+            font-size: .95rem;
+            color: #d0d8e0;
+        }
+        .topic-stat-label {
+            font-size: .65rem;
+            color: #5a7090;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+        .topic-last-reply {
+            font-size: .7rem;
+            color: #5a7090;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 110px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #8a95a3;
+        }
+        
+        .empty {
+            text-align: center;
+            padding: 3rem;
+            color: #8a95a3;
+            border: 2px dashed rgba(37,99,196,0.18);
+            border-radius: 0;
+        }
+        
+        .error {
+            background: #8b0000;
+            color: #8899aa;
+            padding: 2rem;
+            text-align: center;
+        }
+    </style>
+
+    <!-- Ampehere Global Theme -->
+    <style>
+      :root {
+        --amp-navy: #060606;
+        --amp-navy-card: rgba(12,12,12,0.92);
+        --amp-navy-mid: #162544;
+        --amp-blue: #1c1c1c;
+        --amp-sky: #8899aa;
+        --amp-sky-light: #8899aa;
+        --amp-silver: #8899aa;
+        --amp-silver-light: #d0d8e0;
+        --amp-silver-dim: #8a95a3;
+      }
+      body {
+        background: var(--amp-navy) !important;
+        background-image: radial-gradient(ellipse at 20% 10%, rgba(15,15,15,0.35) 0%, transparent 50%),
+                          radial-gradient(ellipse at 80% 90%, rgba(126,184,212,0.10) 0%, transparent 50%) !important;
+        background-attachment: fixed !important;
+        color: var(--amp-silver-light) !important;
+        font-family: 'Exo 2', sans-serif !important;
+      }
+      /* Container glass cards */
+      .container, .card, .page-wrap > .card, .panel, .box, .section-card,
+      .profile-container, .group-card, .topic-card, .post-card, .modal-box {
+        background: linear-gradient(145deg, rgba(12,12,12,0.88), rgba(8,8,8,0.94)) !important;
+        border: 1px solid rgba(37,99,196,0.2) !important;
+        border-radius: 0;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5),  !important;
+        backdrop-filter: blur(16px) !important;
+      }
+      /* Headings */
+      h1, h2, h3 { font-family: 'Exo 2', sans-serif !important; color: var(--amp-silver-light) !important; }
+      h1 { text-shadow: 0 2px 20px rgba(37,99,196,0.18) !important; }
+      /* Links */
+      a { color: var(--amp-sky) !important; }
+      /* Inputs */
+      input[type="text"], input[type="password"], input[type="email"], textarea, select {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(126,184,212,0.25) !important;
+        border-radius: 0;
+        color: var(--amp-silver-light) !important;
+        font-family: 'Exo 2', sans-serif !important;
+      }
+      input:focus, textarea:focus, select:focus {
+        border-color: rgba(126,184,212,0.55) !important;
+        box-shadow: 0 0 0 3px rgba(255,255,255,0.04) !important;
+        outline: none !important;
+      }
+      /* Buttons */
+      button, .btn, .button, input[type="submit"], input[type="button"] {
+        border-radius: 0;
+        font-family: 'Exo 2', sans-serif !important;
+      }
+      /* Scrollbar */
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+      ::-webkit-scrollbar-thumb { background: rgba(126,184,212,0.3); border-radius: 0; }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(37,99,196,0.5); }
+    
+        @media (max-width: 640px) {
+            .container { padding: 1rem; border-radius: 0; }
+            .topic-row { flex-direction: column; gap: .4rem; }
+            .topic-meta { flex-wrap: wrap; font-size: .72rem; }
+            .topic-stats { display: none; }
+            .category-header { flex-direction: column; align-items: flex-start; gap: .5rem; }
+        }
+    </style>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/avatar-renderer.js"></script>
+    <script src="/avatar2d.js"></script>
+    <script src="/avatar.js"></script>
+</head>
+<body>
+    <div class="page-container">
+        <div class="header">
+            <h1><i class="fas fa-comments"></i> FORUM</h1>
+            <a href="/forums.html" class="back-button"><i class="fas fa-arrow-left"></i> BACK</a>
+        </div>
+
+        <button class="new-topic-btn" id="newTopicBtn">
+            <i class="fas fa-plus-circle"></i> CREATE NEW TOPIC
+        </button>
+
+        <div id="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> Loading topics...</div>
+        <div id="topics"></div>
+    </div>
+
+    <script src="/sidebar.js"></script>
+    <script>
+        // Soft auth check — guests can read, but need login to post
+        let _isLoggedIn = false;
+        fetch('/api/get-balance').then(r => { if (r.ok) _isLoggedIn = true; }).catch(() => {});
+
+        const categoryName = new URLSearchParams(window.location.search).get('name') || 'general-discussion';
+        const categoryMap = {
+            'general-discussion': 'forum_category_general',
+            'help-support': 'forum_category_help',
+            'showcase': 'forum_category_showcase',
+            'off-topic': 'forum_category_offtopic',
+            'suggestions': 'forum_category_suggestions'
+        };
+        const categoryId = categoryMap[categoryName] || 'forum_category_general';
+        document.getElementById('newTopicBtn').onclick = () => {
+            if (!_isLoggedIn) { window.location.href = '/login.html'; return; }
+            window.location.href = '/create-forum-topic.html?category=' + categoryId;
+        };
+
+        fetch(`/api/get-forum-topics?category=${encodeURIComponent(categoryName)}`)
+            .then(r => r.json())
+            .then(async data => {
+                document.getElementById('loading').style.display = 'none';
+                
+                if (!data.success || !data.topics || data.topics.length === 0) {
+                    document.getElementById('topics').innerHTML = '<div class="empty">No topics yet. Be the first to post!</div>';
+                    return;
+                }
+
+                function timeAgo(ms) {
+                    if (!ms) return '';
+                    const diff = Date.now() - ms, d = Math.floor(diff / 86400000);
+                    if (d === 0) { const h = Math.floor(diff/3600000); return h < 1 ? 'just now' : h + 'h ago'; }
+                    if (d === 1) return 'yesterday';
+                    if (d < 30) return d + 'd ago';
+                    return new Date(ms).toLocaleDateString();
+                }
+                function escF(s) { return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+                // Batch-warm badges for authors + last repliers
+                const allAuthors = [...new Set([
+                    ...data.topics.map(t => t.author),
+                    ...data.topics.map(t => t.lastReplyAuthor).filter(Boolean)
+                ])];
+                if (window.ampNameBadgeBatch) await window.ampNameBadgeBatch(allAuthors);
+                const _fbi = window.ampNameBadge || (async () => '');
+
+                let html = '';
+                for (const topic of data.topics) {
+                    const tBadge = await _fbi(topic.author);
+                    const lastAgo = topic.lastReplyAt ? timeAgo(topic.lastReplyAt) : timeAgo(topic.createdAt);
+                    const lastWho = topic.lastReplyAuthor || topic.author;
+                    html += `
+                        <div class="topic-item" onclick="window.location.href='/forum-topic.html?id=${topic.id}'">
+                            <img width="34" height="34" data-avuser="${escF(topic.author)}" alt="" style="width:34px;height:34px;border-radius:50%;background:#111111;border:1px solid rgba(37,99,196,0.18);flex-shrink:0;">
+                            <div class="topic-main">
+                                <div class="topic-title" title="${escF(topic.title)}">${escF(topic.title)}</div>
+                                <div class="topic-meta">
+                                    <span style="display:inline-flex;align-items:center;gap:4px;">${tBadge}${escF(topic.author)}</span>
+                                    <span>·</span>
+                                    <span><i class="fas fa-reply" style="font-size:.6rem;"></i> ${topic.postCount || 0}</span>
+                                    <span><i class="fas fa-eye" style="font-size:.6rem;"></i> ${topic.views || 0}</span>
+                                </div>
+                            </div>
+                            <div class="topic-stats">
+                                <span class="topic-last-reply" title="Last activity by ${escF(lastWho)}">${escF(lastWho)}</span>
+                                <span class="topic-stat-label">${lastAgo}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                const topicsEl = document.getElementById('topics');
+                topicsEl.innerHTML = html;
+                setTimeout(() => { if (window.AmpAvatar) topicsEl.querySelectorAll('img[data-avuser]').forEach(img => AmpAvatar.render(img, img.dataset.avuser, 34)); }, 100);
+            })
+            .catch(err => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('topics').innerHTML = '<div class="error">Failed to load topics</div>';
+            });
+    </script>
+</body>
+</html>

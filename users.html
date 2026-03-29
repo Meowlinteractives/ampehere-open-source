@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ampehere · All Users</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0 !important; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+    <style>
+        :root {
+            --bg:#060606; --surface:#0c0c0c; --border:#1a1a1a; --border-hi:#252525;
+            --blue:#2563c4; --blue-hi:#3b7de0;
+            --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+            --red:#c0392b; --gold:#f1c40f; --green:#27ae60;
+        }
+        *, *::before, *::after { border-radius: 0 !important; }
+        body { background: #060606 !important; background-image: none !important; }
+        a { color: #2563c4; }
+        a:hover { color: #3b7de0; }
+    </style>
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            overflow-x: hidden;background:#060606;background-image:radial-gradient(ellipse at 20% 10%,rgba(15,15,15,.35) 0%,transparent 50%),radial-gradient(ellipse at 80% 90%,rgba(255,255,255,.04) 0%,transparent 50%);min-height:100vh;font-family:'Exo 2',sans-serif;color:#8899aa;}
+        .page{max-width:860px;margin:0 auto;padding:2rem 1.5rem;}
+
+        .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap;}
+        .page-title{font-family:'Exo 2',sans-serif;font-weight:900;font-size:1.6rem;color:#d0d8e0;letter-spacing:.05em;display:flex;align-items:center;gap:.6rem;}
+        .user-count{background:rgba(255,255,255,.04);border:1px solid rgba(37,99,196,.18);border-radius: 0;padding:.25rem .85rem;font-size:.78rem;font-weight:700;color:#8899aa;}
+
+        .search-bar{position:relative;margin-bottom:1.5rem;}
+        .search-bar input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(37,99,196,.18);border-radius: 0;padding:.7rem 1rem .7rem 2.6rem;color:#d0d8e0;font-family:'Exo 2',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s;}
+        .search-bar input:focus{border-color:rgba(37,99,196,.4);background:rgba(126,184,212,.04);}
+        .search-bar .search-icon{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:#3a5570;font-size:.88rem;pointer-events:none;}
+
+        .users-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.85rem;}
+
+        .user-card{background:linear-gradient(145deg,rgba(12,12,12,.7),rgba(8,8,8,.85));border:1px solid rgba(255,255,255,.04);border-radius: 0;padding:1.2rem 1rem 1rem;text-align:center;cursor:pointer;transition:all .15s;text-decoration:none;display:block;}
+        .user-card:hover{border-color:rgba(37,99,196,.3);background:linear-gradient(145deg,rgba(14,14,14,.75),rgba(18,34,72,.9));transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3);}
+        .user-card img{width:56px;height:56px;border-radius:50%;border:1px solid rgba(37,99,196,.18);background:#111111;margin:0 auto .65rem;display:block;}
+        .avatar-wrap{position:relative;width:56px;margin:0 auto .65rem;}
+        .avatar-wrap img{width:56px;height:56px;border-radius:50%;border:1px solid rgba(37,99,196,.18);background:#111111;display:block;margin:0;}
+        .status-dot{position:absolute;bottom:2px;right:2px;width:13px;height:13px;border-radius:50%;border:2px solid #060606;}
+        .status-dot.online  {background:#2ecc71;}
+        .status-dot.playing {background:#3498db;}
+        .status-dot.offline {background:#4a5568;}
+        .user-card .uname{font-weight:700;font-size:.92rem;color:#d0d8e0;margin-bottom:.3rem;}
+        .user-card .ucoins{font-size:.78rem;color:#8899aa;}
+        .user-card .ubadges{display:flex;justify-content:center;gap:.3rem;margin-top:.4rem;flex-wrap:wrap;}
+        .ubadge{font-size:.65rem;font-weight:700;padding:.12rem .5rem;border-radius: 0;}
+        .ubadge.ampere{background:rgba(255,255,255,.04);border:1px solid rgba(126,184,212,.25);color:#8899aa;}
+
+        .pagination{display:flex;justify-content:center;align-items:center;gap:.5rem;margin-top:2rem;}
+        .page-btn{background:rgba(15,15,15,.3);border:1px solid rgba(37,99,196,.18);border-radius: 0;color:#8899aa;font-family:'Exo 2',sans-serif;font-size:.75rem;font-weight:800;padding:.4rem .9rem;cursor:pointer;transition:all .14s;text-transform:uppercase;letter-spacing:.05em;}
+        .page-btn:hover{background:rgba(15,15,15,.6);border-color:rgba(37,99,196,.4);}
+        .page-btn:disabled{opacity:.3;cursor:not-allowed;}
+        .page-info{font-size:.8rem;color:#4a6070;padding:0 .5rem;}
+
+        .empty-state{text-align:center;padding:4rem 2rem;color:#3a5068;}
+        .empty-state .icon{font-size:2.5rem;margin-bottom:1rem;opacity:.4;}
+
+        .loading-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.85rem;}
+        .skeleton{background:linear-gradient(90deg,rgba(12,12,12,.4) 25%,rgba(15,15,15,.2) 50%,rgba(12,12,12,.4) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius: 0;height:140px;}
+        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    
+        @media (max-width: 600px) {
+            .page-header { flex-direction: column; align-items: flex-start; gap: .5rem; }
+            .users-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: .6rem; }
+            .loading-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: .6rem; }
+            .search-bar input { font-size: .9rem; }
+        }
+        @media (max-width: 400px) {
+            .users-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <div class="page-header">
+        <div class="page-title">👥 All Users <span class="user-count" id="totalCount">…</span></div>
+    </div>
+    <div class="search-bar">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchInput" placeholder="Search users…" oninput="onSearch()">
+    </div>
+    <div id="usersContainer">
+        <div class="loading-grid">
+            <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+            <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+            <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+            <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+        </div>
+    </div>
+    <div class="pagination" id="pagination"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/avatar-renderer.js"></script>
+    <script src="/avatar2d.js"></script>
+    <script src="/avatar.js"></script>
+    <script src="/sidebar.js"></script>
+<script>
+let _page = 0;
+let _search = '';
+let _total = 0;
+let _allLoaded = [];
+let _searchTimeout = null;
+
+function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+async function loadUsers(reset = false) {
+    if (reset) {
+        _page = 0;
+        _allLoaded = [];
+        document.getElementById('usersContainer').innerHTML = '<div class="users-grid" id="usersGrid"></div>';
+    }
+
+    const url = `/api/all-users?page=${_page}&search=${encodeURIComponent(_search)}`;
+    try {
+        const r = await fetch(url);
+        const d = await r.json();
+        if (!d.success) throw new Error(d.error || 'Server returned failure');
+
+        _total = d.total;
+        document.getElementById('totalCount').textContent = _total.toLocaleString() + ' members';
+
+        const container = document.getElementById('usersContainer');
+
+        if (!d.users.length && _page === 0) {
+            container.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><p>No users found.</p></div>`;
+            document.getElementById('pagination').innerHTML = '';
+            return;
+        }
+
+        // Ensure grid exists (first load clears skeletons)
+        if (!document.getElementById('usersGrid')) {
+            container.innerHTML = '<div class="users-grid" id="usersGrid"></div>';
+        }
+        const g = document.getElementById('usersGrid');
+        const _ubi = window.ampNameBadge || (async () => '');
+        if (window.ampNameBadgeBatch) await window.ampNameBadgeBatch(d.users.map(u => u.username));
+        for (const u of d.users) {
+            const uBadge = await _ubi(u.username);
+            const card = document.createElement('a');
+            card.className = 'user-card';
+            card.href = `/profile.html?user=${encodeURIComponent(u.username)}`;
+            const dotClass = u.status === 'online' ? 'online' : u.status === 'playing' ? 'playing' : 'offline';
+            card.innerHTML = `
+                <div class="avatar-wrap">
+                    <img data-avuser="${u.username}" alt="">
+                    <span class="status-dot ${dotClass}" title="${dotClass.charAt(0).toUpperCase()+dotClass.slice(1)}"></span>
+                </div>
+                <div class="uname">${uBadge}${escHtml(u.username)}</div>
+                <div class="ucoins">🪙 ${u.coins.toLocaleString()} coins</div>
+                <div class="ubadges">${u.ampere_plus ? '<span class="ubadge ampere">⚡ Ampere+</span>' : ''}</div>
+            `;
+            g.appendChild(card);
+        }
+
+        setTimeout(() => {
+            if (window.AmpAvatar) document.querySelectorAll('img[data-avuser]').forEach(img => AmpAvatar.render(img, img.dataset.avuser, 56));
+        }, 100);
+
+        _allLoaded.push(...d.users);
+        const hasMore = _allLoaded.length < _total;
+        document.getElementById('pagination').innerHTML = hasMore
+            ? `<button class="page-btn" onclick="loadMore()">Load More (${_total - _allLoaded.length} remaining)</button>`
+            : (_allLoaded.length > 10 ? `<span class="page-info">All ${_total} members loaded</span>` : '');
+
+    } catch(e) {
+        document.getElementById('usersContainer').innerHTML =
+            `<div class="empty-state"><div class="icon">⚠️</div><p>Failed to load users: ${e.message}</p></div>`;
+    }
+}
+
+function loadMore() {
+    _page++;
+    loadUsers(false);
+}
+
+function onSearch() {
+    clearTimeout(_searchTimeout);
+    _searchTimeout = setTimeout(() => {
+        _search = document.getElementById('searchInput').value.trim();
+        loadUsers(true);
+    }, 350);
+}
+
+// Init — clear skeletons and load
+document.getElementById('usersContainer').innerHTML = '<div class="users-grid" id="usersGrid"></div>';
+loadUsers(false);
+</script>
+</body>
+</html>

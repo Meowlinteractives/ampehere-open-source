@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="logo.png" type="image/png">
+<title>Ampehere · Friends</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+    --navy:#060606;--sky:#8899aa;--sky-dim:rgba(37,99,196,.18);
+    --silver:#8899aa;--silver-light:#d0d8e0;--dim:#8a95a3;
+    --panel:rgba(12,12,12,.6);--panel-b:rgba(126,184,212,.18);
+    --green:#2ecc71;--blue:#3498db;--red-bg:rgba(139,0,0,.3);--red-b:rgba(220,60,60,.3);--red-t:#ee8080;
+}
+@keyframes floatIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes rowIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+
+body{
+    overflow-x:hidden;font-family:'Exo 2',sans-serif;min-height:100vh;
+    background:#060606;
+    background-image:radial-gradient(ellipse at 20% 10%,rgba(15,15,15,.35) 0%,transparent 50%),
+                     radial-gradient(ellipse at 80% 90%,rgba(255,255,255,.04) 0%,transparent 50%);
+    background-attachment:fixed;color:#8899aa;
+    display:flex;align-items:flex-start;justify-content:center;padding:1.5rem 1rem 3rem;
+}
+.page-wrap{width:100%;max-width:580px;animation:floatIn .45s ease-out;}
+
+/* ── Page header ── */
+.page-header{text-align:center;margin-bottom:1.5rem;}
+.page-title{font-family:'Exo 2',sans-serif;font-size:2.2rem;font-weight:900;color:#d0d8e0;
+    text-transform:uppercase;letter-spacing:3px;text-shadow:0 2px 20px rgba(126,184,212,.3);}
+.page-sub{color:#8a95a3;font-size:.75rem;margin-top:.35rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.7;}
+
+/* ── Cards ── */
+.card{
+    background:linear-gradient(145deg,rgba(12,12,12,.85),rgba(8,8,8,.92));
+    border:1px solid var(--panel-b);border-radius: 0;padding:1.25rem;
+    margin-bottom:1rem;box-shadow:0 8px 28px rgba(0,0,0,.35);
+}
+.card-title{
+    font-family:'Exo 2',sans-serif;font-size:.9rem;font-weight:800;
+    color:#8899aa;text-transform:uppercase;letter-spacing:.07em;
+    display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;
+}
+.badge-count{
+    background:rgba(139,0,0,.7);border:1px solid rgba(220,60,60,.4);
+    color:#ee8080;font-size:.65rem;font-weight:900;
+    padding:.1rem .5rem;border-radius: 0;
+}
+
+/* ── Add friend form ── */
+.add-row{display:flex;gap:.5rem;}
+.add-input{
+    flex:1;padding:.6rem .9rem;
+    background:rgba(255,255,255,.05);border:1px solid rgba(126,184,212,.22);
+    border-radius: 0;color:#d0d8e0;font-family:'Exo 2',sans-serif;font-size:.9rem;
+    outline:none;transition:border-color .2s;
+}
+.add-input:focus{border-color:rgba(37,99,196,.5);background:rgba(126,184,212,.04);}
+.add-input::placeholder{color:#3a5570;}
+.btn-add{
+    padding:.6rem 1.1rem;display:flex;align-items:center;gap:.4rem;
+    background:linear-gradient(135deg,rgba(15,15,15,.6),rgba(12,12,12,.85));
+    border:1px solid rgba(126,184,212,.3);border-radius: 0;
+    color:#8899aa;font-family:'Exo 2',sans-serif;font-weight:800;
+    font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;
+    cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.btn-add:hover{background:linear-gradient(135deg,rgba(15,15,15,.9),rgba(12,12,12,1));transform:translateY(-1px);}
+.btn-add:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+
+/* ── Tabs ── */
+.tabs{display:flex;gap:.35rem;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,.04);padding-bottom:.75rem;}
+.tab{
+    padding:.38rem .9rem;border-radius: 0;cursor:pointer;font-family:'Exo 2',sans-serif;
+    font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    border:1px solid transparent;color:#5a7090;transition:all .15s;
+}
+.tab.active{background:rgba(15,15,15,.45);border-color:rgba(126,184,212,.3);color:#8899aa;}
+.tab:hover:not(.active){background:rgba(255,255,255,.04);color:#8a95a3;}
+.tab .tab-count{
+    display:inline-block;margin-left:.3rem;padding:.06rem .4rem;
+    background:rgba(255,255,255,.04);border-radius: 0;
+    font-size:.62rem;color:#8899aa;
+}
+
+/* ── Online section header ── */
+.online-header{
+    display:flex;align-items:center;gap:.5rem;
+    margin-bottom:.65rem;padding:.4rem .7rem;
+    background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.15);
+    border-radius: 0;
+}
+.online-dot-pulse{
+    width:8px;height:8px;border-radius:50%;background:var(--green);
+    box-shadow:0 0 0 0 rgba(46,204,113,.4);
+    animation:pulse-ring 1.8s infinite;flex-shrink:0;
+}
+@keyframes pulse-ring{
+    0%{box-shadow:0 0 0 0 rgba(46,204,113,.4);}
+    70%{box-shadow:0 0 0 6px rgba(46,204,113,0);}
+    100%{box-shadow:0 0 0 0 rgba(46,204,113,0);}
+}
+.online-label{font-size:.76rem;font-weight:700;color:#4ade80;font-family:'Exo 2',sans-serif;letter-spacing:.05em;}
+
+/* ── Friend row ── */
+.friend-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:.65rem .85rem;
+    background:rgba(12,12,12,.5);border:1px solid rgba(255,255,255,.04);
+    border-radius: 0;margin-bottom:.4rem;
+    transition:all .14s;animation:rowIn .28s ease-out both;
+}
+.friend-row:hover{border-color:rgba(126,184,212,.28);background:rgba(30,52,100,.55);transform:translateX(3px);}
+.friend-left{display:flex;align-items:center;gap:.65rem;min-width:0;flex:1;}
+
+/* avatar with status ring */
+.avatar-wrap{position:relative;flex-shrink:0;width:42px;height:42px;}
+.avatar-wrap img{width:42px;height:42px;border-radius:50%;display:block;background:#111111;border:1px solid rgba(37,99,196,.18);}
+.status-ring{
+    position:absolute;inset:-2px;border-radius:50%;border:2px solid transparent;
+    transition:border-color .3s;
+}
+.status-ring.online {border-color:var(--green);}
+.status-ring.playing{border-color:var(--blue);}
+.status-dot{
+    position:absolute;bottom:1px;right:1px;
+    width:11px;height:11px;border-radius:50%;
+    border:2px solid #060606;
+}
+.status-dot.online {background:var(--green);}
+.status-dot.playing{background:var(--blue);}
+.status-dot.offline{background:#3a4a5a;}
+
+.friend-info{min-width:0;flex:1;}
+.friend-name{
+    color:#d0d8e0;font-weight:700;font-size:.9rem;
+    text-decoration:none;display:block;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    transition:color .15s;
+}
+.friend-name:hover{color:#8899aa;}
+.friend-meta{font-size:.68rem;color:#8a95a3;margin-top:.1rem;display:flex;align-items:center;gap:.4rem;}
+.status-label.online {color:#2ecc71;}
+.status-label.playing{color:#3498db;}
+.status-label.offline{color:#4a5a6a;}
+
+.friend-actions{display:flex;gap:.35rem;flex-shrink:0;margin-left:.5rem;}
+.btn-sm{
+    padding:.3rem .65rem;border-radius: 0;cursor:pointer;
+    font-family:'Exo 2',sans-serif;font-size:.68rem;font-weight:800;
+    letter-spacing:.04em;text-transform:uppercase;border:1px solid;
+    transition:all .13s;white-space:nowrap;
+}
+.btn-sm:hover{transform:translateY(-1px);}
+.btn-profile{background:rgba(15,15,15,.3);border-color:rgba(126,184,212,.25);color:#8899aa;}
+.btn-profile:hover{background:rgba(15,15,15,.6);}
+.btn-accept {background:rgba(30,100,60,.3);border-color:rgba(80,200,120,.3);color:#4ade80;}
+.btn-accept:hover{background:rgba(30,100,60,.6);}
+.btn-decline{background:rgba(40,40,60,.4);border-color:rgba(255,255,255,.05);color:#5a7090;}
+.btn-decline:hover{background:rgba(80,30,30,.4);border-color:rgba(220,60,60,.3);color:#ee8080;}
+.btn-remove {background:rgba(80,20,20,.3);border-color:rgba(180,60,60,.25);color:#cc7070;}
+.btn-remove:hover{background:rgba(139,0,0,.55);border-color:rgba(220,60,60,.5);color:#ee8080;}
+
+/* ── Empty / Loading ── */
+.empty-state{text-align:center;color:#3a5068;font-size:.82rem;padding:2rem 1rem;font-weight:600;}
+.empty-state i{font-size:1.6rem;display:block;margin-bottom:.6rem;opacity:.35;}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(37,99,196,.18);border-radius: 0;}
+
+@media(max-width:500px){
+    body{padding:1rem .75rem 2rem;}
+    .page-title{font-size:1.7rem;}
+    .friend-actions{flex-wrap:wrap;}
+    .tabs{flex-wrap:wrap;}
+}
+</style>
+<link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0 !important; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="/avatar-renderer.js"></script>
+<script src="/avatar2d.js"></script>
+<script src="/avatar.js"></script>
+</head>
+<body>
+<script src="/sidebar.js"></script>
+<div class="page-wrap">
+    <div class="page-header">
+        <div class="page-title">👥 Friends</div>
+        <div class="page-sub">Manage your friends on Ampehere</div>
+    </div>
+
+    <!-- Add friend -->
+    <div class="card">
+        <div class="card-title"><i class="fas fa-user-plus"></i> Add a Friend</div>
+        <div class="add-row">
+            <input class="add-input" id="addInput" type="text" maxlength="20"
+                placeholder="Enter username…" onkeydown="if(event.key==='Enter')sendRequest()">
+            <button class="btn-add" id="addBtn" onclick="sendRequest()">
+                <i class="fas fa-paper-plane"></i> Send
+            </button>
+        </div>
+    </div>
+
+    <!-- Pending requests -->
+    <div class="card" id="pendingCard" style="display:none;">
+        <div class="card-title">
+            <i class="fas fa-user-clock"></i> Friend Requests
+            <span class="badge-count" id="pendingCount">0</span>
+        </div>
+        <div id="pendingList"></div>
+    </div>
+
+    <!-- Friends list with tabs -->
+    <div class="card">
+        <div class="card-title"><i class="fas fa-users"></i> Your Friends</div>
+        <div class="tabs" id="friendTabs" style="display:none;">
+            <div class="tab active" onclick="showTab('all')" id="tab-all">
+                All <span class="tab-count" id="tc-all">0</span>
+            </div>
+            <div class="tab" onclick="showTab('online')" id="tab-online">
+                🟢 Online <span class="tab-count" id="tc-online">0</span>
+            </div>
+        </div>
+        <div id="friendsList">
+            <div class="empty-state"><i class="fas fa-spinner fa-spin"></i> Loading…</div>
+        </div>
+    </div>
+</div>
+
+<script>
+const Swal = window.Swal;
+const swalTheme = { background:'#0c0c0c', color:'#d0d8e0', confirmButtonColor:'#111111', cancelButtonColor:'#8b0000' };
+
+let _allFriends = [];
+let _currentTab = 'all';
+
+function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function timeAgo(ms){
+    const diff=Date.now()-ms, d=Math.floor(diff/86400000);
+    if(d===0)return 'today';
+    if(d===1)return 'yesterday';
+    if(d<30) return d+' days ago';
+    const m=Math.floor(d/30);
+    if(m<12)return m+' month'+(m>1?'s':'')+' ago';
+    return Math.floor(m/12)+' year(s) ago';
+}
+
+function statusLabel(s){
+    if(s==='online') return '<span class="status-label online">● Online</span>';
+    if(s==='playing')return '<span class="status-label playing">● Playing</span>';
+    return '<span class="status-label offline">● Offline</span>';
+}
+
+async function loadFriends(){
+    try{
+        const r=await fetch('/api/get-friends');
+        const d=await r.json();
+        if(!d.success){ renderFriends([], []); return; }
+        renderFriends(d.friends||[], d.pending||[]);
+    }catch(e){ renderFriends([], []); }
+}
+
+async function renderFriends(friends, pending){
+    // ── Pending ──
+    const pendingCard=document.getElementById('pendingCard');
+    document.getElementById('pendingCount').textContent=pending.length;
+    if(pending.length>0){
+        pendingCard.style.display='block';
+        if(window.ampNameBadgeBatch) await window.ampNameBadgeBatch(pending.map(p=>p.username));
+        const rows=[];
+        for(const p of pending){
+            const badge=window.ampNameBadge?await window.ampNameBadge(p.username):'';
+            rows.push(`
+            <div class="friend-row" id="pr-${p.requester_id}" style="animation-delay:${rows.length*40}ms">
+                <div class="friend-left">
+                    <div class="avatar-wrap">
+                        <img data-avuser="${esc(p.username)}" alt="" width="42" height="42">
+                        <span class="status-dot offline"></span>
+                    </div>
+                    <div class="friend-info">
+                        <a class="friend-name" href="/profile.html?user=${encodeURIComponent(p.username)}">${badge}${esc(p.username)}</a>
+                        <div class="friend-meta">Sent ${timeAgo(p.created_at)}</div>
+                    </div>
+                </div>
+                <div class="friend-actions">
+                    <button class="btn-sm btn-accept"  onclick="respond('${p.requester_id}','accept')"><i class="fas fa-check"></i> Accept</button>
+                    <button class="btn-sm btn-decline" onclick="respond('${p.requester_id}','decline')"><i class="fas fa-times"></i></button>
+                </div>
+            </div>`);
+        }
+        document.getElementById('pendingList').innerHTML=rows.join('');
+        setTimeout(()=>{ if(window.AmpAvatar) document.querySelectorAll('#pendingList img[data-avuser]').forEach(img=>AmpAvatar.render(img,img.dataset.avuser,42)); },50);
+    }else{
+        pendingCard.style.display='none';
+    }
+
+    // ── Friends ──
+    _allFriends=friends;
+
+    const onlineCount=friends.filter(f=>f.displayStatus==='online'||f.displayStatus==='playing').length;
+    document.getElementById('tc-all').textContent=friends.length;
+    document.getElementById('tc-online').textContent=onlineCount;
+
+    const tabsEl=document.getElementById('friendTabs');
+    if(friends.length>0) tabsEl.style.display='flex';
+
+    showTab(_currentTab, friends);
+}
+
+function showTab(tab, friends){
+    _currentTab=tab;
+    friends=friends||_allFriends;
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('tab-'+tab).classList.add('active');
+
+    const list=tab==='online'
+        ? friends.filter(f=>f.displayStatus==='online'||f.displayStatus==='playing')
+        : friends;
+
+    renderFriendList(list);
+}
+
+async function renderFriendList(friends){
+    const list=document.getElementById('friendsList');
+    if(!friends.length){
+        list.innerHTML=`<div class="empty-state"><i class="fas fa-${_currentTab==='online'?'moon':'user-friends'}"></i>${_currentTab==='online'?'No friends online right now':'No friends yet — add someone above!'}</div>`;
+        return;
+    }
+
+    if(window.ampNameBadgeBatch) await window.ampNameBadgeBatch(friends.map(f=>f.username));
+
+    // Group: online first, then playing, then offline
+    const sorted=[
+        ...friends.filter(f=>f.displayStatus==='online'),
+        ...friends.filter(f=>f.displayStatus==='playing'),
+        ...friends.filter(f=>f.displayStatus==='offline'),
+    ];
+
+    const onlineFriends=sorted.filter(f=>f.displayStatus==='online'||f.displayStatus==='playing');
+    let html='';
+
+    if(_currentTab==='all' && onlineFriends.length>0){
+        html+=`<div class="online-header">
+            <span class="online-dot-pulse"></span>
+            <span class="online-label">${onlineFriends.length} friend${onlineFriends.length!==1?'s':''} online now</span>
+        </div>`;
+    }
+
+    for(let i=0;i<sorted.length;i++){
+        const f=sorted[i];
+        const badge=window.ampNameBadge?await window.ampNameBadge(f.username):'';
+        const s=f.displayStatus||'offline';
+        const sinceText=f.since?`Friends since ${timeAgo(f.since)}`:'';
+        html+=`
+        <div class="friend-row" id="fr-${f.friend_id}" style="animation-delay:${i*30}ms">
+            <div class="friend-left">
+                <div class="avatar-wrap">
+                    <img data-avuser="${esc(f.username)}" alt="" width="42" height="42">
+                    <span class="status-ring ${s}"></span>
+                    <span class="status-dot ${s}" title="${s.charAt(0).toUpperCase()+s.slice(1)}"></span>
+                </div>
+                <div class="friend-info">
+                    <a class="friend-name" href="/profile.html?user=${encodeURIComponent(f.username)}">${badge}${esc(f.username)}</a>
+                    <div class="friend-meta">
+                        ${statusLabel(s)}
+                        ${sinceText?`<span>· ${sinceText}</span>`:''}
+                    </div>
+                </div>
+            </div>
+            <div class="friend-actions">
+                <button class="btn-sm btn-profile" onclick="window.location.href='/profile.html?user=${encodeURIComponent(f.username)}'">
+                    <i class="fas fa-user"></i>
+                </button>
+                <button class="btn-sm btn-remove" onclick="removeFriend('${f.friend_id}','${esc(f.username)}')" title="Remove friend">
+                    <i class="fas fa-user-minus"></i>
+                </button>
+            </div>
+        </div>`;
+    }
+    list.innerHTML=html;
+    setTimeout(()=>{ if(window.AmpAvatar) list.querySelectorAll('img[data-avuser]').forEach(img=>AmpAvatar.render(img,img.dataset.avuser,42)); },50);
+}
+
+async function sendRequest(){
+    const input=document.getElementById('addInput');
+    const btn=document.getElementById('addBtn');
+    const uname=input.value.trim();
+    if(!uname)return;
+    btn.disabled=true;
+    btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>';
+    try{
+        const res=await fetch('/api/send-friend-request',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({targetUsername:uname})
+        });
+        const data=await res.json();
+        if(data.success){
+            input.value='';
+            Swal.fire({icon:'success',title:'Request Sent!',text:`Friend request sent to ${uname}`,...swalTheme,timer:2500,showConfirmButton:false});
+            fetch('/api/complete-task',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({taskId:'friend'})}).catch(()=>{});
+        }else{
+            Swal.fire({icon:'error',title:'Could Not Send',text:data.error||'Something went wrong',...swalTheme});
+        }
+    }catch(e){
+        Swal.fire({icon:'error',title:'Network Error',text:'Please try again',...swalTheme});
+    }
+    btn.disabled=false;
+    btn.innerHTML='<i class="fas fa-paper-plane"></i> Send';
+}
+
+async function respond(requesterId, action){
+    const row=document.getElementById('pr-'+requesterId);
+    if(row)row.style.opacity='.4';
+    try{
+        await fetch('/api/respond-friend-request',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({requesterId,action})
+        });
+        if(action==='accept'){
+            Swal.fire({toast:true,position:'top-end',icon:'success',title:'Friend Added!',background:'#0c0c0c',color:'#d0d8e0',showConfirmButton:false,timer:2500,timerProgressBar:true});
+            // Check if Friends badge was earned (20 friends)
+            fetch('/api/check-achievements',{method:'POST'}).catch(()=>{});
+        }
+        loadFriends();
+    }catch(e){
+        if(row)row.style.opacity='1';
+    }
+}
+
+async function removeFriend(friendId, username){
+    const result=await Swal.fire({
+        title:'Remove Friend?',text:`Remove ${username} from your friends?`,
+        icon:'warning',showCancelButton:true,
+        confirmButtonText:'Remove',cancelButtonText:'Cancel',
+        ..._sw
+    });
+    if(!result.isConfirmed)return;
+    const row=document.getElementById('fr-'+friendId);
+    if(row){row.style.opacity='.4';row.style.pointerEvents='none';}
+    try{
+        await fetch('/api/remove-friend',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({friendId})
+        });
+        Swal.fire({toast:true,position:'top-end',icon:'success',title:'Friend Removed',background:'#0c0c0c',color:'#d0d8e0',showConfirmButton:false,timer:2000,timerProgressBar:true});
+        loadFriends();
+    }catch(e){
+        if(row){row.style.opacity='1';row.style.pointerEvents='';}
+    }
+}
+
+const _sw={background:'#0c0c0c',color:'#d0d8e0',confirmButtonColor:'#8b0000',cancelButtonColor:'#111111'};
+
+loadFriends();
+// Auto-refresh every 45 seconds so online status stays fresh
+setInterval(loadFriends, 45000);
+</script>
+</body>
+</html>

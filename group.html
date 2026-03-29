@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ampehere · Group</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+    --navy:#060606; --sky:#8899aa; --silver:#8899aa;
+    --silver-light:#d0d8e0; --silver-dim:#8a95a3;
+    --panel:rgba(12,12,12,.55); --panel-border:rgba(37,99,196,.18);
+    --red-bg:rgba(139,0,0,.3); --red-border:rgba(220,60,60,.3); --red-text:#ee8080;
+    --gold:#f1c40f;
+}
+@keyframes floatIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideIn { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+
+body {
+    overflow-x:hidden; font-family:'Exo 2',sans-serif; min-height:100vh; padding:1rem;
+    background:#060606;
+    background-image:radial-gradient(ellipse at 20% 10%,rgba(15,15,15,.35) 0%,transparent 50%),
+                     radial-gradient(ellipse at 80% 90%,rgba(255,255,255,.04) 0%,transparent 50%);
+    background-attachment:fixed;
+}
+
+.container {
+    max-width:860px; margin:0 auto;
+    background:linear-gradient(145deg,rgba(12,12,12,.88),rgba(8,8,8,.94));
+    border:1px solid var(--panel-border); border-radius: 0; padding:2rem;
+    box-shadow:0 24px 64px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);
+    animation:floatIn .45s ease-out;
+}
+.header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:1.75rem; padding-bottom:1.25rem;
+    border-bottom:1px solid rgba(255,255,255,.05); flex-wrap:wrap; gap:.75rem;
+}
+h1 { font-family:'Exo 2',sans-serif; font-size:1.6rem; font-weight:900; color:#d0d8e0; letter-spacing:.04em; text-shadow:0 2px 20px rgba(37,99,196,.18); }
+.back-button {
+    display:inline-flex; align-items:center; gap:.45rem; color:#8a95a3;
+    font-size:.82rem; font-weight:700; padding:.4rem .9rem;
+    background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.05);
+    border-radius: 0; text-decoration:none; transition:all .15s;
+}
+.back-button:hover { color:#8899aa; background:rgba(255,255,255,.04); }
+
+/* ── Group header ── */
+.group-header {
+    background:var(--panel); border:1px solid var(--panel-border);
+    border-radius: 0; padding:1.5rem; margin-bottom:1.5rem;
+    box-shadow:0 8px 28px rgba(0,0,0,.3); position:relative; overflow:hidden;
+}
+.group-header::before {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(135deg,rgba(126,184,212,.04) 0%,transparent 60%);
+}
+.group-name { font-family:'Exo 2',sans-serif; font-size:2rem; font-weight:900; color:#d0d8e0; margin-bottom:.35rem; }
+.group-description-display { color:#8a95a3; font-size:.9rem; line-height:1.55; margin:.5rem 0 .75rem; font-style:italic; max-width:560px; }
+.group-meta { color:#8a95a3; font-weight:600; font-size:.88rem; margin-bottom:.2rem; }
+.badges-row { display:flex; flex-wrap:wrap; gap:.5rem; margin:.75rem 0; }
+.private-badge { display:inline-flex; align-items:center; gap:.35rem; padding:.25rem .75rem; background:var(--red-bg); border:1px solid var(--red-border); border-radius: 0; color:var(--red-text); font-size:.78rem; font-weight:800; }
+.group-stats { display:flex; gap:2rem; margin-top:1rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,.04); flex-wrap:wrap; }
+.stat { text-align:center; }
+.stat-value { font-size:1.75rem; font-weight:900; color:#d0d8e0; }
+.stat-label { font-size:.78rem; text-transform:uppercase; color:#8a95a3; font-weight:700; }
+.action-button { display:block; width:100%; padding:.75rem 1.5rem; font-family:'Exo 2',sans-serif; font-weight:800; font-size:.9rem; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; transition:all .15s; margin-bottom:.75rem; background:linear-gradient(135deg,rgba(15,15,15,.6),rgba(12,12,12,.85)); border:1px solid rgba(126,184,212,.3); border-radius: 0; color:#8899aa; }
+.action-button:hover { background:linear-gradient(135deg,rgba(15,15,15,.9),rgba(12,12,12,1)); transform:translateY(-1px); border-color:rgba(37,99,196,.5); }
+.action-button.danger { background:var(--red-bg); border-color:var(--red-border); color:var(--red-text); }
+.action-button.danger:hover { background:rgba(139,0,0,.55); border-color:rgba(220,60,60,.55); }
+
+/* ── Owner panel ── */
+.owner-controls { background:rgba(12,12,12,.45); border:1px solid var(--panel-border); border-radius: 0; margin-bottom:1.5rem; box-shadow:0 6px 20px rgba(0,0,0,.25); overflow:hidden; }
+.owner-controls-header { display:flex; align-items:center; gap:.6rem; padding:1.1rem 1.5rem; border-bottom:1px solid rgba(255,255,255,.04); background:rgba(8,8,8,.3); }
+.owner-controls-header h3 { font-family:'Exo 2',sans-serif; font-size:.95rem; font-weight:800; color:#8899aa; text-transform:uppercase; letter-spacing:.08em; margin:0; }
+.owner-tabs { display:flex; gap:.25rem; padding:.75rem 1.5rem; border-bottom:1px solid rgba(126,184,212,.08); background:rgba(8,8,8,.2); flex-wrap:wrap; }
+.owner-tab { padding:.4rem .95rem; border-radius: 0; cursor:pointer; font-family:'Exo 2',sans-serif; font-size:.75rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase; border:1px solid transparent; color:#5a7090; transition:all .15s; }
+.owner-tab.active { background:rgba(15,15,15,.5); border-color:rgba(126,184,212,.3); color:#8899aa; }
+.owner-tab:hover:not(.active) { background:rgba(255,255,255,.05); color:#8a95a3; }
+.owner-tab-content { display:none; padding:1.25rem 1.5rem; }
+.owner-tab-content.active { display:block; }
+.control-card { background:rgba(8,8,8,.4); border:1px solid rgba(255,255,255,.04); border-radius: 0; padding:.9rem 1rem; margin-bottom:.75rem; }
+.control-card:last-child { margin-bottom:0; }
+.control-card h4 { color:#8899aa; font-weight:800; font-size:.88rem; margin-bottom:.6rem; display:flex; align-items:center; gap:.45rem; }
+.control-card label { display:flex; align-items:center; gap:.6rem; font-weight:700; color:#8a95a3; cursor:pointer; font-size:.9rem; }
+.control-card input[type="checkbox"] { width:18px; height:18px; cursor:pointer; accent-color:#8899aa; }
+.ctrl-row { display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; }
+.ctrl-row select,.ctrl-row input[type="number"],.ctrl-row input[type="text"] { padding:.5rem .75rem; background:rgba(255,255,255,.06); border:1px solid rgba(37,99,196,.18); border-radius: 0; color:#d0d8e0; font-family:'Exo 2',sans-serif; font-weight:600; flex:1; min-width:80px; }
+.ctrl-row textarea { width:100%; padding:.6rem .9rem; background:rgba(255,255,255,.05); border:1px solid rgba(37,99,196,.18); border-radius: 0; color:#d0d8e0; font-family:'Exo 2',sans-serif; font-size:.9rem; resize:none; margin-bottom:.5rem; }
+.ctrl-row textarea:focus,.ctrl-row input:focus,.ctrl-row select:focus { border-color:rgba(37,99,196,.4); outline:none; }
+.ctrl-btn { padding:.5rem 1rem; background:linear-gradient(135deg,rgba(15,15,15,.6),rgba(12,12,12,.85)); border:1px solid rgba(126,184,212,.3); border-radius: 0; color:#8899aa; font-family:'Exo 2',sans-serif; font-weight:800; font-size:.8rem; letter-spacing:.05em; cursor:pointer; transition:all .15s; white-space:nowrap; }
+.ctrl-btn:hover { background:linear-gradient(135deg,rgba(15,15,15,.9),rgba(12,12,12,1)); }
+.ctrl-btn.red { background:rgba(139,0,0,.35); border-color:rgba(220,60,60,.4); color:#ee8080; }
+.ctrl-btn.red:hover { background:rgba(139,0,0,.6); }
+.ctrl-result { color:#8899aa; margin-top:.5rem; font-size:.85rem; font-weight:600; }
+
+/* ── Member mgmt ── */
+.mgmt-member-row { display:flex; align-items:center; gap:.75rem; padding:.6rem .8rem; background:rgba(12,12,12,.5); border:1px solid rgba(255,255,255,.04); border-radius: 0; margin-bottom:.35rem; transition:all .14s; }
+.mgmt-member-row:hover { border-color:rgba(126,184,212,.25); background:rgba(30,50,100,.45); }
+.mgmt-member-row img { width:32px; height:32px; border-radius:50%; border:1px solid rgba(37,99,196,.18); background:#111111; flex-shrink:0; }
+.mgmt-member-name { font-weight:700; font-size:.88rem; color:#d0d8e0; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.mgmt-role-badge { padding:.15rem .55rem; border-radius: 0; font-size:.68rem; font-weight:800; flex-shrink:0; }
+.role-owner { background:rgba(241,196,15,.15); border:1px solid rgba(241,196,15,.3); color:var(--gold); }
+.role-site-owner { background:rgba(255,255,255,.05); border:1px solid rgba(126,184,212,.3); color:#8899aa; }
+.role-member { background:rgba(126,184,212,.07); border:1px solid rgba(255,255,255,.05); color:#8a95a3; }
+.kick-btn { background:var(--red-bg); border:1px solid rgba(220,60,60,.4); border-radius: 0; color:var(--red-text); font-size:.72rem; font-weight:800; padding:.3rem .7rem; cursor:pointer; transition:all .15s; flex-shrink:0; font-family:'Exo 2',sans-serif; letter-spacing:.04em; text-transform:uppercase; }
+.kick-btn:hover { background:rgba(139,0,0,.6); border-color:rgba(220,60,60,.7); transform:scale(1.05); }
+
+/* ── Members section ── */
+.members-section { background:rgba(12,12,12,.4); border:1px solid rgba(255,255,255,.05); border-radius: 0; padding:1.5rem; margin-bottom:1.5rem; box-shadow:0 6px 20px rgba(0,0,0,.2); }
+.members-section h2 { font-family:'Exo 2',sans-serif; font-size:.95rem; font-weight:800; color:#8899aa; margin-bottom:1rem; text-transform:uppercase; letter-spacing:.08em; display:flex; align-items:center; gap:.5rem; }
+.see-all-btn { margin-left:auto; background:rgba(15,15,15,.4); border:1px solid rgba(126,184,212,.25); border-radius: 0; color:#8899aa; font-family:'Exo 2',sans-serif; font-size:.68rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; padding:.3rem .8rem; cursor:pointer; transition:all .15s; }
+.see-all-btn:hover { background:rgba(15,15,15,.7); color:#a0aabb; border-color:rgba(37,99,196,.5); }
+.members-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:.5rem; }
+.member-card { background:rgba(12,12,12,.55); border:1px solid rgba(255,255,255,.05); border-radius: 0; padding:.8rem; text-align:center; font-weight:700; font-size:.88rem; color:#8899aa; box-shadow:0 4px 12px rgba(0,0,0,.2); position:relative; transition:all .15s; }
+.member-card:hover { border-color:rgba(37,99,196,.3); transform:translateY(-2px); background:rgba(12,12,12,.6); }
+.member-card .creator-badge { display:inline-block; margin-top:.3rem; padding:.18rem .55rem; background:rgba(241,196,15,.15); border:1px solid rgba(241,196,15,.3); border-radius: 0; color:var(--gold); font-size:.68rem; font-weight:800; }
+.member-card .site-owner-badge { display:inline-block; margin-top:.3rem; padding:.18rem .55rem; background:rgba(255,255,255,.04); border:1px solid rgba(126,184,212,.28); border-radius: 0; color:#8899aa; font-size:.68rem; font-weight:800; }
+.kick-card-btn { position:absolute; top:4px; right:4px; background:rgba(220,60,60,.15); border:1px solid rgba(220,60,60,.35); border-radius: 0; color:#ee8080; font-size:.65rem; font-weight:700; padding:2px 6px; cursor:pointer; line-height:1.4; transition:all .13s; }
+.kick-card-btn:hover { background:rgba(220,60,60,.4); transform:scale(1.1); }
+
+/* ── Members Modal ── */
+#allMembersModal { display:none; position:fixed; inset:0; z-index:999; background:rgba(5,10,25,.85); backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:1rem; }
+#allMembersModal.open { display:flex; }
+.members-modal-box { background:linear-gradient(145deg,rgba(12,12,12,.97),rgba(10,20,40,.98)); border:1px solid rgba(126,184,212,.22); border-radius: 0; width:100%; max-width:680px; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 32px 80px rgba(0,0,0,.7); }
+.members-modal-header { display:flex; align-items:center; gap:.75rem; padding:1.2rem 1.5rem; border-bottom:1px solid rgba(255,255,255,.04); flex-shrink:0; }
+.members-modal-header h3 { font-family:'Exo 2',sans-serif; font-weight:900; font-size:1rem; color:#d0d8e0; letter-spacing:.06em; text-transform:uppercase; margin:0; }
+.members-modal-header .modal-count { background:rgba(255,255,255,.04); border:1px solid rgba(37,99,196,.18); border-radius: 0; padding:.15rem .65rem; font-size:.72rem; font-weight:700; color:#8899aa; }
+.members-modal-close { margin-left:auto; background:none; border:none; color:#5a7090; font-size:1.3rem; cursor:pointer; line-height:1; padding:.2rem .4rem; border-radius: 0; transition:color .15s; }
+.members-modal-close:hover { color:#8899aa; }
+.members-modal-search { padding:.9rem 1.5rem; border-bottom:1px solid rgba(126,184,212,.08); flex-shrink:0; }
+.members-modal-search input { width:100%; background:rgba(255,255,255,.05); border:1px solid rgba(37,99,196,.18); border-radius: 0; padding:.6rem 1rem; color:#d0d8e0; font-family:'Exo 2',sans-serif; font-size:.88rem; outline:none; transition:border-color .2s; }
+.members-modal-search input:focus { border-color:rgba(37,99,196,.4); }
+.members-modal-list { overflow-y:auto; padding:1rem 1.5rem; flex:1; display:flex; flex-direction:column; gap:.5rem; }
+.members-modal-list::-webkit-scrollbar { width:4px; }
+.members-modal-list::-webkit-scrollbar-thumb { background:rgba(37,99,196,.18); border-radius: 0; }
+.modal-member-row { display:flex; align-items:center; gap:.85rem; background:rgba(12,12,12,.5); border:1px solid rgba(255,255,255,.04); border-radius: 0; padding:.65rem 1rem; cursor:pointer; transition:all .14s; text-decoration:none; }
+.modal-member-row:hover { background:rgba(42,70,130,.5); border-color:rgba(126,184,212,.3); }
+.modal-member-row img { width:38px; height:38px; border-radius:50%; border:1px solid rgba(37,99,196,.18); background:#111111; flex-shrink:0; }
+.modal-member-name { font-weight:700; font-size:.9rem; color:#d0d8e0; }
+.modal-member-meta { font-size:.75rem; color:#8a95a3; }
+.modal-member-badge { margin-left:auto; }
+.modal-kick-btn { margin-left:.5rem; background:var(--red-bg); border:1px solid var(--red-border); border-radius: 0; color:var(--red-text); font-size:.7rem; font-weight:800; padding:.3rem .75rem; cursor:pointer; transition:all .13s; font-family:'Exo 2',sans-serif; text-transform:uppercase; letter-spacing:.04em; flex-shrink:0; white-space:nowrap; }
+.modal-kick-btn:hover { background:rgba(139,0,0,.6); transform:scale(1.05); }
+
+/* ── Activity log ── */
+.activity-section { background:rgba(12,12,12,.4); border:1px solid rgba(255,255,255,.05); border-radius: 0; padding:1.5rem; margin-bottom:1.5rem; box-shadow:0 6px 20px rgba(0,0,0,.2); }
+.activity-section h2 { font-family:'Exo 2',sans-serif; font-size:.95rem; font-weight:800; color:#8899aa; margin-bottom:1rem; text-transform:uppercase; letter-spacing:.08em; display:flex; align-items:center; gap:.5rem; }
+.activity-list { max-height:220px; overflow-y:auto; display:flex; flex-direction:column; gap:.4rem; }
+.activity-item { display:flex; align-items:center; gap:.65rem; padding:.5rem .75rem; background:rgba(8,8,8,.3); border-radius: 0; border:1px solid rgba(126,184,212,.07); font-size:.82rem; color:#8a95a3; animation:slideIn .3s ease-out; }
+.activity-icon { font-size:.95rem; flex-shrink:0; }
+.activity-text { flex:1; }
+.activity-text strong { color:#8899aa; }
+.activity-time { font-size:.7rem; color:#5a7090; flex-shrink:0; }
+
+/* ── Shouts ── */
+.shouts-section { background:rgba(12,12,12,.4); border:1px solid rgba(255,255,255,.05); border-radius: 0; padding:1.5rem; margin-bottom:1.5rem; box-shadow:0 6px 20px rgba(0,0,0,.2); }
+.shouts-section h2 { font-family:'Exo 2',sans-serif; font-size:.95rem; font-weight:800; color:#8899aa; margin-bottom:1rem; text-transform:uppercase; letter-spacing:.08em; display:flex; align-items:center; gap:.5rem; }
+.shout-form { background:rgba(8,8,8,.4); border:1px solid rgba(255,255,255,.05); border-radius: 0; padding:1rem; margin-bottom:1rem; }
+.shout-form textarea { width:100%; padding:.7rem .9rem; background:rgba(255,255,255,.05); border:1px solid rgba(37,99,196,.18); border-radius: 0; color:#d0d8e0; font-family:'Exo 2',sans-serif; font-size:.9rem; resize:none; margin-bottom:.5rem; }
+.shout-form textarea:focus { border-color:rgba(37,99,196,.5); outline:none; box-shadow:0 0 0 3px rgba(126,184,212,.08); }
+.shout-form button { padding:.5rem 1.25rem; background:linear-gradient(135deg,rgba(15,15,15,.6),rgba(12,12,12,.85)); border:1px solid rgba(126,184,212,.3); border-radius: 0; color:#8899aa; font-family:'Exo 2',sans-serif; font-weight:800; font-size:.8rem; letter-spacing:.05em; cursor:pointer; transition:all .15s; }
+.shout-form button:hover { background:linear-gradient(135deg,rgba(15,15,15,.9),rgba(12,12,12,1)); transform:translateY(-1px); }
+.pending-note { color:#8a95a3; font-size:.78rem; margin-top:.4rem; }
+.shouts-list { max-height:420px; overflow-y:auto; }
+.shout-item { background:rgba(12,12,12,.45); border:1px solid rgba(255,255,255,.04); border-radius: 0; padding:.9rem 1.1rem; margin-bottom:.5rem; }
+.shout-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:.35rem; font-weight:800; color:#d0d8e0; font-size:.88rem; gap:.5rem; flex-wrap:wrap; }
+.shout-message { color:#8a95a3; word-wrap:break-word; font-size:.9rem; line-height:1.55; }
+.shout-time { font-size:.72rem; color:#8a95a3; opacity:.65; }
+
+/* ── Misc ── */
+.empty { text-align:center; padding:2rem; color:#8a95a3; font-size:.88rem; }
+.debug-info { font-size:.7rem; color:#8a95a3; opacity:.45; margin-top:.2rem; }
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:rgba(255,255,255,.02); }
+::-webkit-scrollbar-thumb { background:rgba(126,184,212,.25); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background:rgba(37,99,196,.4); }
+
+@media(max-width:640px){ .container{ padding:1.25rem; border-radius: 0; } .members-grid{ grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); } .owner-tabs{ flex-wrap:wrap; } }
+@media(max-width:480px){ .members-grid{ grid-template-columns:repeat(auto-fill,minmax(90px,1fr)); } .ctrl-row{ flex-direction:column; } .ctrl-row select,.ctrl-row input{ width:100%; } }
+</style>
+<link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0 !important; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="/avatar-renderer.js"></script>
+<script src="/avatar2d.js"></script>
+<script src="/avatar.js"></script>
+</head>
+<body>
+<script src="/sidebar.js"></script>
+<div class="page-container">
+    <div class="header">
+        <h1>👥 GROUP</h1>
+        <a href="/groups.html" class="back-button">← BACK</a>
+    </div>
+
+    <div id="loadingSection" style="text-align:center;padding:2rem;">⏳ Loading group...</div>
+
+    <div id="groupContent" style="display:none;">
+
+        <!-- Group Header -->
+        <div class="group-header">
+            <div class="group-name" id="groupName"></div>
+            <div id="groupDescription" class="group-description-display" style="display:none;"></div>
+            <div class="group-meta" id="groupCreator"></div>
+            <div class="group-meta" id="groupCreated"></div>
+            <div class="badges-row">
+                <div id="privacyBadge" class="private-badge" style="display:none;">🔒 PRIVATE</div>
+            </div>
+            <div class="group-stats">
+                <div class="stat">
+                    <div class="stat-value" id="memberCount">0</div>
+                    <div class="stat-label">MEMBERS</div>
+                </div>
+                <div class="stat" id="shoutStatWrap" style="display:none;">
+                    <div class="stat-value" id="shoutCount">0</div>
+                    <div class="stat-label">SHOUTS</div>
+                </div>
+            </div>
+            <button id="joinButton" class="action-button" style="display:none;margin-top:.75rem;">➕ JOIN GROUP</button>
+            <button id="leaveButton" class="action-button danger" style="display:none;margin-top:.75rem;">🚪 LEAVE GROUP</button>
+        </div>
+
+        <!-- Owner Controls — tabbed panel, visible to group creator -->
+        <div id="ownerControls" class="owner-controls" style="display:none;">
+            <div class="owner-controls-header">
+                <span>👑</span>
+                <h3>OWNER CONTROLS</h3>
+            </div>
+            <div class="owner-tabs">
+                <div class="owner-tab active" onclick="switchTab('settings')">⚙️ Settings</div>
+                <div class="owner-tab" onclick="switchTab('members')">👥 Members</div>
+                <div class="owner-tab" onclick="switchTab('give')">💰 Give Coins</div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="tab-settings" class="owner-tab-content active">
+                <div class="control-card">
+                    <h4>🔒 Privacy</h4>
+                    <label>
+                        <input type="checkbox" id="privacyToggle" onchange="togglePrivacy()">
+                        <span>Private Group — members can only join by owner invitation</span>
+                    </label>
+                </div>
+                <div class="control-card">
+                    <h4>📝 Group Description</h4>
+                    <div class="ctrl-row" style="flex-direction:column;">
+                        <textarea id="descInput" rows="3" maxlength="300" placeholder="Tell members what this group is about… (max 300 chars)"></textarea>
+                        <button class="ctrl-btn" onclick="saveDescription()">💾 Save Description</button>
+                    </div>
+                    <div id="descResult" class="ctrl-result"></div>
+                </div>
+            </div>
+
+            <!-- Members Management Tab — full kick panel -->
+            <div id="tab-members" class="owner-tab-content">
+                <div style="margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem;">
+                    <input type="text" id="mgmtSearch" placeholder="Search members…" oninput="filterMgmtMembers()"
+                        style="flex:1;padding:.5rem .9rem;background:rgba(255,255,255,.05);border:1px solid rgba(37,99,196,.18);border-radius: 0;color:#d0d8e0;font-family:'Exo 2',sans-serif;outline:none;">
+                    <span style="color:#8a95a3;font-size:.8rem;white-space:nowrap;" id="mgmtCount"></span>
+                </div>
+                <div id="mgmtMemberList" style="max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:.35rem;"></div>
+                <p style="color:#5a7090;font-size:.75rem;margin-top:.75rem;">⚠️ Kicking removes a member immediately. The site owner cannot be kicked.</p>
+            </div>
+
+            <!-- Give Coins Tab -->
+            <div id="tab-give" class="owner-tab-content">
+                <div class="control-card">
+                    <h4>💰 Give Coins to Member</h4>
+                    <div class="ctrl-row">
+                        <select id="memberSelect"><option value="">Select member…</option></select>
+                        <input type="number" id="giveAmount" value="5" min="1" max="1000" style="max-width:90px;">
+                        <button class="ctrl-btn" onclick="giveCoinsToMember()">GIVE</button>
+                    </div>
+                    <div id="giveResult" class="ctrl-result"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Site-owner delete -->
+        <div id="siteOwnerControls" style="display:none;margin-bottom:1rem;">
+            <button onclick="deleteGroup()" class="ctrl-btn red" style="background:rgba(139,0,0,.35);border:1px solid rgba(220,60,60,.5);border-radius: 0;color:#ffaaaa;font-family:'Exo 2',sans-serif;font-size:.78rem;font-weight:800;padding:8px 18px;cursor:pointer;letter-spacing:.05em;text-transform:uppercase;">🗑 Delete Group</button>
+        </div>
+        <!-- Report -->
+        <div id="reportGroupControls" style="display:none;margin-bottom:1rem;">
+            <button id="reportGroupBtn" onclick="reportThisGroup()" style="background:rgba(139,0,0,.22);border:1px solid rgba(200,80,80,.3);border-radius: 0;color:#cc7070;font-family:'Exo 2',sans-serif;font-size:.75rem;font-weight:700;padding:6px 16px;cursor:pointer;letter-spacing:.04em;">
+                <i class="fas fa-flag"></i> Report Group
+            </button>
+        </div>
+
+        <!-- Members grid -->
+        <div class="members-section">
+            <h2>👥 MEMBERS <button class="see-all-btn" onclick="openAllMembers()">See All</button></h2>
+            <div id="membersList" class="members-grid"></div>
+        </div>
+
+        <!-- All Members Modal -->
+        <div id="allMembersModal">
+            <div class="members-modal-box">
+                <div class="members-modal-header">
+                    <h3>👥 All Members</h3>
+                    <span class="modal-count" id="modalMemberCount">0</span>
+                    <button class="members-modal-close" onclick="closeAllMembers()">✕</button>
+                </div>
+                <div class="members-modal-search">
+                    <input type="text" id="memberSearchInput" placeholder="Search members…" oninput="filterModalMembers()">
+                </div>
+                <div class="members-modal-list" id="modalMembersList"></div>
+            </div>
+        </div>
+
+        <!-- Activity Feed -->
+        <div class="activity-section">
+            <h2>⚡ RECENT ACTIVITY</h2>
+            <div class="activity-list" id="activityList">
+                <div class="empty">No recent activity yet</div>
+            </div>
+        </div>
+
+        <!-- Shouts -->
+        <div class="shouts-section">
+            <h2>📢 GROUP SHOUTS</h2>
+            <div id="shoutForm" class="shout-form" style="display:none;">
+                <textarea id="shoutMessage" placeholder="What's on your mind? (max 200 chars)" maxlength="200" rows="3"></textarea>
+                <button onclick="submitShout()">📢 SHOUT</button>
+                <div class="pending-note">⏳ All shouts are reviewed by admins before posting</div>
+            </div>
+            <div id="shoutsList" class="shouts-list"><div class="empty">Loading shouts...</div></div>
+            <div id="shoutDebug" class="debug-info"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+const Swal=window.Swal;
+let novaId=null, isSiteOwner=false, isCreator=false, isMember=false, currentGroupId=null;
+let _allMembersData=[];
+
+function escG(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+async function resolveCurrentUser(){
+    try{
+        const r=await fetch('/api/get-user');
+        if(!r.ok)return;
+        const d=await r.json();
+        if(d.success){novaId=d.user.id;isSiteOwner=!!d.user.is_owner;}
+    }catch(e){}
+}
+
+const urlParams=new URLSearchParams(window.location.search);
+const groupName=urlParams.get('name');
+if(!groupName)window.location.href='/groups.html';
+
+// ── Tabs ──
+function switchTab(name){
+    const names=['settings','members','give'];
+    document.querySelectorAll('.owner-tab').forEach((t,i)=>t.classList.toggle('active',names[i]===name));
+    document.querySelectorAll('.owner-tab-content').forEach(c=>c.classList.remove('active'));
+    document.getElementById('tab-'+name).classList.add('active');
+    if(name==='members')renderMgmtMembers(_allMembersData);
+}
+
+// ── Activity log ──
+const _activityLog=[];
+function logActivity(icon,html){
+    const t=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    _activityLog.unshift({icon,html,t});
+    if(_activityLog.length>20)_activityLog.pop();
+    const list=document.getElementById('activityList');
+    list.innerHTML=_activityLog.map(a=>`
+        <div class="activity-item">
+            <span class="activity-icon">${a.icon}</span>
+            <span class="activity-text">${a.html}</span>
+            <span class="activity-time">${a.t}</span>
+        </div>`).join('');
+}
+
+// ── Load group ──
+async function loadGroup(){
+    try{
+        const res=await fetch(`/api/get-group-by-name?name=${encodeURIComponent(groupName)}`);
+        const data=await res.json();
+        if(data.error){
+            await Swal.fire({icon:'error',title:'Group Not Found',text:data.error,background:'#0c0c0c',color:'#d0d8e0',confirmButtonColor:'#111111'});
+            window.location.href='/groups.html';
+            return;
+        }
+        document.getElementById('loadingSection').style.display='none';
+        document.getElementById('groupContent').style.display='block';
+        document.getElementById('groupName').textContent=data.name;
+        document.getElementById('groupCreator').textContent=`Created by: ${data.createdBy}`;
+        document.getElementById('groupCreated').textContent=`Created: ${new Date(data.createdAt).toLocaleDateString()}`;
+        document.getElementById('memberCount').textContent=data.memberCount;
+        if(data.isPrivate)document.getElementById('privacyBadge').style.display='inline-flex';
+
+        if(data.description){
+            const d=document.getElementById('groupDescription');
+            d.textContent=data.description;d.style.display='block';
+        }
+
+        currentGroupId=data.id;
+        isCreator=data.createdById===novaId;
+        isMember=false;
+
+        // Build member cards
+        let membersHtml='';
+        const memberSelect=document.getElementById('memberSelect');
+        memberSelect.innerHTML='<option value="">Select member…</option>';
+        const _mbi=window.ampNameBadge||(async()=>'');
+        if(window.ampNameBadgeBatch)await window.ampNameBadgeBatch(data.members.map(m=>m.username));
+        for(const member of data.members){
+            const mBadge=await _mbi(member.username);
+            // Group owners can kick: anyone who isn't the creator, isn't site owner, and isn't themselves
+            const canKick=isCreator&&!member.isCreator&&!member.isSiteOwner&&member.user_id!==novaId;
+            membersHtml+=`
+                <div class="member-card">
+                    <div onclick="window.location.href='/profile.html?user=${encodeURIComponent(member.username)}'" style="cursor:pointer;">
+                        <img width="36" height="36" style="display:block;width:36px;height:36px;border-radius:50%;border:1px solid rgba(126,184,212,0.25);background:#111111;margin:0 auto 0.4rem;" data-avuser="${member.username}" alt="">
+                        <div style="font-size:0.82rem;font-weight:600;color:#d0d8e0;text-align:center;">${mBadge}${escG(member.username)}</div>
+                        ${member.isCreator?'<div class="creator-badge">👑 OWNER</div>':''}
+                        ${member.isSiteOwner&&!member.isCreator?'<div class="site-owner-badge">⭐ SITE OWNER</div>':''}
+                    </div>
+                    ${canKick?`<button class="kick-card-btn" onclick="kickMember('${escG(member.username)}')" title="Kick ${escG(member.username)}">✕</button>`:''}
+                </div>`;
+            if(isCreator&&member.user_id!==novaId&&!member.isSiteOwner){
+                const opt=document.createElement('option');
+                opt.value=member.username;opt.textContent=member.username;
+                memberSelect.appendChild(opt);
+            }
+            if(member.user_id===novaId)isMember=true;
+        }
+        document.getElementById('membersList').innerHTML=membersHtml;
+        _allMembersData=data.members;
+        setTimeout(()=>{if(window.AmpAvatar)document.querySelectorAll('img[data-avuser]').forEach(img=>AmpAvatar.render(img,img.dataset.avuser,36));},100);
+
+        if(isCreator){
+            document.getElementById('ownerControls').style.display='block';
+            document.getElementById('privacyToggle').checked=data.isPrivate||false;
+            if(data.description)document.getElementById('descInput').value=data.description;
+            if(document.getElementById('tab-members').classList.contains('active'))renderMgmtMembers(_allMembersData);
+        }
+        if(isSiteOwner){document.getElementById('siteOwnerControls').style.display='block';}
+        else if(novaId){document.getElementById('reportGroupControls').style.display='block';}
+
+        // Hide join for private groups (must be invited)
+        const canJoin = !isMember && !data.isPrivate;
+        document.getElementById('joinButton').style.display=canJoin?'block':'none';
+        document.getElementById('leaveButton').style.display=isMember?'block':'none';
+        if(isMember)document.getElementById('shoutForm').style.display='block';
+
+        await loadShouts();
+    }catch(err){console.error('Load group error:',err);}
+}
+
+// ── Member management panel ──
+function renderMgmtMembers(members){
+    const list=document.getElementById('mgmtMemberList');
+    document.getElementById('mgmtCount').textContent=`${members.length} member${members.length!==1?'s':''}`;
+    if(!members.length){list.innerHTML='<div class="empty">No members</div>';return;}
+    list.innerHTML='';
+    members.forEach(m=>{
+        const canKick=!m.isCreator&&!m.isSiteOwner&&m.user_id!==novaId;
+        const roleLabel=m.isCreator
+            ?'<span class="mgmt-role-badge role-owner">👑 Owner</span>'
+            :m.isSiteOwner
+            ?'<span class="mgmt-role-badge role-site-owner">⭐ Site Owner</span>'
+            :'<span class="mgmt-role-badge role-member">Member</span>';
+        const row=document.createElement('div');
+        row.className='mgmt-member-row';
+        row.innerHTML=`
+            <img data-avuser-mgmt="${m.username}" alt="" width="32" height="32" style="border-radius:50%;border:1px solid rgba(37,99,196,.18);background:#111111;">
+            <a class="mgmt-member-name" href="/profile.html?user=${encodeURIComponent(m.username)}" style="text-decoration:none;color:inherit;" onclick="event.stopPropagation()">${escG(m.username)}</a>
+            ${roleLabel}
+            ${canKick?`<button class="kick-btn" onclick="kickMember('${escG(m.username)}')">⚡ Kick</button>`:''}`;
+        list.appendChild(row);
+    });
+    setTimeout(()=>{if(window.AmpAvatar)document.querySelectorAll('img[data-avuser-mgmt]').forEach(img=>AmpAvatar.render(img,img.dataset.avuserMgmt,32));},50);
+}
+function filterMgmtMembers(){
+    const q=document.getElementById('mgmtSearch').value.toLowerCase().trim();
+    renderMgmtMembers(q?_allMembersData.filter(m=>m.username.toLowerCase().includes(q)):_allMembersData);
+}
+
+// ── Kick member ── (group owner; cannot kick site owner, enforced client + server)
+async function kickMember(username){
+    const confirmed=await Swal.fire({
+        icon:'warning',title:'Kick Member?',
+        html:`Remove <strong>${escG(username)}</strong> from the group?`,
+        showCancelButton:true,confirmButtonText:'⚡ Kick',
+        confirmButtonColor:'#dc2626',cancelButtonColor:'#111111',
+        background:'#0c0c0c',color:'#d0d8e0'
+    });
+    if(!confirmed.isConfirmed)return;
+    const res=await fetch('/api/kick-member',{
+        method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',
+        body:JSON.stringify({groupId:currentGroupId,username})
+    });
+    const data=await res.json();
+    if(data.success){
+        await Swal.fire({icon:'success',title:'Kicked!',text:`${username} has been removed.`,background:'#0c0c0c',color:'#d0d8e0',timer:1800,showConfirmButton:false});
+        logActivity('🚫',`<strong>${escG(username)}</strong> was removed from the group`);
+        loadGroup();
+    }else{
+        Swal.fire({icon:'error',title:'Error',text:data.error||'Could not kick member.',background:'#0c0c0c',color:'#d0d8e0'});
+    }
+}
+
+// ── Join / Leave ──
+document.getElementById('joinButton').addEventListener('click',async()=>{
+    if(!novaId){Swal.fire({icon:'error',title:'Not Logged In',text:'Please login first.',background:'#0c0c0c',color:'#d0d8e0',confirmButtonColor:'#111111'}).then(()=>window.location.href='/login.html');return;}
+    try{
+        const res=await fetch('/api/join-group',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({groupId:currentGroupId})});
+        const data=await res.json();
+        if(data.success){
+            await Swal.fire({icon:'success',title:'Joined!',text:data.message,background:'#0c0c0c',color:'#d0d8e0',timer:2000});
+            logActivity('✅','You joined the group');loadGroup();
+        }else{await Swal.fire('Error',data.error,'error');}
+    }catch(e){console.error(e);}
+});
+
+document.getElementById('leaveButton').addEventListener('click',async()=>{
+    if(!novaId)return;
+    const c=await Swal.fire({title:'Leave Group?',text:'Are you sure?',icon:'question',showCancelButton:true,background:'#0c0c0c',color:'#d0d8e0',confirmButtonColor:'#8b0000',cancelButtonColor:'#111111'});
+    if(!c.isConfirmed)return;
+    try{
+        const res=await fetch('/api/leave-group',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({groupId:currentGroupId})});
+        const data=await res.json();
+        if(data.success){
+            await Swal.fire({icon:'success',title:'Left Group',text:data.message,background:'#0c0c0c',color:'#d0d8e0',timer:2000});
+            logActivity('🚪','You left the group');loadGroup();
+        }else{await Swal.fire('Error',data.error,'error');}
+    }catch(e){console.error(e);}
+});
+
+// ── Privacy ──
+async function togglePrivacy(){
+    const isPrivate=document.getElementById('privacyToggle').checked;
+    const res=await fetch('/api/toggle-private',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({groupId:currentGroupId,isPrivate})});
+    const data=await res.json();
+    if(data.success){
+        await Swal.fire({icon:'success',title:data.message,background:'#0c0c0c',color:'#d0d8e0',timer:2000});
+        document.getElementById('privacyBadge').style.display=isPrivate?'inline-flex':'none';
+        logActivity('🔒',`Group set to <strong>${isPrivate?'Private':'Public'}</strong>`);
+    }
+}
+
+// ── Description ──
+async function saveDescription(){
+    const desc=document.getElementById('descInput').value.trim();
+    const resultDiv=document.getElementById('descResult');
+    try{
+        const res=await fetch('/api/update-group-description',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({groupId:currentGroupId,description:desc})
+        });
+        const data=await res.json();
+        if(data.success){
+            resultDiv.textContent='✅ Description saved!';
+            const descEl=document.getElementById('groupDescription');
+            if(desc){descEl.textContent=desc;descEl.style.display='block';}
+            else{descEl.style.display='none';}
+            logActivity('📝','Group description was updated');
+            setTimeout(()=>resultDiv.textContent='',3000);
+        }else{resultDiv.textContent=`❌ ${data.error||'Could not save'}`;}
+    }catch(e){resultDiv.textContent='⚠️ Server error saving description. Try again.';}
+}
+
+// ── All Members Modal ──
+function openAllMembers(){
+    document.getElementById('allMembersModal').classList.add('open');
+    document.getElementById('memberSearchInput').value='';
+    renderModalMembers(_allMembersData);
+}
+function closeAllMembers(){document.getElementById('allMembersModal').classList.remove('open');}
+function renderModalMembers(members){
+    const list=document.getElementById('modalMembersList');
+    document.getElementById('modalMemberCount').textContent=members.length;
+    if(!members.length){list.innerHTML='<div style="color:#5a7090;text-align:center;padding:2rem;font-size:.85rem;">No members found</div>';return;}
+    list.innerHTML=members.map(m=>{
+        const canKick=isCreator&&!m.isCreator&&!m.isSiteOwner&&m.user_id!==novaId;
+        const badge=m.isCreator
+            ?'<span style="background:rgba(241,196,15,.15);border:1px solid rgba(241,196,15,.3);border-radius: 0;color:#f1c40f;font-size:.68rem;font-weight:800;padding:.15rem .55rem;">👑 OWNER</span>'
+            :m.isSiteOwner
+            ?'<span style="background:rgba(255,255,255,.04);border:1px solid rgba(126,184,212,.28);border-radius: 0;color:#8899aa;font-size:.68rem;font-weight:800;padding:.15rem .55rem;">⭐ SITE OWNER</span>'
+            :'';
+        return `
+            <div class="modal-member-row" onclick="window.location.href='/profile.html?user=${encodeURIComponent(m.username)}'">
+                <img data-avuser-modal="${m.username}" alt="" style="width:38px;height:38px;border-radius:50%;border:1px solid rgba(37,99,196,.18);background:#111111;flex-shrink:0;">
+                <div style="flex:1;min-width:0;">
+                    <div class="modal-member-name">${escG(m.username)}</div>
+                    ${m.joinedAt?`<div class="modal-member-meta">Joined ${new Date(m.joinedAt).toLocaleDateString()}</div>`:''}
+                </div>
+                <span class="modal-member-badge">${badge}</span>
+                ${canKick?`<button class="modal-kick-btn" onclick="event.stopPropagation();kickMember('${escG(m.username)}')">⚡ Kick</button>`:''}
+            </div>`;
+    }).join('');
+    setTimeout(()=>{if(window.AmpAvatar)document.querySelectorAll('img[data-avuser-modal]').forEach(img=>AmpAvatar.render(img,img.dataset.avuserModal,38));},50);
+}
+function filterModalMembers(){
+    const q=document.getElementById('memberSearchInput').value.toLowerCase().trim();
+    renderModalMembers(q?_allMembersData.filter(m=>m.username.toLowerCase().includes(q)):_allMembersData);
+}
+document.getElementById('allMembersModal').addEventListener('click',function(e){if(e.target===this)closeAllMembers();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAllMembers();});
+
+// ── Give coins ──
+async function giveCoinsToMember(){
+    const targetUsername=document.getElementById('memberSelect').value;
+    const amount=parseInt(document.getElementById('giveAmount').value);
+    const resultDiv=document.getElementById('giveResult');
+    if(!targetUsername){resultDiv.textContent='❌ Select a member';return;}
+    if(amount<1||amount>1000){resultDiv.textContent='❌ Amount must be 1-1000';return;}
+    const res=await fetch('/api/group-give',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({groupId:currentGroupId,targetUsername,amount})});
+    const data=await res.json();
+    if(data.success){
+        resultDiv.textContent=`✅ Gave ${amount} coins to ${targetUsername}`;
+        logActivity('💰',`<strong>${escG(targetUsername)}</strong> received ${amount} coins from the owner`);
+        setTimeout(()=>resultDiv.textContent='',3000);
+        loadGroup();
+    }else{resultDiv.textContent=`❌ ${data.error}`;}
+}
+
+// ── Shouts ──
+async function loadShouts(){
+    if(!currentGroupId)return;
+    try{
+        const res=await fetch(`/api/get-group-shouts?groupId=${encodeURIComponent(currentGroupId)}`);
+        const shouts=await res.json();
+        const shoutsList=document.getElementById('shoutsList');
+        const debugDiv=document.getElementById('shoutDebug');
+        if(shouts&&shouts.length){
+            document.getElementById('shoutCount').textContent=shouts.length;
+            document.getElementById('shoutStatWrap').style.display='block';
+        }
+        if(!shouts||shouts.length===0){shoutsList.innerHTML='<div class="empty">No shouts yet</div>';debugDiv.textContent='No shouts found';return;}
+        let html='';
+        const _bi=window.ampNameBadge||(async()=>'');
+        if(window.ampNameBadgeBatch)await window.ampNameBadgeBatch(shouts.map(s=>s.username));
+        for(const shout of shouts){
+            const rawDate=shout.created_at||shout.createdAt;
+            const date=rawDate?new Date(rawDate).toLocaleString():'Unknown date';
+            const isDeleted=shout.message==='[DELETED]';
+            const wipeBtn=isSiteOwner&&!isDeleted?`<button onclick="wipeShout('${shout.id}')" style="background:rgba(139,0,0,.3);border:1px solid rgba(220,60,60,.35);border-radius: 0;color:#ee8080;font-size:.6rem;font-weight:800;padding:2px 8px;cursor:pointer;text-transform:uppercase;flex-shrink:0;">🗑</button>`:'';
+            const reportBtn=!isSiteOwner&&novaId&&!isDeleted?`<button onclick="openReportModal({type:'shout',targetId:'${shout.id}',targetLabel:'Shout by ${shout.username}'})" style="background:rgba(139,0,0,.18);border:1px solid rgba(200,80,80,.25);border-radius: 0;color:#cc7070;font-size:.6rem;font-weight:700;padding:2px 7px;cursor:pointer;flex-shrink:0;" title="Report"><i class='fas fa-flag'></i></button>`:'';
+            const badge=await _bi(shout.username);
+            html+=`
+                <div class="shout-item">
+                    <div class="shout-header">
+                        <span>${badge}${escG(shout.username)}</span>
+                        <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;">
+                            <span class="shout-time">${date}</span>
+                            ${wipeBtn}${reportBtn}
+                        </div>
+                    </div>
+                    <div class="shout-message"${isDeleted?' style="color:#3a5070;font-style:italic;"':''}>${escG(shout.message)}</div>
+                </div>`;
+        }
+        shoutsList.innerHTML=html;
+        debugDiv.textContent=`Loaded ${shouts.length} shouts`;
+    }catch(err){
+        console.error('Load shouts error:',err);
+        document.getElementById('shoutsList').innerHTML='<div class="empty">Error loading shouts</div>';
+    }
+}
+
+async function submitShout(){
+    const message=document.getElementById('shoutMessage').value.trim();
+    if(!message)return;
+    if(message.length>200){await Swal.fire({icon:'warning',title:'Too Long',text:'Maximum 200 characters',background:'#0c0c0c',color:'#d0d8e0',timer:2000});return;}
+    const res=await fetch('/api/create-shout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({groupId:currentGroupId,message})});
+    const data=await res.json();
+    if(data.success){
+        await Swal.fire({icon:'success',title:'Shout Submitted',text:'Pending admin approval',background:'#0c0c0c',color:'#d0d8e0',timer:2000});
+        document.getElementById('shoutMessage').value='';
+        logActivity('📢','You posted a new shout (pending approval)');
+        // Mark 'shout' daily task as complete
+        fetch('/api/complete-task',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({taskId:'shout'})}).catch(()=>{});
+    }else{await Swal.fire({icon:'error',title:'Error',text:data.error,background:'#0c0c0c',color:'#d0d8e0'});}
+}
+
+async function wipeShout(shoutId){
+    if(!shoutId)return;
+    const{isConfirmed}=await Swal.fire({title:'Delete shout?',icon:'warning',showCancelButton:true,confirmButtonText:'Delete',cancelButtonText:'Cancel',background:'#0c0c0c',color:'#d0d8e0',confirmButtonColor:'#7f1d1d'});
+    if(!isConfirmed)return;
+    try{
+        const res=await fetch('/api/owner/wipe-content',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'group_shout',id:shoutId})}).then(r=>r.json());
+        if(!res.success)throw new Error(res.error||'Failed');
+        loadShouts();
+    }catch(e){Swal.fire({icon:'error',title:e.message,background:'#0c0c0c',color:'#d0d8e0'});}
+}
+
+async function deleteGroup(){
+    if(!currentGroupId)return;
+    const groupNameText=document.getElementById('groupName')?.textContent||'this group';
+    const{isConfirmed}=await Swal.fire({
+        title:'Delete Group?',
+        html:`<p style="color:#8899aa">Permanently delete <strong style="color:#ffaaaa">${groupNameText}</strong>?</p><p style="font-size:.8rem;color:#5a6880;margin-top:.4rem">This removes the group, all members, shouts and pending entries. Cannot be undone.</p>`,
+        icon:'warning',
+        showCancelButton:true,
+        confirmButtonText:'Delete Permanently',
+        cancelButtonText:'Cancel',
+        background:'#0c0c0c',color:'#d0d8e0',confirmButtonColor:'#7f1d1d'
+    });
+    if(!isConfirmed)return;
+    try{
+        const res=await fetch('/api/delete-group',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({groupId:currentGroupId})}).then(r=>r.json());
+        if(!res.success)throw new Error(res.error||'Failed');
+        await Swal.fire({icon:'success',title:'Group Deleted',text:`"${res.deleted}" has been permanently removed.`,background:'#0c0c0c',color:'#d0d8e0',timer:2500,showConfirmButton:false});
+        window.location.href='/groups.html';
+    }catch(e){Swal.fire({icon:'error',title:'Delete Failed',text:e.message,background:'#0c0c0c',color:'#d0d8e0'});}
+}
+
+// ── Boot ──
+resolveCurrentUser().then(()=>loadGroup());
+setInterval(()=>{if(currentGroupId)loadShouts();},30000);
+</script>
+<script src="/report-modal.js"></script>
+<script>
+function reportThisGroup(){
+    const gname=document.getElementById('groupName').textContent||'this group';
+    if(!currentGroupId)return;
+    openReportModal({type:'group',targetId:currentGroupId,targetLabel:gname});
+}
+</script>
+</body>
+</html>

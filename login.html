@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/logo.png" type="image/png">
+    <title>Ampehere · Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="/os-check.js"></script>
+    <style>
+        :root { --bg:#060606; --surface:#0c0c0c; --border:#1a1a1a; --border-hi:#252525; --blue:#2563c4; --blue-hi:#3b7de0; --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677; --red:#c0392b; }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; border-radius:0 !important; }
+        body { font-family:'Exo 2',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1.5rem; }
+        a { color:var(--blue); text-decoration:none; }
+        a:hover { color:var(--blue-hi); text-decoration:underline; }
+
+        .card {
+            width:100%; max-width:400px;
+            background:var(--surface);
+            border:1px solid var(--border);
+        }
+        .card-header {
+            padding:1.5rem 1.75rem 1.25rem;
+            border-bottom:1px solid var(--border);
+            display:flex; align-items:center; gap:.75rem;
+        }
+        .card-header img { width:32px; height:32px; object-fit:contain; }
+        .card-header .brand { font-size:.65rem; font-weight:800; text-transform:uppercase; letter-spacing:.12em; color:var(--text-muted); }
+        .card-header .title { font-size:1.1rem; font-weight:800; color:var(--text); letter-spacing:.02em; }
+
+        .card-body { padding:1.5rem 1.75rem; }
+
+        label { display:block; font-size:.65rem; font-weight:800; text-transform:uppercase; letter-spacing:.1em; color:var(--text-dim); margin-bottom:.4rem; margin-top:1rem; }
+        label:first-child { margin-top:0; }
+
+        input[type=text], input[type=password] {
+            width:100%; background:#050505; border:1px solid var(--border);
+            color:var(--text); font-family:'Exo 2',sans-serif; font-size:.9rem;
+            padding:.65rem .85rem; outline:none; transition:border-color .15s;
+        }
+        input:focus { border-color:var(--blue); }
+        input::placeholder { color:var(--text-dim); }
+
+        .btn {
+            width:100%; margin-top:1.25rem;
+            padding:.7rem; background:var(--blue); border:none;
+            color:#fff; font-family:'Exo 2',sans-serif; font-size:.8rem;
+            font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+            cursor:pointer; transition:background .12s;
+        }
+        .btn:hover { background:var(--blue-hi); }
+        .btn:disabled { opacity:.4; cursor:not-allowed; }
+
+        .err { color:#ff7070; font-size:.75rem; text-align:center; margin-top:.75rem; min-height:1em; }
+
+        .footer-link { text-align:center; margin-top:1.25rem; font-size:.75rem; color:var(--text-dim); }
+
+        /* 2FA */
+        #step2fa { display:none; }
+        .totp-hint { text-align:center; color:var(--text-muted); font-size:.82rem; line-height:1.6; margin-bottom:1rem; }
+        .totp-hint i { font-size:1.75rem; display:block; margin-bottom:.4rem; color:var(--blue); }
+        #totpCode { font-size:1.8rem; letter-spacing:.4em; text-align:center; font-weight:900; }
+        .back-link { display:block; text-align:center; margin-top:.85rem; font-size:.75rem; color:var(--text-dim); cursor:pointer; }
+        .back-link:hover { color:var(--text-muted); }
+
+        .site-footer { margin-top:1.5rem; font-size:.65rem; color:var(--text-dim); }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="card-header">
+        <img src="/logo.png" alt="Ampehere" onerror="this.style.display='none'">
+        <div>
+            <div class="brand">Ampehere</div>
+            <div class="title">Welcome back</div>
+        </div>
+    </div>
+    <div class="card-body">
+
+        <!-- Step 1 -->
+        <div id="step1">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Your username" autocomplete="username">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Your password" autocomplete="current-password">
+            <div class="err" id="errMsg"></div>
+            <button class="btn" id="loginBtn" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Log In</button>
+            <div class="footer-link">No account? <a href="/signup.html">Sign up</a></div>
+        </div>
+
+        <!-- Step 2: TOTP -->
+        <div id="step2fa">
+            <div class="totp-hint">
+                <i class="fas fa-shield-alt"></i>
+                Open your authenticator app and enter the 6-digit code for <strong>Ampehere</strong>.
+            </div>
+            <label for="totpCode">Authenticator Code</label>
+            <input type="text" id="totpCode" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code">
+            <div class="err" id="totpErr"></div>
+            <button class="btn" id="totpBtn" onclick="doTotp()"><i class="fas fa-check-circle"></i> Verify</button>
+            <span class="back-link" onclick="resetToStep1()">← Back to login</span>
+        </div>
+
+    </div>
+</div>
+
+<div class="site-footer">© 2026 Ampehere</div>
+
+<script>
+let _tempToken = null;
+
+async function doLogin() {
+    const btn = document.getElementById('loginBtn');
+    const errMsg = document.getElementById('errMsg');
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    errMsg.textContent = '';
+    if (!username || !password) { errMsg.textContent = 'Please fill in all fields.'; return; }
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in…';
+    try {
+        const res = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username, password}) });
+        const data = await res.json();
+        if (data.success && data.needs2fa) {
+            _tempToken = data.tempToken;
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2fa').style.display = 'block';
+            setTimeout(() => document.getElementById('totpCode').focus(), 50);
+        } else if (data.success) {
+            window.location.href = '/';
+        } else if (data.locked) {
+            const p = new URLSearchParams();
+            if (data.lock_reason) p.set('reason', data.lock_reason);
+            if (data.locked_at)   p.set('at', data.locked_at);
+            window.location.href = '/locked-account.html?' + p.toString();
+        } else {
+            errMsg.textContent = data.error || 'Login failed.';
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Log In';
+        }
+    } catch {
+        errMsg.textContent = 'Network error. Please try again.';
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Log In';
+    }
+}
+
+async function doTotp() {
+    const btn = document.getElementById('totpBtn');
+    const err = document.getElementById('totpErr');
+    const code = document.getElementById('totpCode').value.trim();
+    err.textContent = '';
+    if (!code || !/^\d{6}$/.test(code)) { err.textContent = 'Enter the 6-digit code.'; return; }
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying…';
+    try {
+        const res = await fetch('/api/2fa/complete-login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({tempToken:_tempToken, code}) });
+        const data = await res.json();
+        if (data.success) {
+            window.location.href = '/';
+        } else if (data.expired) {
+            resetToStep1(); document.getElementById('errMsg').textContent = data.error;
+        } else {
+            err.textContent = data.error || 'Verification failed.';
+            document.getElementById('totpCode').value = '';
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-circle"></i> Verify';
+        }
+    } catch {
+        err.textContent = 'Network error.';
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-circle"></i> Verify';
+    }
+}
+
+function resetToStep1() {
+    _tempToken = null;
+    document.getElementById('step2fa').style.display = 'none';
+    document.getElementById('step1').style.display = 'block';
+    document.getElementById('totpCode').value = '';
+    document.getElementById('totpErr').textContent = '';
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Log In';
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    if (document.getElementById('step2fa').style.display !== 'none') doTotp(); else doLogin();
+});
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('totpCode').addEventListener('input', e => {
+        if (/^\d{6}$/.test(e.target.value)) doTotp();
+    });
+});
+</script>
+<script src="/sidebar.js"></script>
+</body>
+</html>

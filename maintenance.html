@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/logo.png" type="image/png">
+    <title>Ampehere · Maintenance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg:#060606; --surface:#0c0c0c; --border:#1a1a1a; --border-hi:#252525; --blue:#2563c4; --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677; }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; border-radius:0 !important; }
+        body { font-family:'Exo 2',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem; text-align:center; }
+        .icon { font-size:2.5rem; margin-bottom:1rem; }
+        .label { font-size:.6rem; font-weight:800; text-transform:uppercase; letter-spacing:.15em; color:var(--text-dim); margin-bottom:.35rem; }
+        .title { font-size:1.4rem; font-weight:900; color:var(--text); text-transform:uppercase; margin-bottom:.5rem; }
+        .msg { font-size:.82rem; color:var(--text-dim); max-width:400px; line-height:1.7; margin-bottom:1.5rem; }
+        .progress-wrap { width:260px; margin:0 auto 1.25rem; }
+        .progress-bg { background:var(--border-hi); height:2px; }
+        .progress-fill { height:100%; background:var(--blue); width:0%; animation:prog 2.5s ease-in-out infinite alternate; }
+        @keyframes prog { from{width:15%} to{width:90%} }
+        .info-grid { display:flex; gap:.75rem; flex-wrap:wrap; justify-content:center; margin-bottom:1.5rem; }
+        .info-item { background:var(--surface); border:1px solid var(--border); padding:.45rem .85rem; font-size:.7rem; font-weight:700; color:var(--text-muted); display:flex; align-items:center; gap:.4rem; }
+        .btn { display:inline-flex; align-items:center; gap:.4rem; padding:.55rem 1.2rem; font-family:'Exo 2',sans-serif; font-size:.75rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; text-decoration:none; border:1px solid var(--border); color:var(--text-muted); background:var(--surface); cursor:pointer; transition:border-color .12s, color .12s; margin:.25rem; }
+        .btn:hover { border-color:var(--blue); color:var(--text); }
+        .countdown { font-size:.72rem; color:var(--text-dim); margin-top:1rem; }
+        .footer { margin-top:2rem; font-size:.65rem; color:var(--text-dim); }
+    </style>
+</head>
+<body>
+    <div class="icon">🔧</div>
+    <div class="label">Status</div>
+    <div class="title">Under Maintenance</div>
+    <p class="msg" id="maintenanceMsg">Ampehere is currently undergoing scheduled maintenance. Check back soon!</p>
+    <div class="progress-wrap"><div class="progress-bg"><div class="progress-fill"></div></div></div>
+    <div class="info-grid">
+        <div class="info-item">⚡ Performance</div>
+        <div class="info-item">🛡️ Security</div>
+        <div class="info-item">🎮 Features</div>
+        <div class="info-item">🐛 Bug Fixes</div>
+    </div>
+    <div>
+        <button class="btn" onclick="location.reload()">↻ Refresh</button>
+        <button class="btn" onclick="history.back()">↩ Go Back</button>
+    </div>
+    <div class="countdown">Auto-refreshing in <span id="cd">30</span>s</div>
+    <div class="footer">© 2026 Ampehere</div>
+<script>
+(async () => {
+    try {
+        const r = await fetch('/api/owner/maintenance');
+        const d = await r.json();
+        if (d.message) document.getElementById('maintenanceMsg').textContent = d.message;
+    } catch {}
+})();
+let s = 30;
+const el = document.getElementById('cd');
+setInterval(() => { s--; el.textContent = s; if (s <= 0) location.reload(); }, 1000);
+</script>
+</body>
+</html>

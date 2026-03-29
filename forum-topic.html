@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+    <title>Ampehere · Topic</title>
+    
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            overflow-x: hidden;
+            background: #060606;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(126,184,212,0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(126,184,212,0.08) 0%, transparent 20%),
+                linear-gradient(45deg, #111111 1px, transparent 1px),
+                linear-gradient(-45deg, #111111 1px, transparent 1px);
+            background-size: 30px 30px, 30px 30px, 30px 30px, 30px 30px;
+            font-family: 'Exo 2', sans-serif;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(14, 30, 60, 0.92);
+            border: 1px solid rgba(126,184,212,0.28);
+            padding: 2rem;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.55), ;
+            border-radius: 0;
+}
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 1rem;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            color: #d0d8e0;
+            text-transform: uppercase;
+            text-shadow: 0 2px 20px rgba(126,184,212,0.25);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .back-button {
+            background: rgba(12,12,12,0.5);
+            color: #8899aa;
+            text-decoration: none;
+            padding: 0.6rem 1.5rem;
+            border: 1px solid rgba(37,99,196,0.18);
+            border-radius: 0;
+            font-weight: 900;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            transition: all 0.2s;
+        }
+        
+        .back-button:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        
+        .topic-box {
+            background: #1a3060;
+            border: 1px solid rgba(126,184,212,0.28);
+            border-radius: 0;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        
+        .topic-title {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #d0d8e0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .topic-meta {
+            color: #8a95a3;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #111111;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .topic-content {
+            color: #8a95a3;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+        
+        .posts-section {
+            margin-top: 2rem;
+        }
+        
+        .posts-section h2 {
+            color: #8a95a3;
+            margin-bottom: 1rem;
+            border-left: 4px solid #8899aa;
+            padding-left: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .post-item {
+            background: #1a3060;
+            border: 1px solid rgba(126,184,212,0.28);
+            border-radius: 0;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #111111;
+            color: #d0d8e0;
+            font-weight: 900;
+        }
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .post-author img {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            border: 1px solid rgba(126,184,212,0.3);
+            background: #111111;
+            display: block;
+            flex-shrink: 0;
+        }
+        .topic-author-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.75rem;
+        }
+        .topic-author-row img {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: 1px solid rgba(126,184,212,0.3);
+            background: #111111;
+            display: block;
+            flex-shrink: 0;
+        }
+        
+        .post-content {
+            color: #8a95a3;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        
+        .reply-form {
+            background: rgba(12,12,12,0.5);
+            border: 1px solid rgba(126,184,212,0.28);
+            border-radius: 0;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        
+        .reply-form h3 {
+            color: #8899aa;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .reply-form textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid rgba(37,99,196,0.2);
+            border-radius: 0;
+            background: rgba(8,8,8,0.6);
+            color: #d0d8e0;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .reply-form button {
+            background: rgba(15,15,15,0.55);
+            border: 1px solid rgba(37,99,196,0.3);
+            border-radius: 0;
+            color: #a0aabb;
+            padding: 0.8rem 2rem;
+            font-weight: 900;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .reply-form button:hover {
+            background: rgba(15,15,15,0.85);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+        }
+        
+        .reply-form .note {
+            color: #8899aa;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #8a95a3;
+            font-size: 1.2rem;
+        }
+        
+        .loading i {
+            margin-right: 0.5rem;
+            color: #8899aa;
+        }
+        
+        .error {
+            background: #8b0000;
+            color: #8899aa;
+            padding: 2rem;
+            text-align: center;
+            font-weight: 900;
+            border: 1px solid rgba(126,184,212,0.28);
+            margin: 2rem 0;
+        }
+        
+        .error a {
+            color: #8899aa;
+            text-decoration: underline;
+        }
+        
+        .empty {
+            text-align: center;
+            padding: 3rem;
+            color: #8a95a3;
+            border: 2px dashed rgba(37,99,196,0.18);
+            border-radius: 0;
+            font-weight: 700;
+        }
+        
+        .nova-badge {
+            background: linear-gradient(135deg, rgba(15,15,15,0.4), rgba(8,8,8,0.8));
+            color: #8899aa;
+            padding: 0.2rem 0.8rem;
+            border-radius: 0;
+            border: 1px solid rgba(126,184,212,0.18);
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+    </style>
+
+    <!-- Ampehere Global Theme -->
+    <style>
+      :root {
+        --amp-navy: #060606;
+        --amp-navy-card: rgba(12,12,12,0.92);
+        --amp-navy-mid: #162544;
+        --amp-blue: #1c1c1c;
+        --amp-sky: #8899aa;
+        --amp-sky-light: #8899aa;
+        --amp-silver: #8899aa;
+        --amp-silver-light: #d0d8e0;
+        --amp-silver-dim: #8a95a3;
+      }
+      body {
+        background: var(--amp-navy) !important;
+        background-image: radial-gradient(ellipse at 20% 10%, rgba(15,15,15,0.35) 0%, transparent 50%),
+                          radial-gradient(ellipse at 80% 90%, rgba(126,184,212,0.10) 0%, transparent 50%) !important;
+        background-attachment: fixed !important;
+        color: var(--amp-silver-light) !important;
+        font-family: 'Exo 2', sans-serif !important;
+      }
+      /* Container glass cards */
+      .container, .card, .page-wrap > .card, .panel, .box, .section-card,
+      .profile-container, .group-card, .topic-card, .post-card, .modal-box {
+        background: linear-gradient(145deg, rgba(12,12,12,0.88), rgba(8,8,8,0.94)) !important;
+        border: 1px solid rgba(37,99,196,0.2) !important;
+        border-radius: 0;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5),  !important;
+        backdrop-filter: blur(16px) !important;
+      }
+      /* Headings */
+      h1, h2, h3 { font-family: 'Exo 2', sans-serif !important; color: var(--amp-silver-light) !important; }
+      h1 { text-shadow: 0 2px 20px rgba(37,99,196,0.18) !important; }
+      /* Links */
+      a { color: var(--amp-sky) !important; }
+      /* Inputs */
+      input[type="text"], input[type="password"], input[type="email"], textarea, select {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(126,184,212,0.25) !important;
+        border-radius: 0;
+        color: var(--amp-silver-light) !important;
+        font-family: 'Exo 2', sans-serif !important;
+      }
+      input:focus, textarea:focus, select:focus {
+        border-color: rgba(126,184,212,0.55) !important;
+        box-shadow: 0 0 0 3px rgba(255,255,255,0.04) !important;
+        outline: none !important;
+      }
+      /* Buttons */
+      button, .btn, .button, input[type="submit"], input[type="button"] {
+        border-radius: 0;
+        font-family: 'Exo 2', sans-serif !important;
+      }
+      /* Scrollbar */
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+      ::-webkit-scrollbar-thumb { background: rgba(126,184,212,0.3); border-radius: 0; }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(37,99,196,0.5); }
+    
+        @media (max-width: 640px) {
+            .container { padding: 1rem; border-radius: 0; }
+            .post-header { flex-wrap: wrap; gap: .5rem; }
+            .post-author { flex-direction: column; align-items: flex-start; }
+            .post-meta { font-size: .72rem; }
+            .post-actions { flex-wrap: wrap; gap: .35rem; }
+            .reply-box textarea { font-size: .9rem; }
+            .topic-title { font-size: 1.2rem; }
+        }
+    </style>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/avatar-renderer.js"></script>
+    <script src="/avatar2d.js"></script>
+    <script src="/avatar.js"></script>
+</head>
+<body>
+    <div class="page-container">
+        <div class="header">
+            <h1><i class="fas fa-comment"></i> FORUM TOPIC</h1>
+            <a href="javascript:history.back()" class="back-button"><i class="fas fa-arrow-left"></i> BACK</a>
+        </div>
+
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Loading topic...
+        </div>
+        
+        <div id="content" style="display: none;"></div>
+    </div>
+
+    <script src="/sidebar.js"></script>
+    <script>
+        const Swal = window.Swal;
+        
+        
+        const topicId = new URLSearchParams(window.location.search).get('id');
+        
+        if (!topicId) {
+            window.location.href = '/forums.html';
+        }
+
+        async function loadTopic() {
+            try {
+                // Check if current user is owner
+                let isOwner = false;
+                let isLoggedIn = false;
+                try {
+                    const me = await fetch('/api/get-user').then(r => r.json());
+                    isOwner = !!me.user?.is_owner;
+                    isLoggedIn = !!me.user;
+                } catch {}
+
+                const res = await fetch(`/api/get-forum-posts?topicId=${encodeURIComponent(topicId)}`);
+                const data = await res.json();
+                
+                if (!data.success) throw new Error(data.error || 'Failed to load');
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+
+                // Pre-warm badge cache for all authors on this page
+                const allAuthors = [data.topic.author, ...data.posts.map(p => p.author)];
+                if (window.ampNameBadgeBatch) await window.ampNameBadgeBatch(allAuthors);
+                const _bi = window.ampNameBadge || (async () => '');
+
+                const topicBadge = await _bi(data.topic.author);
+                const ownerTopicBtn = isOwner ? `<button onclick="wipeContent('forum_topic','${escapeHtml(topicId)}')" style="margin-left:auto;background:rgba(139,0,0,.35);border:1px solid rgba(220,60,60,.4);border-radius: 0;color:#ee8080;font-size:.7rem;font-weight:800;padding:4px 12px;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;">🗑 Wipe Topic</button>` : '';
+                const reportTopicBtn = (!isOwner && isLoggedIn && data.topic.content !== '[DELETED]') ? `<button onclick="openReportModal({type:'forum_topic',targetId:'${escapeHtml(topicId)}',targetLabel:'Topic: ${escapeHtml(data.topic.title).replace(/'/g,"\\'")}'})" style="margin-left:auto;background:rgba(139,0,0,.2);border:1px solid rgba(200,80,80,.28);border-radius: 0;color:#cc7070;font-size:.7rem;font-weight:700;padding:4px 12px;cursor:pointer;"><i class='fas fa-flag'></i> Report</button>` : '';
+                
+                // Build the HTML
+                let html = `
+                    <div class="topic-box">
+                        <div style="display:flex;align-items:flex-start;gap:.5rem;">
+                            <div class="topic-title" style="flex:1">${escapeHtml(data.topic.title)}</div>
+                            ${ownerTopicBtn}${reportTopicBtn}
+                        </div>
+                        <div class="topic-author-row">
+                            <img width="36" height="36" data-avuser="${escapeHtml(data.topic.author)}" alt="" style="cursor:pointer;" onclick="window.location.href='/profile.html?user=${encodeURIComponent(data.topic.author)}'">
+                            <div class="topic-meta" style="border:none;padding:0;margin:0;">
+                                <a href="/profile.html?user=${encodeURIComponent(data.topic.author)}" style="color:#8899aa;font-weight:700;">${topicBadge}${escapeHtml(data.topic.author)}</a> · 
+                                ${new Date(data.topic.createdAt).toLocaleString()} · 
+                                <i class="fas fa-eye"></i> ${data.topic.views || 0} views
+                            </div>
+                        </div>
+                        <div class="topic-content"${data.topic.content === '[DELETED]' ? ' style="color:#3a5070;font-style:italic;"' : ''}>${escapeHtml(data.topic.content).replace(/\n/g, '<br>')}</div>
+                    </div>
+                `;
+                
+                // Reply form
+                if (true) { // login checked via cookie
+                    html += `
+                        <div class="reply-form">
+                            <h3><i class="fas fa-reply"></i> POST A REPLY</h3>
+                            <textarea id="replyContent" placeholder="Write your reply here..." maxlength="1000"></textarea>
+                            <button onclick="submitReply()">
+                                <i class="fas fa-paper-plane"></i> SUBMIT REPLY
+                            </button>
+                            <div class="note">
+                                <i class="fas fa-clock"></i> All replies need admin approval before appearing
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Replies section
+                html += `<div class="posts-section"><h2><i class="fas fa-reply"></i> REPLIES (${data.posts.length})</h2>`;
+                
+                if (data.posts.length === 0) {
+                    html += '<div class="empty">No replies yet. Be the first to reply!</div>';
+                } else {
+                    for (const post of data.posts) {
+                        const postBadge = await _bi(post.author);
+                        const ownerPostBtn = isOwner ? `<button onclick="wipeContent('forum_post','${escapeHtml(post.id)}')" style="margin-left:auto;background:rgba(139,0,0,.3);border:1px solid rgba(220,60,60,.35);border-radius: 0;color:#ee8080;font-size:.65rem;font-weight:800;padding:3px 10px;cursor:pointer;text-transform:uppercase;">🗑 Wipe</button>` : '';
+                        const reportPostBtn = (!isOwner && isLoggedIn && post.content !== '[DELETED]') ? `<button onclick="openReportModal({type:'forum_post',targetId:'${escapeHtml(post.id)}',targetLabel:'Post by ${escapeHtml(post.author).replace(/'/g,"\\'")}'})" style="background:rgba(139,0,0,.18);border:1px solid rgba(200,80,80,.25);border-radius: 0;color:#cc7070;font-size:.63rem;font-weight:700;padding:3px 9px;cursor:pointer;"><i class='fas fa-flag'></i></button>` : '';
+                        html += `
+                            <div class="post-item">
+                                <div class="post-header">
+                                    <div class="post-author">
+                                        <img width="32" height="32" data-avuser="${escapeHtml(post.author)}" alt="" style="cursor:pointer;" onclick="window.location.href='/profile.html?user=${encodeURIComponent(post.author)}'">
+                                        <a href="/profile.html?user=${encodeURIComponent(post.author)}" style="color:#8899aa;">${postBadge}${escapeHtml(post.author)}</a>
+                                    </div>
+                                    <span>${new Date(post.createdAt).toLocaleString()}</span>
+                                    ${ownerPostBtn}${reportPostBtn}
+                                </div>
+                                <div class="post-content"${post.content === '[DELETED]' ? ' style="color:#3a5070;font-style:italic;"' : ''}>${escapeHtml(post.content).replace(/\n/g, '<br>')}</div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                html += '</div>';
+                document.getElementById('content').innerHTML = html;
+                if (window.AmpAvatar) AmpAvatar.renderAll();
+                else setTimeout(() => { if (window.AmpAvatar) AmpAvatar.renderAll(); }, 500);
+                
+            } catch (err) {
+                console.error(err);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                document.getElementById('content').innerHTML = `
+                    <div class="error">
+                        <i class="fas fa-exclamation-triangle"></i> Failed to load topic.<br>
+                        <a href="javascript:location.reload()">Try again</a> or 
+                        <a href="/forums.html">back to forums</a>
+                    </div>
+                `;
+            }
+        }
+
+        async function wipeContent(type, id) {
+            const { isConfirmed } = await Swal.fire({
+                title: 'Wipe content?',
+                text: `This will rename the ${type.replace('_', ' ')} to [DELETED]. This cannot be undone.`,
+                icon: 'warning', showCancelButton: true,
+                confirmButtonText: 'Wipe', cancelButtonText: 'Cancel',
+                background: '#0c0c0c', color: '#d0d8e0', confirmButtonColor: '#7f1d1d'
+            });
+            if (!isConfirmed) return;
+            try {
+                const res = await fetch('/api/owner/wipe-content', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type, id })
+                }).then(r => r.json());
+                if (!res.success) throw new Error(res.error || 'Failed');
+                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Wiped', background: '#0c0c0c', color: '#d0d8e0', showConfirmButton: false, timer: 2000 });
+                loadTopic();
+            } catch(e) {
+                Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: e.message, background: '#0c0c0c', color: '#d0d8e0', showConfirmButton: false, timer: 3000 });
+            }
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+        
+        async function submitReply() {
+            if (false) { // auth handled by cookie
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Not Logged In',
+                    text: 'Please login to reply',
+                    background:'#0c0c0c',
+                    color:'#d0d8e0'
+                }).then(() => {
+                    window.location.href = '/login.html';
+                });
+                return;
+            }
+            
+            const content = document.getElementById('replyContent').value.trim();
+            
+            if (!content) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Empty Reply',
+                    text: 'Please enter a reply',
+                    background:'#0c0c0c',
+                    color:'#d0d8e0',
+                    timer: 2000
+                });
+                return;
+            }
+            
+            const btn = event.target;
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SUBMITTING...';
+            btn.disabled = true;
+            
+            try {
+                const res = await fetch('/api/create-forum-post', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topicId, content })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Reply Submitted!',
+                        text: 'Your reply is pending admin approval',
+                        background:'#0c0c0c',
+                        color:'#d0d8e0',
+                        timer: 3000
+                    });
+                    document.getElementById('replyContent').value = '';
+                    // Check achievements (Forumer badge)
+                    fetch('/api/check-achievements', { method: 'POST' }).catch(() => {});
+                    // Mark 'post' daily task as complete
+                    fetch('/api/complete-task', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ taskId: 'post' })
+                    }).catch(() => {});
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.error || 'Failed to submit',
+                        background:'#0c0c0c',
+                        color:'#d0d8e0'
+                    });
+                }
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Network Error',
+                    text: 'Could not connect to server',
+                    background:'#0c0c0c',
+                    color:'#d0d8e0'
+                });
+            }
+            
+            btn.innerHTML = original;
+            btn.disabled = false;
+        }
+        
+        loadTopic();
+        setInterval(loadTopic, 30000); // Refresh every 30 seconds
+    </script>
+    <script src="/report-modal.js"></script>
+</body>
+</html>

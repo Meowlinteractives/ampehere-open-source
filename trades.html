@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+    <title>Ampehere · Trades</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0 !important; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/avatar-renderer.js"></script>
+    <script src="/avatar2d.js"></script>
+    <script src="/avatar.js"></script>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            overflow-x: hidden;
+            font-family: 'Exo 2', sans-serif;
+            background: #060606;
+            background-image:
+                radial-gradient(ellipse at 20% 10%, rgba(15,15,15,0.35) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 90%, rgba(126,184,212,0.10) 0%, transparent 50%);
+            background-attachment: fixed;
+            color: #d0d8e0;
+            min-height: 100vh;
+        }
+
+        .main-content { padding: 1.5rem 1.5rem 1.5rem 0; }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            background: linear-gradient(145deg, rgba(12,12,12,0.88), rgba(8,8,8,0.94));
+            border: 1px solid rgba(37,99,196,0.2);
+            border-radius: 0;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), ;
+            animation: floatIn 0.5s ease-out;
+        }
+
+        @keyframes floatIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+        /* Header */
+        .header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1.75rem; padding-bottom: 1.25rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            flex-wrap: wrap; gap: 1rem;
+        }
+        .header h1 {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1.9rem; font-weight: 900;
+            color: #d0d8e0; text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 20px rgba(37,99,196,0.18);
+            display: flex; align-items: center; gap: 0.65rem;
+        }
+        .header h1 i { color: #8899aa; font-size: 1.6rem; }
+
+        /* Tab bar */
+        .tab-bar {
+            display: flex; gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: rgba(12,12,12,0.7);
+            border: 1px solid rgba(126,184,212,0.18);
+            border-radius: 0;
+            padding: 0.4rem 1rem;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 0.78rem; font-weight: 800;
+            color: #7a8a9a;
+            text-transform: uppercase; letter-spacing: 0.07em;
+            cursor: pointer; transition: all 0.15s;
+            display: inline-flex; align-items: center; gap: 0.35rem;
+        }
+        .tab-btn:hover { background: rgba(15,15,15,0.25); color: #8899aa; }
+        .tab-btn.active {
+            background: rgba(15,15,15,0.4);
+            border-color: rgba(126,184,212,0.4);
+            color: #a0aabb;
+        }
+        .tab-badge {
+            background: #8b1a1a; color: #e8c8c8;
+            font-size: 0.58rem; font-weight: 900;
+            padding: 0.1rem 0.4rem; border-radius: 0;
+        }
+
+        /* Section */
+        .section {
+            background: rgba(12,12,12,0.4);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 0;
+            padding: 1.5rem;
+        }
+        .section-head {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1.25rem;
+        }
+        .section-head h2 {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1rem; font-weight: 800;
+            color: #a0aabb; text-transform: uppercase; letter-spacing: 0.08em;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .section-head h2 i { color: #8899aa; font-size: 0.95rem; }
+
+        /* Trade item */
+        .trade-item {
+            display: flex; align-items: flex-start; gap: 0.75rem;
+            padding: 0.9rem 1rem;
+            border-radius: 0;
+            border: 1px solid rgba(255,255,255,0.04);
+            background: rgba(8,8,8,0.4);
+            margin-bottom: 0.6rem;
+            transition: background 0.15s;
+            flex-wrap: wrap;
+        }
+        .trade-item:last-child { margin-bottom: 0; }
+        .trade-item:hover { background: rgba(15,15,15,0.15); }
+
+        .trade-badge {
+            font-family: 'Exo 2', sans-serif; font-weight: 900;
+            font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em;
+            padding: 0.2rem 0.55rem; border-radius: 0; flex-shrink: 0;
+            margin-top: 0.15rem;
+        }
+        .badge-incoming { background: rgba(15,15,15,0.35); border: 1px solid rgba(126,184,212,0.25); color: #8899aa; }
+        .badge-outgoing { background: rgba(100,80,0,0.35);  border: 1px solid rgba(200,160,0,0.25);  color: #c8a830; }
+        .badge-accepted { background: rgba(30,80,50,0.35);  border: 1px solid rgba(80,180,100,0.25); color: #70cc88; }
+        .badge-declined { background: rgba(80,20,20,0.35);  border: 1px solid rgba(180,60,60,0.25);  color: #cc7070; }
+        .badge-cancelled{ background: rgba(50,55,70,0.35);  border: 1px solid rgba(100,110,130,0.2); color: #7a8a9a; }
+
+        .trade-body { flex: 1; min-width: 0; }
+        .trade-user-line {
+            font-size: 0.85rem; color: #8899aa; margin-bottom: 0.55rem;
+            display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;
+        }
+        .trade-user-link {
+            font-weight: 700; color: #8899aa; cursor: pointer; text-decoration: none;
+        }
+        .trade-user-link:hover { color: #d0d8e0; text-decoration: underline; }
+        .trade-date { font-size: 0.72rem; color: #4a5a6a; margin-left: auto; }
+
+        /* Sides layout */
+        .trade-sides {
+            display: grid; grid-template-columns: 1fr auto 1fr;
+            gap: 0.75rem; align-items: start;
+            margin-bottom: 0.75rem;
+        }
+        @media(max-width: 520px) {
+            .trade-sides { grid-template-columns: 1fr; }
+            .t-arrow { display: none; }
+        }
+        .side-label {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 0.6rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: #4a5a6a; margin-bottom: 0.35rem;
+        }
+        .items-row { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; min-height: 26px; }
+        .t-arrow { display: flex; align-items: center; justify-content: center; color: #2a3a4a; font-size: 0.9rem; padding-top: 1.2rem; }
+
+        .item-chip {
+            background: rgba(12,12,12,0.8);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 0;
+            padding: 0.28rem 0.5rem;
+            display: inline-flex; align-items: center; gap: 0.38rem;
+            font-size: 0.7rem; font-weight: 600; color: #8899aa;
+        }
+        .item-chip canvas { border-radius: 0; display: block; flex-shrink: 0; }
+        .item-name { max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .coin-chip {
+            background: rgba(80,65,0,0.4);
+            border: 1px solid rgba(200,160,0,0.2);
+            border-radius: 0;
+            padding: 0.28rem 0.6rem;
+            font-size: 0.72rem; font-weight: 700; color: #c8a830;
+            display: inline-flex; align-items: center; gap: 0.3rem;
+        }
+        .nothing-label { font-size: 0.72rem; color: #3a4a5a; font-style: italic; }
+
+        /* Action buttons */
+        .trade-actions { display: flex; gap: 0.5rem; }
+        .act-btn {
+            background: linear-gradient(135deg, rgba(15,15,15,0.55), rgba(12,12,12,0.8));
+            border: 1px solid rgba(126,184,212,0.28);
+            border-radius: 0;
+            color: #8899aa;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 0.75rem; font-weight: 800;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            padding: 0.42rem 0.9rem;
+            cursor: pointer; transition: all 0.15s;
+            display: inline-flex; align-items: center; gap: 0.35rem;
+        }
+        .act-btn:hover { background: linear-gradient(135deg, rgba(15,15,15,0.9), rgba(12,12,12,1)); border-color: rgba(37,99,196,0.5); color: #e0f0ff; }
+        .act-btn:active { transform: scale(0.97); }
+        .act-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        .act-btn.danger { background: linear-gradient(135deg, rgba(100,20,20,0.55), rgba(60,10,10,0.8)); border-color: rgba(180,60,60,0.28); color: #cc9090; }
+        .act-btn.danger:hover { background: linear-gradient(135deg, rgba(140,30,30,0.85), rgba(80,15,15,1)); border-color: rgba(180,60,60,0.5); color: #ffbbbb; }
+
+        /* Empty / loading */
+        .empty-state { text-align: center; color: #4a5a6a; padding: 2rem; font-size: 0.88rem; }
+        .empty-state i { font-size: 1.6rem; display: block; margin-bottom: 0.6rem; opacity: 0.5; }
+        .loading-state { text-align: center; color: #5a6880; padding: 2rem; font-size: 0.88rem; }
+        .loading-state i { animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(126,184,212,0.25); border-radius: 0; }
+    
+        @media (max-width: 640px) {
+            .container { padding: 1rem; border-radius: 0; }
+            .trade-card { padding: .85rem; }
+            .trade-header { flex-direction: column; gap: .4rem; }
+            .trade-meta { font-size: .72rem; flex-wrap: wrap; }
+            .trade-items { gap: .35rem; }
+            .trade-item { width: 44px; height: 44px; }
+            .trade-actions { flex-wrap: wrap; gap: .4rem; }
+            .trade-actions button { flex: 1; min-width: 100px; }
+            .tabs { overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+            .tabs::-webkit-scrollbar { display: none; }
+        }
+    
+        @media (max-width: 500px) {
+            .tab-bar { overflow-x: auto; white-space: nowrap; scrollbar-width: none; gap: .25rem; }
+            .tab-bar::-webkit-scrollbar { display: none; }
+            .tab-btn { font-size: .75rem; padding: .4rem .7rem; flex-shrink: 0; }
+            .trade-card-top { flex-wrap: wrap; gap: .4rem; }
+            .items-row { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+<script src="/sidebar.js"></script>
+<div class="main-content">
+<div class="container">
+
+    <div class="header">
+        <h1><i class="fas fa-exchange-alt"></i> Trades</h1>
+    </div>
+
+    <div class="tab-bar">
+        <button class="tab-btn active" data-tab="pending" onclick="switchTab('pending')">
+            <i class="fas fa-clock"></i> Pending
+            <span class="tab-badge" id="badge-pending" style="display:none;"></span>
+        </button>
+        <button class="tab-btn" data-tab="incoming" onclick="switchTab('incoming')">
+            <i class="fas fa-arrow-down"></i> Incoming
+        </button>
+        <button class="tab-btn" data-tab="outgoing" onclick="switchTab('outgoing')">
+            <i class="fas fa-arrow-up"></i> Outgoing
+        </button>
+        <button class="tab-btn" data-tab="history" onclick="switchTab('history')">
+            <i class="fas fa-history"></i> History
+        </button>
+    </div>
+
+    <div class="section">
+        <div class="section-head">
+            <h2 id="sectionTitle"><i class="fas fa-clock"></i> Pending Trades</h2>
+        </div>
+        <div id="tradeList">
+            <div class="loading-state"><i class="fas fa-spinner"></i>&nbsp; Loading trades…</div>
+        </div>
+    </div>
+
+</div>
+</div>
+
+<script>
+const SWL = { base: { background:'#0c0c0c', color:'#d0d8e0', confirmButtonColor:'#1c1c1c' } };
+const RC  = { common:'#8a95a3', uncommon:'#4CAF50', rare:'#2196F3', epic:'#9C27B0', legendary:'#FF9800' };
+
+const TAB_TITLE = {
+    pending:  ['fa-clock',   'Pending Trades'],
+    incoming: ['fa-arrow-down','Incoming Trades'],
+    outgoing: ['fa-arrow-up',  'Outgoing Trades'],
+    history:  ['fa-history',   'Trade History'],
+};
+const EMPTY_MSG = {
+    pending:'No pending trades', incoming:'No incoming trades',
+    outgoing:'No outgoing trades', history:'No trade history yet'
+};
+
+let _allItems = [], _renderers = {}, _currentTab = 'pending';
+
+function waitRenderer() {
+    return new Promise(r => {
+        if (window.AvatarRenderer) { r(); return; }
+        const t = setInterval(() => { if (window.AvatarRenderer) { clearInterval(t); r(); } }, 80);
+    });
+}
+function destroyRenderers() {
+    Object.values(_renderers).forEach(r => r && r.destroy && r.destroy());
+    _renderers = {};
+}
+function esc(s) { return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function timeAgo(ts) {
+    const d = Math.floor((Date.now()-ts)/86400000);
+    if (d === 0) return 'today';
+    if (d === 1) return 'yesterday';
+    if (d < 30)  return d+'d ago';
+    return new Date(ts).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+}
+
+async function init() {
+    try { const r = await fetch('/api/avatar/get-items'); _allItems = (await r.json()).items||[]; } catch(e) {}
+    loadTrades('pending');
+}
+
+async function loadTrades(tab) {
+    destroyRenderers();
+    document.getElementById('tradeList').innerHTML = '<div class="loading-state"><i class="fas fa-spinner"></i>&nbsp; Loading…</div>';
+    const [icon, title] = TAB_TITLE[tab];
+    document.getElementById('sectionTitle').innerHTML = `<i class="fas ${icon}"></i> ${title}`;
+
+    try {
+        let inc = [], out = [];
+        if (tab === 'history') {
+            const [aR,dR,cR] = await Promise.all([
+                fetch('/api/trade/list?status=accepted'),
+                fetch('/api/trade/list?status=declined'),
+                fetch('/api/trade/list?status=cancelled'),
+            ]);
+            const [a,d,c] = await Promise.all([aR.json(),dR.json(),cR.json()]);
+            const stamp = (arr,s) => (arr||[]).map(t=>({...t,status:s}));
+            inc = [...stamp(a.incoming,'accepted'),...stamp(d.incoming,'declined'),...stamp(c.incoming,'cancelled')].sort((a,b)=>b.created_at-a.created_at);
+            out = [...stamp(a.outgoing,'accepted'),...stamp(d.outgoing,'declined'),...stamp(c.outgoing,'cancelled')].sort((a,b)=>b.created_at-a.created_at);
+        } else {
+            const res = await fetch('/api/trade/list?status=pending');
+            const data = await res.json();
+            if (!data.success) throw new Error(data.error);
+            inc = data.incoming||[]; out = data.outgoing||[];
+            const cnt = inc.length + out.length;
+            const badge = document.getElementById('badge-pending');
+            badge.style.display = cnt > 0 ? 'inline' : 'none';
+            if (cnt > 0) badge.textContent = cnt > 9 ? '9+' : cnt;
+        }
+
+        let show = [];
+        if (tab === 'pending' || tab === 'history') {
+            show = [...inc.map(t=>({...t,_d:'i'})),...out.map(t=>({...t,_d:'o'}))].sort((a,b)=>b.created_at-a.created_at);
+        } else if (tab === 'incoming') {
+            show = inc.map(t=>({...t,_d:'i'}));
+        } else {
+            show = out.map(t=>({...t,_d:'o'}));
+        }
+
+        renderTrades(show, tab);
+    } catch(e) {
+        document.getElementById('tradeList').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i>Failed to load trades</div>';
+    }
+}
+
+async function renderTrades(trades, tab) {
+    destroyRenderers();
+    const list = document.getElementById('tradeList');
+    if (!trades.length) {
+        list.innerHTML = `<div class="empty-state"><i class="fas fa-exchange-alt"></i>${EMPTY_MSG[tab]||'Nothing here'}</div>`;
+        return;
+    }
+
+    list.innerHTML = '';
+    const _tbi = window.ampNameBadge || (async () => '');
+    const partners = [...new Set(trades.map(t => t._d === 'i' ? (t.from_username||'?') : (t.to_username||'?')))];
+    if (window.ampNameBadgeBatch) await window.ampNameBadgeBatch(partners);
+
+    for (const trade of trades) {
+        const isIn = trade._d === 'i';
+        const status = trade.status || 'pending';
+        const isPending = status === 'pending';
+        const other = isIn ? (trade.from_username||'?') : (trade.to_username||'?');
+        const tBadge = await _tbi(other);
+
+        let badgeClass, badgeText;
+        if (isPending) { badgeClass = isIn?'badge-incoming':'badge-outgoing'; badgeText = isIn?'Incoming':'Outgoing'; }
+        else if (status==='accepted')  { badgeClass='badge-accepted';  badgeText='Accepted'; }
+        else if (status==='declined')  { badgeClass='badge-declined';  badgeText='Declined'; }
+        else                           { badgeClass='badge-cancelled'; badgeText='Cancelled'; }
+
+        const row = document.createElement('div');
+        row.className = 'trade-item';
+        row.innerHTML = `
+            <span class="trade-badge ${badgeClass}">${badgeText}</span>
+            <div class="trade-body">
+                <div class="trade-user-line">
+                    <span style="color:#7a8a9a;font-size:.78rem;">${isIn?'From':'To'}</span>
+                    <a class="trade-user-link" href="/profile.html?user=${encodeURIComponent(other)}">${tBadge}${esc(other)}</a>
+                    <span class="trade-date">${timeAgo(trade.created_at)}</span>
+                </div>
+                <div class="trade-sides">
+                    <div>
+                        <div class="side-label">${isIn?'They offer':'You offer'}</div>
+                        <div class="items-row" id="o-${trade.id}"></div>
+                    </div>
+                    <div class="t-arrow"><i class="fas fa-right-left"></i></div>
+                    <div>
+                        <div class="side-label">${isIn?'They want':'You want'}</div>
+                        <div class="items-row" id="w-${trade.id}"></div>
+                    </div>
+                </div>
+                <div class="trade-actions" id="a-${trade.id}"></div>
+            </div>`;
+
+        list.appendChild(row);
+
+        fillRow(`o-${trade.id}`, trade.offer_items||[], trade.offer_coins||0, trade.id, 'o');
+        fillRow(`w-${trade.id}`, trade.want_items||[],  trade.want_coins||0,  trade.id, 'w');
+
+        if (isPending) {
+            const actEl = document.getElementById(`a-${trade.id}`);
+            if (isIn) {
+                actEl.innerHTML = `
+                    <button class="act-btn" onclick="respond('${trade.id}','accept',this)"><i class="fas fa-check"></i> Accept</button>
+                    <button class="act-btn danger" onclick="respond('${trade.id}','decline',this)"><i class="fas fa-times"></i> Decline</button>`;
+            } else {
+                actEl.innerHTML = `<button class="act-btn danger" onclick="respond('${trade.id}','cancel',this)"><i class="fas fa-ban"></i> Cancel Offer</button>`;
+            }
+        }
+    }
+}
+
+function fillRow(elId, ids, coins, tradeId, side) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    if (!ids.length && !coins) { el.innerHTML = '<span class="nothing-label">nothing</span>'; return; }
+
+    ids.forEach(id => {
+        const item = _allItems.find(i => i.id === id);
+        const chip = document.createElement('div');
+        chip.className = 'item-chip';
+        chip.title = item ? item.name : id;
+
+        const cvs = document.createElement('canvas');
+        cvs.width = 36; cvs.height = 36;
+        chip.appendChild(cvs);
+
+        const nm = document.createElement('span');
+        nm.className = 'item-name';
+        nm.textContent = item ? item.name : id.slice(0,10);
+        if (item) nm.style.color = RC[item.rarity] || '#8899aa';
+        chip.appendChild(nm);
+        el.appendChild(chip);
+
+        if (item) {
+            requestAnimationFrame(async () => {
+                await waitRenderer();
+                if (!cvs.isConnected) return;
+                _renderers[`${tradeId}-${side}-${id}`] = AvatarRenderer.init(cvs, [item], { autoRotate:true, interactive:true, size:36 });
+            });
+        }
+    });
+
+    if (coins > 0) {
+        const c = document.createElement('div');
+        c.className = 'coin-chip';
+        c.innerHTML = `<img src="/images/coin-icon.png" alt="coin" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:0.2em;position:relative;top:-0.05em;display:inline-block;">${coins.toLocaleString()}`;
+        el.appendChild(c);
+    }
+}
+
+async function respond(tradeId, action, btn) {
+    const isAccept = action === 'accept';
+    const { isConfirmed } = await Swal.fire({
+        title: isAccept ? 'Accept this trade?' : action==='decline' ? 'Decline this trade?' : 'Cancel your offer?',
+        icon: isAccept ? 'question' : 'warning',
+        showCancelButton: true,
+        confirmButtonText: action.charAt(0).toUpperCase()+action.slice(1),
+        cancelButtonText: 'Back',
+        ...SWL.base,
+        confirmButtonColor: isAccept ? '#1a5030' : '#6a1010',
+    });
+    if (!isConfirmed) return;
+
+    btn.disabled = true;
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+    try {
+        const res  = await fetch('/api/trade/respond', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ tradeId, action })
+        });
+        const data = await res.json();
+        if (data.success) {
+            Swal.fire({ toast:true, position:'top-end', icon:'success',
+                title: isAccept ? 'Trade accepted!' : action==='decline' ? 'Trade declined' : 'Offer cancelled',
+                background:'#0c0c0c', color:'#d0d8e0', showConfirmButton:false, timer:2200 });
+            loadTrades(_currentTab);
+        } else {
+            Swal.fire({ toast:true, position:'top-end', icon:'error', title:data.error||'Failed',
+                background:'#0c0c0c', color:'#d0d8e0', showConfirmButton:false, timer:3000 });
+            btn.disabled = false; btn.innerHTML = orig;
+        }
+    } catch(e) { btn.disabled = false; btn.innerHTML = orig; }
+}
+
+function switchTab(tab) {
+    _currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    loadTrades(tab);
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+    <title>Ampehere · Ampere+</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0 !important; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+    <style>
+        :root { --bg:#060606; --surface:#0c0c0c; --border:#1a1a1a; --border-hi:#252525; --blue:#2563c4; --blue-hi:#3b7de0; --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677; --red:#c0392b; --gold:#f1c40f; --green:#27ae60; }
+        *, *::before, *::after { border-radius: 0 !important; }
+        body { background: #060606 !important; background-image: none !important; color: #d0d8e0; }
+        a { color: #2563c4; } a:hover { color: #3b7de0; }
+    </style>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        @keyframes floatIn   { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes crownBob  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+        @keyframes confFall  { 0%{opacity:1;transform:translateY(0) rotate(0)} 100%{opacity:0;transform:translateY(100vh) rotate(720deg)} }
+        @keyframes spin      { to{transform:rotate(360deg)} }
+
+        body {
+            overflow-x: hidden;
+            font-family: 'Exo 2', sans-serif;
+            background: #060606;
+            background-image:
+                radial-gradient(ellipse at 20% 10%, rgba(15,15,15,0.35) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 90%, rgba(126,184,212,0.10) 0%, transparent 50%);
+            background-attachment: fixed;
+            color: #d0d8e0;
+            min-height: 100vh;
+        }
+
+        .main-content { padding: 1.5rem 1.5rem 1.5rem 0; }
+
+        .container {
+            max-width: 580px;
+            margin: 0 auto;
+            background: linear-gradient(145deg, rgba(12,12,12,0.88), rgba(8,8,8,0.94));
+            border: 1px solid rgba(37,99,196,0.2);
+            border-radius: 0;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), ;
+            animation: floatIn 0.5s ease-out;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.75rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .crown-icon {
+            display: block; margin: 0 auto 0.65rem;
+            width: 72px; height: 72px; object-fit: contain;
+            filter: drop-shadow(0 0 16px rgba(15,15,15,0.5));
+            animation: crownBob 3s ease-in-out infinite;
+        }
+        .page-header h1 {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 2rem; font-weight: 900;
+            color: #d0d8e0; text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 20px rgba(37,99,196,0.18);
+        }
+        .page-header .sub {
+            font-size: 0.78rem; font-weight: 600;
+            color: #8899aa; letter-spacing: 0.06em;
+            text-transform: uppercase; margin-top: 0.35rem;
+            opacity: 0.8;
+        }
+
+        /* Price pill */
+        .price-pill {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: rgba(80,65,0,0.35);
+            border: 1px solid rgba(200,160,0,0.25);
+            border-radius: 0;
+            padding: 0.45rem 1.25rem;
+            font-family: 'Exo 2', sans-serif; font-weight: 900;
+            font-size: 1.3rem; color: #c8a830;
+            margin-top: 0.85rem;
+        }
+        .price-pill i { font-size: 1rem; }
+
+        /* Sections */
+        .section {
+            background: rgba(12,12,12,0.4);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 0;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+        .section-head h2 {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1rem; font-weight: 800;
+            color: #a0aabb; text-transform: uppercase; letter-spacing: 0.08em;
+            display: flex; align-items: center; gap: 0.5rem;
+            margin-bottom: 1.1rem;
+        }
+        .section-head h2 i { color: #8899aa; font-size: 0.95rem; }
+
+        /* Benefit rows */
+        .benefit-item {
+            display: flex; align-items: center; gap: 0.85rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0;
+            border: 1px solid rgba(255,255,255,0.04);
+            background: rgba(8,8,8,0.4);
+            margin-bottom: 0.5rem;
+            transition: background 0.15s;
+        }
+        .benefit-item:last-child { margin-bottom: 0; }
+        .benefit-item:hover { background: rgba(15,15,15,0.2); }
+        .benefit-icon {
+            width: 32px; height: 32px; flex-shrink: 0;
+            background: rgba(15,15,15,0.35);
+            border: 1px solid rgba(37,99,196,0.18);
+            border-radius: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; color: #8899aa;
+        }
+        .benefit-text .title { font-weight: 700; color: #8899aa; font-size: 0.88rem; }
+        .benefit-text .desc  { font-size: 0.7rem; color: #5a6880; margin-top: 0.1rem; }
+
+        /* Already member banner */
+        .member-banner {
+            text-align: center; padding: 1.25rem;
+            background: rgba(20,60,35,0.45);
+            border: 1px solid rgba(80,180,100,0.2);
+            border-radius: 0;
+            margin-bottom: 1rem;
+        }
+        .member-banner i { font-size: 1.8rem; color: #c8a830; display: block; margin-bottom: 0.45rem; }
+        .member-banner h3 { font-family: 'Exo 2', sans-serif; font-size: 1.1rem; color: #70cc88; font-weight: 900; }
+        .member-banner p  { font-size: 0.78rem; color: #4a7a5a; margin-top: 0.25rem; }
+
+        /* Balance row */
+        .balance-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.85rem 1rem;
+            background: rgba(8,8,8,0.5);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 0;
+            margin-bottom: 1rem;
+        }
+        .balance-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #5a6880; }
+        .balance-val {
+            font-family: 'Exo 2', sans-serif; font-weight: 900;
+            font-size: 1.4rem; color: #8899aa;
+            display: flex; align-items: center; gap: 0.3rem;
+        }
+        .balance-val i { font-size: 1rem; color: #c8a830; }
+        .balance-need { font-size: 0.7rem; color: #9a4040; font-weight: 700; margin-top: 0.15rem; }
+
+        /* Buttons */
+        .btn-row { display: flex; gap: 0.75rem; }
+        .btn {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(15,15,15,0.7), rgba(12,12,12,0.9));
+            border: 1px solid rgba(37,99,196,0.3);
+            border-radius: 0;
+            color: #8899aa;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 0.88rem; font-weight: 800;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            padding: 0.65rem 1rem;
+            cursor: pointer; transition: all 0.15s;
+            display: flex; align-items: center; justify-content: center; gap: 0.45rem;
+        }
+        .btn:hover { background: linear-gradient(135deg, rgba(15,15,15,0.95), rgba(12,12,12,1)); border-color: rgba(126,184,212,0.55); color: #e0f0ff; }
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        .btn.gold {
+            background: linear-gradient(135deg, rgba(100,80,0,0.65), rgba(60,45,0,0.85));
+            border-color: rgba(200,160,0,0.35); color: #c8a830;
+        }
+        .btn.gold:hover { background: linear-gradient(135deg, rgba(140,110,0,0.9), rgba(80,60,0,1)); border-color: rgba(200,160,0,0.6); color: #f0d060; }
+
+        /* Quote */
+        .quote {
+            margin-top: 1rem;
+            padding: 0.9rem 1.1rem;
+            background: rgba(8,8,8,0.4);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-left: 3px solid rgba(126,184,212,0.3);
+            border-radius: 0 8px 8px 0;
+            font-style: italic; font-size: 0.82rem; color: #5a6880; line-height: 1.55;
+        }
+        .quote-attr { margin-top: 0.4rem; font-style: normal; font-weight: 700; font-size: 0.7rem; color: #3a4a5a; text-transform: uppercase; letter-spacing: 0.07em; }
+
+        .footer-note { text-align: center; font-size: 0.72rem; color: #3a4a5a; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.04); margin-top: 1rem; }
+        .footer-note i { margin-right: 0.2rem; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(126,184,212,0.25); border-radius: 0; }
+    
+        @media (max-width: 600px) {
+            .container { padding: 1.25rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+<script src="/sidebar.js"></script>
+<div class="main-content">
+<div class="container">
+
+    <div class="page-header">
+        <img src="/images/ampere-plus-icon.png" class="crown-icon" alt="Ampere+">
+        <h1>Ampere+</h1>
+        <div class="sub">Lifetime membership</div>
+        <div class="price-pill"><img src="/images/coin-icon.png" alt="coin" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:0.2em;position:relative;top:-0.05em;display:inline-block;"> 5,000 coins &mdash; one time</div>
+    </div>
+
+    <!-- Already member -->
+    <div id="memberSection" style="display:none;">
+        <div class="member-banner">
+            <i class="fas fa-crown"></i>
+            <h3>You have Ampere+!</h3>
+            <p>All lifetime perks are active on your account ✨</p>
+        </div>
+    </div>
+
+    <!-- Benefits -->
+    <div class="section">
+        <div class="section-head">
+            <h2><i class="fas fa-gift"></i> What You Get</h2>
+        </div>
+        <div class="benefit-item">
+            <div class="benefit-icon"><img src="/images/coin-icon.png" alt="coin" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:0.2em;position:relative;top:-0.05em;display:inline-block;"></div>
+            <div class="benefit-text">
+                <div class="title">+50 Daily Coins</div>
+                <div class="desc">Bonus added to every daily claim, forever</div>
+            </div>
+        </div>
+        <div class="benefit-item">
+            <div class="benefit-icon"><i class="fas fa-crown"></i></div>
+            <div class="benefit-text">
+                <div class="title">Exclusive Ampere+ Badge</div>
+                <div class="desc">Gold crown badge shown on your profile and posts</div>
+            </div>
+        </div>
+        <div class="benefit-item">
+            <div class="benefit-icon"><i class="fas fa-star"></i></div>
+            <div class="benefit-text">
+                <div class="title">Profile Glow Effect</div>
+                <div class="desc">Animated glow that sets you apart everywhere</div>
+            </div>
+        </div>
+        <div class="benefit-item">
+            <div class="benefit-icon"><i class="fas fa-paint-brush"></i></div>
+            <div class="benefit-text">
+                <div class="title">Custom Backgrounds</div>
+                <div class="desc">Exclusive homepage themes just for members</div>
+            </div>
+        </div>
+        <div class="benefit-item">
+            <div class="benefit-icon"><i class="fas fa-trophy"></i></div>
+            <div class="benefit-text">
+                <div class="title">Crown on Leaderboard</div>
+                <div class="desc">Gold crown icon next to your name site-wide</div>
+            </div>
+        </div>
+        <div class="benefit-item">
+            <div class="benefit-icon"><i class="fas fa-infinity"></i></div>
+            <div class="benefit-text">
+                <div class="title">Lifetime Access</div>
+                <div class="desc">Pay once, never expires, no subscriptions</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Purchase -->
+    <div class="section" id="purchaseSection">
+        <div class="section-head">
+            <h2><i class="fas fa-wallet"></i> Purchase</h2>
+        </div>
+
+        <div class="balance-row">
+            <div>
+                <div class="balance-label">Your coins</div>
+                <div class="balance-need" id="needMsg" style="display:none;"></div>
+            </div>
+            <div class="balance-val" id="balanceVal">
+                <i class="fas fa-spinner" style="animation:spin 1s linear infinite;font-size:.9rem;"></i>
+            </div>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn" onclick="window.location.href='/'">
+                <i class="fas fa-home"></i> Home
+            </button>
+            <button class="btn gold" id="buyBtn" onclick="buyAmpere()" disabled>
+                <i class="fas fa-crown"></i> Buy Ampere+
+            </button>
+        </div>
+
+        <div class="quote">
+            Ampere+ is genuinely worth it. The daily coins add up fast and the profile glow looks incredible.
+            <div class="quote-attr">&mdash; Satisfied Ampere+ Member</div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        <i class="fas fa-shield-alt"></i> One-time purchase &bull; Lifetime access &bull; Non-refundable
+    </div>
+
+</div>
+</div>
+
+<script>
+const SWL = { base: { background:'#0c0c0c', color:'#d0d8e0', confirmButtonColor:'#1c1c1c' } };
+
+let userCoins = 0, isAmpere = false, currentUsername = null;
+
+async function loadUserData() {
+    try {
+        const res  = await fetch('/api/get-balance');
+        const data = await res.json();
+        if (!data.username) return;
+        currentUsername = data.username;
+        userCoins = data.coins || 0;
+
+        const pr = await fetch(`/api/get-profile?username=${encodeURIComponent(data.username)}`);
+        const pd = await pr.json();
+        isAmpere = pd.user?.ampere_plus?.active || false;
+
+        updateUI();
+    } catch(e) {
+        document.getElementById('balanceVal').innerHTML = '<span style="color:#9a4040;font-size:.8rem;">Failed to load</span>';
+    }
+}
+
+function updateUI() {
+    if (isAmpere) {
+        document.getElementById('memberSection').style.display = 'block';
+        document.getElementById('purchaseSection').style.display = 'none';
+        return;
+    }
+
+    const balEl = document.getElementById('balanceVal');
+    balEl.innerHTML = `<img src="/images/coin-icon.png" alt="coin" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:0.2em;position:relative;top:-0.05em;display:inline-block;"> ${userCoins.toLocaleString()}`;
+
+    const buyBtn = document.getElementById('buyBtn');
+    const needMsg = document.getElementById('needMsg');
+
+    if (userCoins >= 5000) {
+        buyBtn.disabled = false;
+        needMsg.style.display = 'none';
+    } else {
+        buyBtn.disabled = true;
+        needMsg.textContent = `Need ${(5000-userCoins).toLocaleString()} more`;
+        needMsg.style.display = 'block';
+    }
+}
+
+async function buyAmpere() {
+    const { isConfirmed } = await Swal.fire({
+        title: 'Purchase Ampere+?',
+        html: `<p>Cost: <strong style="color:#c8a830;">5,000 coins</strong></p>
+               <p style="margin-top:.5rem;">Balance after: <strong>${(userCoins-5000).toLocaleString()} coins</strong></p>
+               <p style="margin-top:.5rem;font-size:.82rem;color:#7a5050;">Lifetime membership &mdash; non-refundable</p>`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Purchase',
+        cancelButtonText: 'Cancel',
+        ...SWL.base, confirmButtonColor: '#1a4a28',
+    });
+    if (!isConfirmed) return;
+
+    const btn = document.getElementById('buyBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner" style="animation:spin 1s linear infinite;"></i> Processing…';
+
+    try {
+        const res  = await fetch('/api/buy-ampereplus', { method:'POST', headers:{'Content-Type':'application/json'}, body:'{}' });
+        const data = await res.json();
+
+        if (data.success) {
+            spawnConfetti();
+            await Swal.fire({
+                icon: 'success', title: '🎉 Welcome to Ampere+!',
+                html: `<p>${data.message||'Membership activated!'}</p>
+                       <p style="margin-top:.5rem;">New balance: <strong style="color:#c8a830;">${(data.newBalance||0).toLocaleString()} coins</strong></p>`,
+                ...SWL.base, timer:5000, showConfirmButton:true, confirmButtonText:'View Profile',
+            });
+            if (currentUsername) window.location.href = `/profile.html?user=${encodeURIComponent(currentUsername)}`;
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-crown"></i> Buy Ampere+';
+            Swal.fire({ icon:'error', title:'Purchase failed', text:data.error||'Please try again', ...SWL.base });
+            loadUserData();
+        }
+    } catch(e) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-crown"></i> Buy Ampere+';
+        Swal.fire({ icon:'error', title:'Network error', text:'Please try again', ...SWL.base });
+    }
+}
+
+function spawnConfetti() {
+    const colors = ['#c8a830','#8899aa','#8899aa','#70cc88','#4a82c8'];
+    for (let i = 0; i < 70; i++) {
+        setTimeout(() => {
+            const el = document.createElement('div');
+            const size = 5 + Math.random() * 7;
+            el.style.cssText = `position:fixed;top:-10px;left:${Math.random()*100}%;width:${size}px;height:${size}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};z-index:9999;pointer-events:none;animation:confFall ${2+Math.random()*3}s linear forwards;`;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 5000);
+        }, i * 40);
+    }
+}
+
+loadUserData();
+</script>
+</body>
+</html>

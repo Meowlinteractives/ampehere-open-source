@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <link rel="icon" href="logo.png" type="image/png">
+    <title>Ampehere · Forums</title>
+    
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        @keyframes floatIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        body {
+            overflow-x: hidden;
+            background: #060606;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(126,184,212,0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(126,184,212,0.08) 0%, transparent 20%),
+                linear-gradient(45deg, #111111 1px, transparent 1px),
+                linear-gradient(-45deg, #111111 1px, transparent 1px);
+            background-size: 30px 30px, 30px 30px, 30px 30px, 30px 30px;
+            font-family: 'Exo 2', sans-serif;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(14, 30, 60, 0.92);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(126,184,212,0.28);
+            padding: 2rem;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.55), ;
+            animation: floatIn 0.6s ease-out;
+            border-radius: 0;
+}
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            color: #d0d8e0;
+            text-transform: uppercase;
+            text-shadow: 0 2px 20px rgba(126,184,212,0.25);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .button {
+            background: rgba(12,12,12,0.5);
+            color: #8899aa;
+            text-decoration: none;
+            padding: 0.6rem 1.5rem;
+            border: 1px solid rgba(37,99,196,0.18);
+            font-weight: 900;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .button:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        
+        .stats-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat-pill {
+            background: rgba(12,12,12,0.5);
+            color: #8899aa;
+            padding: 0.5rem 1.2rem;
+            border: 1px solid rgba(37,99,196,0.18);
+            font-weight: 900;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .forum-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .forum-card {
+            background: linear-gradient(145deg, rgba(26,48,96,0.85), rgba(10,10,10,0.92));
+            border: 1px solid rgba(37,99,196,0.2);
+            border-radius: 0;
+            padding: 1.25rem 1.5rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+            transition: all 0.18s ease;
+            cursor: pointer;
+            animation: floatIn 0.4s ease-out;
+        }
+        
+        .forum-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(37,99,196,0.4);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+        }
+        
+        .forum-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: .85rem;
+        }
+        
+        .forum-icon {
+            font-size: 2rem;
+            background: rgba(12,12,12,0.5);
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(37,99,196,0.18);
+            border-radius: 0;
+            flex-shrink: 0;
+        }
+
+        .forum-info { flex: 1; min-width: 0; }
+        
+        .forum-name {
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: #d0d8e0;
+            margin-bottom: .2rem;
+        }
+        
+        .forum-description {
+            color: #8a95a3;
+            font-size: 0.82rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .forum-stats {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            flex-wrap: wrap;
+            color: #8a95a3;
+            font-weight: 700;
+            font-size: .8rem;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            padding-top: .75rem;
+        }
+        
+        .forum-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .forum-meta {
+            font-size: 0.8rem;
+            color: #8a95a3;
+            opacity: 0.8;
+        }
+        
+        .empty {
+            grid-column: 1 / -1;
+            background: rgba(12,12,12,0.5);
+            border: 1px solid rgba(37,99,196,0.2);
+            padding: 3rem;
+            text-align: center;
+            font-size: 1.2rem;
+            color: #8a95a3;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #8a95a3;
+        }
+        
+        .loading:after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                border-radius: 0;
+}
+            
+            .forum-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .nav-buttons {
+                width: 100%;
+            }
+            
+            .button {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+
+    <!-- Ampehere Global Theme -->
+    <style>
+      :root {
+        --amp-navy: #060606;
+        --amp-navy-card: rgba(12,12,12,0.92);
+        --amp-navy-mid: #162544;
+        --amp-blue: #1c1c1c;
+        --amp-sky: #8899aa;
+        --amp-sky-light: #8899aa;
+        --amp-silver: #8899aa;
+        --amp-silver-light: #d0d8e0;
+        --amp-silver-dim: #8a95a3;
+      }
+      body {
+        background: var(--amp-navy) !important;
+        background-image: radial-gradient(ellipse at 20% 10%, rgba(15,15,15,0.35) 0%, transparent 50%),
+                          radial-gradient(ellipse at 80% 90%, rgba(126,184,212,0.10) 0%, transparent 50%) !important;
+        background-attachment: fixed !important;
+        color: var(--amp-silver-light) !important;
+        font-family: 'Exo 2', sans-serif !important;
+      }
+      /* Container glass cards */
+      .container, .card, .page-wrap > .card, .panel, .box, .section-card,
+      .profile-container, .group-card, .topic-card, .post-card, .modal-box {
+        background: linear-gradient(145deg, rgba(12,12,12,0.88), rgba(8,8,8,0.94)) !important;
+        border: 1px solid rgba(37,99,196,0.2) !important;
+        border-radius: 0;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5),  !important;
+        backdrop-filter: blur(16px) !important;
+      }
+      /* Headings */
+      h1, h2, h3 { font-family: 'Exo 2', sans-serif !important; color: var(--amp-silver-light) !important; }
+      h1 { text-shadow: 0 2px 20px rgba(37,99,196,0.18) !important; }
+      /* Links */
+      a { color: var(--amp-sky) !important; }
+      /* Inputs */
+      input[type="text"], input[type="password"], input[type="email"], textarea, select {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(126,184,212,0.25) !important;
+        border-radius: 0;
+        color: var(--amp-silver-light) !important;
+        font-family: 'Exo 2', sans-serif !important;
+      }
+      input:focus, textarea:focus, select:focus {
+        border-color: rgba(126,184,212,0.55) !important;
+        box-shadow: 0 0 0 3px rgba(255,255,255,0.04) !important;
+        outline: none !important;
+      }
+      /* Buttons */
+      button, .btn, .button, input[type="submit"], input[type="button"] {
+        border-radius: 0;
+        font-family: 'Exo 2', sans-serif !important;
+      }
+      /* Scrollbar */
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+      ::-webkit-scrollbar-thumb { background: rgba(126,184,212,0.3); border-radius: 0; }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(37,99,196,0.5); }
+    
+        @media (max-width: 480px) {
+            .container { padding: .85rem; border-radius: 0; }
+            .forum-card { padding: .85rem; }
+            .forum-stats { display: none; }
+        }
+    </style>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/avatar-renderer.js"></script>
+    <script src="/avatar2d.js"></script>
+</head>
+<body>
+    <!-- Sidebar will be injected by sidebar.js -->
+    
+    <div class="page-container">
+        <div class="header">
+            <h1><i class="fas fa-comments"></i> FORUMS</h1>
+            <div class="nav-buttons">
+                <a href="/" class="button"><i class="fas fa-home"></i> HOME</a>
+                <a href="/create-forum-topic.html" class="button"><i class="fas fa-plus-circle"></i> NEW TOPIC</a>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <span class="stat-pill"><i class="fas fa-comments"></i> <span id="totalCategories">0</span> CATEGORIES</span>
+            <span class="stat-pill"><i class="fas fa-file-alt"></i> <span id="totalTopics">0</span> TOPICS</span>
+            <span class="stat-pill"><i class="fas fa-reply"></i> <span id="totalPosts">0</span> POSTS</span>
+        </div>
+
+        <div id="loadingSection" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Loading forums
+        </div>
+
+        <div id="forumGrid" class="forum-grid"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/sidebar.js"></script>
+    <script>
+        const Swal = window.Swal;
+        
+        
+
+        function timeAgo(ms) {
+            if (!ms) return 'Never';
+            const diff = Date.now() - ms, d = Math.floor(diff / 86400000);
+            if (d === 0) { const h = Math.floor(diff / 3600000); return h < 1 ? 'Just now' : h + 'h ago'; }
+            if (d === 1) return 'Yesterday';
+            if (d < 30)  return d + 'd ago';
+            return new Date(ms).toLocaleDateString();
+        }
+
+        function esc(s) { return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+        async function loadForums() {
+            try {
+                const res = await fetch('/api/get-forum-categories');
+                const data = await res.json();
+                
+                document.getElementById('loadingSection').style.display = 'none';
+                const grid = document.getElementById('forumGrid');
+                
+                if (!data.success || !data.categories || data.categories.length === 0) {
+                    grid.innerHTML = '<div class="empty"><i class="fas fa-comments"></i> No forums available</div>';
+                    return;
+                }
+
+                document.getElementById('totalCategories').textContent = data.categories.length;
+                document.getElementById('totalTopics').textContent = (data.stats?.totalTopics || 0).toLocaleString();
+                document.getElementById('totalPosts').textContent = (data.stats?.totalPosts || 0).toLocaleString();
+
+                // Pre-warm badges for last-post authors
+                const authors = [...new Set(data.categories.map(c => c.lastPostAuthor).filter(Boolean))];
+                if (window.ampNameBadgeBatch && authors.length) await window.ampNameBadgeBatch(authors);
+                const _bi = window.ampNameBadge || (async () => '');
+
+                let html = '';
+                for (const cat of data.categories) {
+                    const urlName = cat.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                    const authorBadge = cat.lastPostAuthor ? (await _bi(cat.lastPostAuthor)) : '';
+                    const lastLine = cat.lastPostAt
+                        ? `<span style="display:inline-flex;align-items:center;gap:4px;">${authorBadge}<strong>${esc(cat.lastPostAuthor||'')}</strong> · ${timeAgo(cat.lastPostAt)}</span>`
+                        : '<span style="color:#3a5068;">No posts yet</span>';
+                    
+                    html += `
+                        <div class="forum-card" onclick="window.location.href='/forum-category.html?name=${urlName}'">
+                            <div class="forum-header">
+                                <div class="forum-icon">${cat.icon || '📢'}</div>
+                                <div class="forum-info">
+                                    <div class="forum-name">${esc(cat.name)}</div>
+                                    <div class="forum-description">${esc(cat.description)}</div>
+                                </div>
+                            </div>
+                            <div class="forum-stats">
+                                <span class="forum-stat"><i class="fas fa-file-alt"></i> ${(cat.topicCount||0).toLocaleString()} topics</span>
+                                <span class="forum-stat"><i class="fas fa-reply"></i> ${(cat.postCount||0).toLocaleString()} posts</span>
+                                <span class="forum-stat forum-last" style="margin-left:auto;font-size:.72rem;color:#5a7090;">
+                                    <i class="fas fa-clock" style="font-size:.65rem;"></i> ${lastLine}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                }
+                grid.innerHTML = html;
+
+            } catch (err) {
+                console.error('Load forums error:', err);
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('forumGrid').innerHTML = '<div class="empty">Failed to load forums</div>';
+            }
+        }
+
+        loadForums();
+    </script>
+</body>
+</html>

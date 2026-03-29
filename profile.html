@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+    <title>Ampehere · Profile</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/avatar-renderer.js"></script>
+    <script src="/avatar2d.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+        @keyframes fadeUp      {from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes novaPulse   {0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+        @keyframes badgeGlow   {0%,100%{box-shadow:0 0 4px rgba(126,184,212,.3)}50%{box-shadow:0 0 12px rgba(126,184,212,.6)}}
+        @keyframes dotPulse    {0%,100%{opacity:1}50%{opacity:.3}}
+        @keyframes rainbowSpin {0%{border-color:#f00}17%{border-color:#f80}33%{border-color:#ff0}50%{border-color:#0f0}67%{border-color:#08f}83%{border-color:#80f}100%{border-color:#f00}}
+        @keyframes pulseGold   {0%,100%{box-shadow:0 0 8px #ffd700,0 0 20px rgba(255,215,0,.3);border-color:#ffd700}50%{box-shadow:0 0 20px #ffd700,0 0 40px rgba(255,215,0,.6);border-color:#fff8a0}}
+        @keyframes pulseCyan   {0%,100%{box-shadow:0 0 8px #0fc,0 0 20px rgba(0,255,204,.3);border-color:#0fc}50%{box-shadow:0 0 20px #0fc,0 0 40px rgba(0,255,204,.6);border-color:#aafff0}}
+        @keyframes fireGlow    {0%,100%{box-shadow:0 0 10px #f40,0 0 25px rgba(255,68,0,.4);border-color:#f40}50%{box-shadow:0 0 25px #f80,0 0 50px rgba(255,136,0,.6);border-color:#fa0}}
+        @keyframes iceShimmer  {0%,100%{box-shadow:0 0 10px #8ce,0 0 25px rgba(136,204,238,.3);border-color:#8ce}50%{box-shadow:0 0 25px #cef,0 0 50px rgba(204,238,255,.5);border-color:#ddf5ff}}
+
+        body{
+            overflow-x: hidden;font-family:"Exo 2",sans-serif;min-height:100vh;padding:1.5rem 1rem 3rem;color:#8899aa;background:#060606;background-image:radial-gradient(ellipse at 20% 10%,rgba(15,15,15,.35) 0%,transparent 50%),radial-gradient(ellipse at 80% 90%,rgba(255,255,255,.04) 0%,transparent 50%);background-attachment:fixed;}
+
+        body.default-theme{background:#060606;background-image:radial-gradient(ellipse at 20% 10%,rgba(15,15,15,.35) 0%,transparent 50%),radial-gradient(ellipse at 80% 90%,rgba(255,255,255,.04) 0%,transparent 50%);}
+        body.theme-midnight{background:#0b0b1f;background-image:radial-gradient(ellipse at 50% 50%,rgba(100,100,200,.15) 0%,transparent 60%);}
+        body.theme-midnight .panel{background:rgba(26,26,58,.9);border-color:rgba(138,138,255,.22);}
+        body.theme-midnight .avatar-ring{background:#2a2a5a;border-color:#8a8aff;}
+        body.theme-sunset{background:#ff7e5f;background-image:linear-gradient(135deg,#ff7e5f,#feb47b);}
+        body.theme-sunset .panel{background:rgba(255,155,90,.85);border-color:rgba(255,78,80,.5);}
+        body.theme-sunset .avatar-ring{background:#ff6f61;border-color:#ff4e50;}
+        body.theme-forest{background:#2e5e3e;background-image:radial-gradient(ellipse at 30% 30%,rgba(70,130,80,.2) 0%,transparent 60%);}
+        body.theme-forest .panel{background:rgba(62,122,94,.9);border-color:rgba(139,195,74,.3);}
+        body.theme-forest .avatar-ring{background:#2e6b4e;border-color:#8bc34a;}
+        body.theme-ocean{background:#1b4f72;background-image:radial-gradient(ellipse at 40% 40%,rgba(46,134,193,.3) 0%,transparent 60%);}
+        body.theme-ocean .panel{background:rgba(31,97,141,.9);border-color:rgba(93,173,226,.3);}
+        body.theme-ocean .avatar-ring{background:#1b4f72;border-color:#5dade2;}
+        body.theme-lavender{background:#9b8bc6;}
+        body.theme-lavender .panel{background:rgba(181,165,214,.85);border-color:rgba(255,179,186,.4);}
+        body.theme-lavender .avatar-ring{background:#8a7bb5;border-color:#ffb3ba;}
+        body.theme-crimson{background:#8b0000;background-image:radial-gradient(ellipse at 30% 30%,rgba(200,0,0,.2) 0%,transparent 60%);}
+        body.theme-crimson .panel{background:rgba(165,42,42,.9);border-color:rgba(255,215,0,.25);}
+        body.theme-crimson .avatar-ring{background:#8b0000;border-color:#ffd700;}
+        body.theme-gold{background:#daa520;}
+        body.theme-gold .panel{background:rgba(229,183,59,.88);border-color:rgba(139,0,0,.4);}
+        body.theme-gold .avatar-ring{background:#c9a227;border-color:#8b0000;}
+        body.theme-neon{background:#001a00;background-image:radial-gradient(ellipse at 50% 50%,rgba(0,255,0,.12) 0%,transparent 70%);}
+        body.theme-neon .panel{background:rgba(0,30,0,.92);border-color:rgba(0,255,0,.25);}
+        body.theme-neon .avatar-ring{background:#002000;border-color:#0f0;}
+        body.theme-pastel{background:#f8d7e3;}
+        body.theme-pastel .panel{background:rgba(250,218,221,.88);border-color:rgba(193,225,193,.5);}
+        body.theme-pastel .avatar-ring{background:#e6c3c3;border-color:#c1e1c1;}
+        body.theme-cherry{background:#2d0a0a;}
+        body.theme-cherry .panel{background:rgba(61,16,16,.9);border-color:rgba(204,34,68,.25);}
+        body.theme-cherry .avatar-ring{background:#5a1a1a;border-color:#cc2244;}
+        body.theme-slate{background:#1a1f2e;}
+        body.theme-slate .panel{background:rgba(37,43,59,.9);border-color:rgba(100,120,160,.25);}
+        body.theme-slate .avatar-ring{background:#2e3550;border-color:#6478a0;}
+        body.theme-amber{background:#2a1800;}
+        body.theme-amber .panel{background:rgba(58,34,0,.9);border-color:rgba(255,165,0,.25);}
+        body.theme-amber .avatar-ring{background:#4a2e00;border-color:#fa0;}
+        body.theme-candy{background:#ff66aa;}
+        body.theme-candy .panel{background:rgba(255,136,204,.88);border-color:rgba(255,0,170,.4);}
+        body.theme-candy .avatar-ring{background:#ff55bb;border-color:#f0a;}
+        body.theme-mono{background:#111;}
+        body.theme-mono .panel{background:rgba(28,28,28,.95);border-color:rgba(136,136,136,.25);}
+        body.theme-mono .avatar-ring{background:#2a2a2a;border-color:#888;}
+        body.theme-aqua{background:#003344;}
+        body.theme-aqua .panel{background:rgba(0,68,85,.9);border-color:rgba(0,204,221,.25);}
+        body.theme-aqua .avatar-ring{background:#005566;border-color:#0cd;}
+        body.theme-rose{background:#3d0020;}
+        body.theme-rose .panel{background:rgba(74,0,40,.9);border-color:rgba(255,102,153,.25);}
+        body.theme-rose .avatar-ring{background:#600035;border-color:#f69;}
+        body.theme-void{background:#000;background-image:radial-gradient(ellipse at 30% 30%,rgba(80,0,150,.2) 0%,transparent 50%),radial-gradient(ellipse at 70% 70%,rgba(0,80,150,.2) 0%,transparent 50%);}
+        body.theme-void .panel{background:rgba(10,0,21,.95);border-color:rgba(102,0,204,.25);}
+        body.theme-void .avatar-ring{background:#150025;border-color:#60c;}
+        body.theme-galaxy{background:#050518;background-image:radial-gradient(ellipse at 20% 20%,rgba(168,85,247,.25) 0%,transparent 40%),radial-gradient(ellipse at 80% 80%,rgba(59,130,246,.2) 0%,transparent 40%);}
+        body.theme-galaxy .panel{background:rgba(13,10,37,.95);border-color:rgba(168,85,247,.25);}
+        body.theme-galaxy .avatar-ring{background:#150a35;border-color:#a855f7;}
+        body.theme-aurora{background:#001a0e;background-image:radial-gradient(ellipse at 30% 30%,rgba(0,255,136,.2) 0%,transparent 50%),radial-gradient(ellipse at 70% 70%,rgba(0,180,255,.15) 0%,transparent 50%);}
+        body.theme-aurora .panel{background:rgba(0,31,16,.95);border-color:rgba(0,255,136,.2);}
+        body.theme-aurora .avatar-ring{background:#002a18;border-color:#0f8;}
+        body.theme-lava{background:#1a0500;background-image:radial-gradient(ellipse at 30% 60%,rgba(255,68,0,.3) 0%,transparent 50%);}
+        body.theme-lava .panel{background:rgba(32,8,0,.95);border-color:rgba(255,68,0,.25);}
+        body.theme-lava .avatar-ring{background:#2a0a00;border-color:#f60;}
+        body.theme-arctic{background:#e8f4f8;background-image:radial-gradient(ellipse at 20% 20%,rgba(136,204,238,.4) 0%,transparent 50%);}
+        body.theme-arctic .panel{background:rgba(255,255,255,.88);border-color:rgba(136,204,238,.5);color:#003;}
+        body.theme-arctic .avatar-ring{background:#cce8f5;border-color:#4499cc;}
+        body.theme-arctic h1,body.theme-arctic h2,body.theme-arctic .stat-value,body.theme-arctic .tile-val{color:#003 !important;}
+        body.theme-sunset .panel *,body.theme-gold .panel *,body.theme-pastel .panel *,body.theme-lavender .panel *,body.theme-candy .panel *,body.theme-arctic .panel *{color:#1a1a2e !important;text-shadow:none !important;}
+        body.theme-sunset .badge,body.theme-gold .badge,body.theme-pastel .badge,body.theme-lavender .badge,body.theme-candy .badge,body.theme-arctic .badge{color:#fff !important;}
+
+        .wrap{max-width:860px;margin:0 auto;animation:fadeUp .4s ease-out;}
+        .nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem;}
+        .nav-title{font-family:"Exo 2",sans-serif;font-size:1.3rem;font-weight:900;color:#d0d8e0;letter-spacing:.06em;display:flex;align-items:center;gap:.45rem;}
+        .nav-title i{color:#8899aa;font-size:1.1rem;}
+        .back-btn{display:inline-flex;align-items:center;gap:.4rem;color:#7a8a9a;font-size:.8rem;font-weight:600;padding:.38rem .85rem;background:rgba(255,255,255,.04);border:1px solid rgba(126,184,212,.14);border-radius: 0;text-decoration:none;transition:all .15s;letter-spacing:.03em;}
+        .back-btn:hover{color:#8899aa;background:rgba(126,184,212,.08);border-color:rgba(126,184,212,.28);}
+
+        .panel{background:rgba(20,34,62,.6);border:1px solid rgba(126,184,212,.16);border-radius: 0;padding:1.5rem;box-shadow:0 8px 32px rgba(0,0,0,.3);}
+        .panel.card-glass{background:rgba(255,255,255,.06)!important;backdrop-filter:blur(20px)!important;border:1px solid rgba(255,255,255,.15)!important;}
+        .panel.card-solid{background:#060606!important;border:2px solid #1c1c1c!important;}
+        .panel.card-neon-outline{background:transparent!important;border:2px solid #0fc!important;box-shadow:0 0 20px rgba(0,255,204,.3),inset 0 0 20px rgba(0,255,204,.05)!important;}
+        .panel.card-gradient{background:linear-gradient(135deg,#060606,#111111,#0a2a40)!important;border:1px solid rgba(126,184,212,.4)!important;}
+
+        .hero-inner{display:flex;gap:1.4rem;align-items:flex-start;flex-wrap:wrap;}
+        .av-wrap{position:relative;flex-shrink:0;}
+        .avatar-ring{width:110px;height:110px;border-radius:50%;border:3px solid rgba(37,99,196,.3);background:rgba(12,12,12,.6);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.4);transition:all .25s;}
+        .avatar-ring canvas{border-radius:50%!important;display:block;width:100%!important;height:100%!important;}
+        .avatar-ring.editable{cursor:pointer;}
+        .avatar-ring.editable:hover{transform:scale(1.04);border-color:#8899aa;}
+        .avatar-ring.anim-rainbow{animation:rainbowSpin 2s linear infinite;}
+        .avatar-ring.anim-pulse-gold{animation:pulseGold 1.8s ease-in-out infinite;}
+        .avatar-ring.anim-pulse-cyan{animation:pulseCyan 1.8s ease-in-out infinite;}
+        .avatar-ring.anim-fire{animation:fireGlow 1.5s ease-in-out infinite;}
+        .avatar-ring.anim-ice{animation:iceShimmer 2s ease-in-out infinite;}
+        /* ── Badge-specific avatar rings (override theme) ── */
+        .avatar-ring.ring-admin{border-color:#e03030!important;border-width:3px!important;box-shadow:0 0 0 2px rgba(220,40,40,.25),0 0 18px rgba(220,40,40,.45),0 4px 20px rgba(0,0,0,.4)!important;animation:adminRingPulse 2s ease-in-out infinite!important;}
+        @keyframes adminRingPulse{0%,100%{box-shadow:0 0 0 2px rgba(220,40,40,.2),0 0 14px rgba(220,40,40,.35),0 4px 20px rgba(0,0,0,.4);}50%{box-shadow:0 0 0 3px rgba(220,40,40,.35),0 0 26px rgba(220,40,40,.65),0 4px 20px rgba(0,0,0,.4);}}50%{box-shadow:0 0 0 3px rgba(245,168,0,.38),0 0 28px rgba(245,168,0,.7),0 4px 20px rgba(0,0,0,.4);}}
+        .av-dot{position:absolute;bottom:4px;right:4px;width:17px;height:17px;border-radius:50%;border:3px solid #060606;z-index:2;}
+        .av-dot.online{background:#2ecc71;animation:dotPulse 2s infinite;}
+        .av-dot.playing{background:#3498db;animation:dotPulse 1.2s infinite;}
+        .av-dot.offline{background:#4a5568;}
+
+        .identity{flex:1;min-width:0;padding-top:.1rem;}
+        .avatar-ring.ring-meowl{border-color:#f5a800!important;border-width:3px!important;box-shadow:0 0 0 2px rgba(245,168,0,.25),0 0 22px rgba(245,168,0,.55),0 4px 20px rgba(0,0,0,.4)!important;animation:meowlRingPulse 2s ease-in-out infinite!important;}
+        @keyframes meowlRingPulse{0%,100%{box-shadow:0 0 0 2px rgba(245,168,0,.2),0 0 16px rgba(245,168,0,.45),0 4px 20px rgba(0,0,0,.4);}50%{box-shadow:0 0 0 3px rgba(245,168,0,.38),0 0 28px rgba(245,168,0,.7),0 4px 20px rgba(0,0,0,.4);}}
+        .badge.badge-meowl .badge-label{color:#ffb347;}
+        .username{font-family:"Exo 2",sans-serif;font-size:1.85rem;font-weight:900;color:#d0d8e0;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .username-row{display:flex;align-items:center;gap:.4rem;margin-bottom:.2rem;}
+        .bio-text{color:#7a8a9a;font-size:.85rem;font-style:italic;margin-bottom:.55rem;line-height:1.55;max-width:440px;}
+        .status-pill{display:inline-flex;align-items:center;gap:.38rem;padding:.2rem .65rem;border-radius: 0;font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.5rem;border:1px solid transparent;}
+        .sp-dot{width:7px;height:7px;border-radius:50%;}
+        .sp-online{background:rgba(39,174,96,.13);border-color:rgba(39,174,96,.28);color:#2ecc71;}
+        .sp-online .sp-dot{background:#2ecc71;animation:dotPulse 2s infinite;}
+        .sp-playing{background:rgba(52,152,219,.13);border-color:rgba(52,152,219,.28);color:#3498db;}
+        .sp-playing .sp-dot{background:#3498db;animation:dotPulse 1.2s infinite;}
+        .sp-offline{background:rgba(127,140,141,.08);border-color:rgba(127,140,141,.2);color:#636e72;}
+        .sp-offline .sp-dot{background:#4a5568;}
+        .badges-row{display:flex;gap:.55rem;flex-wrap:wrap;margin-bottom:.6rem;align-items:flex-start;}
+        .badge{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.55rem .5rem .45rem;background:rgba(10,10,10,.85);border:1px solid rgba(126,184,212,.14);border-radius: 0;cursor:pointer;transition:all .18s;width:72px;text-align:center;}
+        .badge:hover{border-color:rgba(126,184,212,.4);background:rgba(30,50,90,.9);transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.4);}
+        .badge img{width:44px;height:44px;object-fit:contain;flex-shrink:0;}
+        .badge-label{font-size:.65rem;font-weight:700;color:#a0b8d0;line-height:1.2;word-break:break-word;}
+        .badge.badge-rich .badge-label{color:#70d870;}
+        .badge.badge-forumer .badge-label{color:#80e0a0;}
+        .badge.badge-admin .badge-label{color:#ee8080;}
+        .badge.badge-friends .badge-label{color:#cc88ff;}
+        .badge.badge-ampere .badge-label{color:#8899aa;}
+
+        .actions{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.5rem;}
+        .btn{display:inline-flex;align-items:center;gap:.38rem;padding:.42rem 1.05rem;font-family:"Exo 2",sans-serif;font-weight:800;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;border-radius: 0;cursor:pointer;transition:all .15s;border:1px solid transparent;}
+        .btn-customize{background:rgba(15,15,15,.35);border-color:rgba(126,184,212,.28);color:#8899aa;}
+        .btn-customize:hover{background:rgba(15,15,15,.6);border-color:rgba(37,99,196,.5);transform:translateY(-1px);}
+        .btn-friend{background:rgba(12,12,12,.45);border-color:rgba(37,99,196,.18);color:#d0d8e0;}
+        .btn-friend:hover:not(:disabled){background:rgba(15,15,15,.55);transform:translateY(-1px);}
+        .btn-friend:disabled{opacity:.5;cursor:not-allowed;}
+        .btn-friend.is-friend{background:rgba(13,31,60,.65);border-color:#8899aa;color:#8899aa;}
+        .btn-friend.is-pending{background:rgba(122,138,158,.35);border-color:#556070;color:#8899aa;}
+        .btn-lock{background:rgba(139,0,0,.3);border-color:rgba(220,60,60,.3);color:#ee8080;}
+        .btn-unlock{background:rgba(68,160,68,.22);border-color:rgba(68,160,68,.38);color:#80ee80;}
+
+        .stats-strip{display:flex;gap:.75rem;margin-top:1.25rem;flex-wrap:wrap;}
+        .stat-box{flex:1;min-width:80px;background:rgba(10,18,40,.5);border:1px solid rgba(255,255,255,.04);border-radius: 0;padding:.85rem .9rem;text-align:center;}
+        .stat-value{font-family:"Exo 2",sans-serif;font-size:1.7rem;font-weight:900;color:#d0d8e0;line-height:1;}
+        .stat-label{font-size:.62rem;text-transform:uppercase;color:#3a5070;font-weight:700;margin-top:.28rem;letter-spacing:.08em;}
+
+        .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.55rem;margin-top:1rem;}
+        .tile{background:rgba(10,18,40,.4);border:1px solid rgba(126,184,212,.09);border-radius: 0;padding:.6rem .85rem;}
+        .tile-lbl{font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;color:#2e4060;font-weight:700;margin-bottom:.18rem;}
+        .tile-val{font-size:.85rem;font-weight:600;color:#8ab4cc;}
+        .group-link{color:#8899aa;font-weight:700;text-decoration:none;border-bottom:1px solid rgba(126,184,212,.28);}
+        .group-link:hover{color:#8899aa;}
+
+        .customize-panel{margin-top:1rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.04);display:none;}
+        .cust-heading{font-family:"Exo 2",sans-serif;font-size:.85rem;font-weight:800;color:#8899aa;margin-bottom:1rem;text-transform:uppercase;letter-spacing:.09em;display:flex;align-items:center;gap:.45rem;}
+        .cust-section-lbl{color:#5a7090;font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;padding:.4rem .2rem;border-bottom:1px solid rgba(255,255,255,.04);margin:1rem 0 .55rem;}
+        .cust-section-lbl:first-of-type{margin-top:0;}
+        .plus-lbl{color:#f1c40f;border-color:rgba(241,196,15,.22);}
+        .cust-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem;}
+        .cust-item{background:rgba(8,18,38,.4);border:1px solid rgba(255,255,255,.04);border-radius: 0;padding:.85rem;}
+        .cust-item label{display:block;color:#6a7a8a;font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.45rem;}
+        .cust-item select{width:100%;padding:.45rem .7rem;background:rgba(255,255,255,.05);border:1px solid rgba(126,184,212,.18);border-radius: 0;color:#d0d8e0;font-family:"Exo 2",sans-serif;font-weight:600;font-size:.85rem;}
+        .cust-item textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(126,184,212,.18);border-radius: 0;color:#d0d8e0;font-family:"Exo 2",sans-serif;font-size:.85rem;padding:.5rem .7rem;resize:vertical;min-height:55px;}
+        .cust-item input[type="color"]{width:100%;height:36px;border:1px solid rgba(126,184,212,.18);border-radius: 0;cursor:pointer;background:rgba(255,255,255,.04);padding:.18rem .35rem;}
+        .theme-options{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:.65rem;}
+        @media(max-width:560px){.theme-options{grid-template-columns:repeat(3,1fr);}}
+        .theme-btn{border:2px solid rgba(126,184,212,.18);border-radius: 0;overflow:hidden;cursor:pointer;padding:0;background:none;display:block;width:100%;transition:transform .15s,box-shadow .15s;}
+        .theme-btn:hover,.theme-btn.selected{box-shadow:0 0 0 2px #8899aa,0 4px 16px rgba(0,0,0,.5);transform:translateY(-2px);}
+        .theme-preview{height:42px;}
+        .theme-label{font-size:.6rem;font-weight:700;text-align:center;padding:3px 2px;font-family:"Exo 2",sans-serif;letter-spacing:.03em;}
+        .plus-locked{position:relative;}
+        .plus-locked::after{content:'AMPERE+ ONLY';position:absolute;inset:0;background:rgba(8,16,34,.84);display:flex;align-items:center;justify-content:center;color:#ff8c42;font-weight:900;font-size:.78rem;letter-spacing:.08em;border-radius: 0;pointer-events:none;}
+        .save-btn{width:100%;padding:.85rem;margin-top:.85rem;background:linear-gradient(135deg,rgba(15,15,15,.65),rgba(12,12,12,.85));border:1px solid rgba(126,184,212,.32);border-radius: 0;color:#8899aa;font-family:"Exo 2",sans-serif;font-weight:800;font-size:.95rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:.45rem;}
+        .save-btn:hover{background:linear-gradient(135deg,rgba(15,15,15,.9),rgba(12,12,12,1));transform:translateY(-1px);}
+
+        .section{margin-top:1rem;}
+        .section-heading{font-family:"Exo 2",sans-serif;font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:#8899aa;margin-bottom:.9rem;display:flex;align-items:center;gap:.45rem;}
+        .section-heading i{color:#5a8aaa;font-size:.9rem;}
+
+        .tasks-list{display:grid;gap:.5rem;}
+        .task-item{background:rgba(18,32,58,.45);border:1px solid rgba(255,255,255,.04);border-radius: 0;padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;}
+        .task-item.completed{opacity:.5;}
+        .task-info{display:flex;align-items:center;gap:.75rem;}
+        .task-desc{font-weight:600;color:#7a8a9a;font-size:.88rem;}
+        .task-reward{font-weight:800;color:#8899aa;display:flex;align-items:center;gap:.3rem;font-size:.85rem;}
+        .task-check{color:#44ff44;font-size:1rem;margin-left:.35rem;}
+
+        .inventory-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.55rem;}
+        .inv-card{background:rgba(18,32,58,.5);border:1px solid rgba(255,255,255,.04);border-radius: 0;padding:.65rem .45rem;text-align:center;transition:all .2s;cursor:default;position:relative;}
+        .inv-card.tradeable:hover{border-color:rgba(126,184,212,.38);transform:translateY(-2px);cursor:pointer;}
+        .inv-card canvas{border-radius: 0;display:block;margin:0 auto .35rem;}
+        .inv-name{font-size:.67rem;font-weight:700;color:#8899aa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .inv-rarity{font-size:.57rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.25rem;}
+        .inv-trade-btn{margin-top:.35rem;width:100%;padding:.28rem;font-size:.62rem;font-weight:800;background:rgba(15,15,15,.35);border:1px solid rgba(126,184,212,.28);border-radius: 0;color:#a8ccdf;cursor:pointer;text-transform:uppercase;letter-spacing:.05em;transition:all .15s;}
+        .inv-trade-btn:hover{background:rgba(15,15,15,.65);color:#e0f0ff;}
+
+        .trade-card{background:rgba(18,32,58,.5);border:1px solid rgba(255,255,255,.04);border-radius: 0;padding:.85rem .95rem;margin-bottom:.55rem;}
+        .trade-meta{font-size:.7rem;color:#3a5070;margin-bottom:.45rem;}
+        .trade-meta strong{color:#8ab4cc;}
+        .trade-row{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin:.25rem 0;}
+        .trade-item-chip{background:rgba(15,15,15,.28);border:1px solid rgba(126,184,212,.18);border-radius: 0;padding:2px 8px;font-size:.66rem;font-weight:700;color:#8899aa;}
+        .trade-coin-chip{background:rgba(180,140,0,.22);border:1px solid rgba(220,170,0,.28);border-radius: 0;padding:2px 8px;font-size:.66rem;font-weight:700;color:#f0c040;}
+        .trade-actions{display:flex;gap:.45rem;margin-top:.6rem;}
+        .trade-btn{flex:1;padding:.42rem;font-size:.7rem;font-weight:800;border-radius: 0;border:1px solid;cursor:pointer;text-transform:uppercase;letter-spacing:.05em;transition:all .15s;}
+        .trade-btn.accept{background:rgba(42,152,80,.25);border-color:rgba(42,200,80,.28);color:#80ee99;}
+        .trade-btn.accept:hover{background:rgba(42,152,80,.48);}
+        .trade-btn.decline{background:rgba(139,0,0,.25);border-color:rgba(220,60,60,.28);color:#ee8080;}
+        .trade-btn.decline:hover{background:rgba(139,0,0,.48);}
+        .trade-btn.cancel{background:rgba(70,70,70,.25);border-color:rgba(110,110,110,.28);color:#7a8a9a;}
+        .trade-btn.cancel:hover{background:rgba(70,70,70,.48);}
+
+        .friends-grid{display:flex;flex-wrap:wrap;gap:.45rem;}
+        .friend-chip{background:rgba(28,50,90,.4);border:1px solid rgba(255,255,255,.04);border-radius: 0;padding:.45rem .7rem;display:inline-flex;align-items:center;gap:.5rem;cursor:pointer;transition:transform .12s,background .15s;text-decoration:none;min-width:0;max-width:160px;}
+        .friend-chip:hover{transform:translateY(-1px);background:rgba(15,15,15,.32);}
+        .fc-av{width:32px;height:32px;border-radius:50%;background:rgba(12,12,12,.8);border:1px solid rgba(126,184,212,.18);overflow:hidden;flex-shrink:0;}
+        .fc-av img{width:100%!important;height:100%!important;border-radius:50%!important;display:block;object-fit:cover;}
+        .fc-name{color:#b0c0d0;font-weight:700;font-size:.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px;}
+
+        .shout-item{background:rgba(18,32,58,.45);border:1px solid rgba(255,255,255,.04);border-radius: 0;padding:.85rem 1rem;margin-bottom:.45rem;}
+        .shout-meta{display:flex;justify-content:space-between;margin-bottom:.35rem;}
+        .shout-grp{color:#7a8a9a;font-weight:700;font-size:.84rem;}
+        .shout-date{color:#3a5070;font-size:.75rem;}
+        .shout-msg{color:#b0c0d0;font-size:.86rem;line-height:1.45;}
+
+        .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:1000;align-items:center;justify-content:center;}
+        .modal-bg.open{display:flex;}
+        .modal-box{background:#0c0c0c;border:1px solid rgba(126,184,212,.22);border-radius: 0;padding:1.5rem;width:min(520px,95vw);max-height:90vh;overflow-y:auto;}
+        .modal-box h3{font-family:"Exo 2",sans-serif;font-size:1.05rem;font-weight:900;color:#d0d8e0;margin-bottom:.95rem;}
+        .trade-slbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#3a5070;margin:.75rem 0 .35rem;}
+        .trade-item-row{display:flex;flex-wrap:wrap;gap:.38rem;min-height:30px;padding:.38rem;background:rgba(0,0,0,.2);border-radius: 0;border:1px solid rgba(255,255,255,.04);}
+        .trade-sel-chip{background:rgba(15,15,15,.42);border:1px solid rgba(126,184,212,.28);border-radius: 0;padding:2px 8px;font-size:.68rem;font-weight:700;color:#8899aa;cursor:pointer;}
+        .trade-sel-chip:hover{background:rgba(139,0,0,.38);color:#ee8080;}
+        .trade-avail-grid{display:flex;flex-wrap:wrap;gap:.38rem;margin:.38rem 0;}
+        .trade-avail-chip{background:rgba(28,50,90,.45);border:1px solid rgba(126,184,212,.18);border-radius: 0;padding:3px 9px;font-size:.68rem;font-weight:700;color:#7a8a9a;cursor:pointer;transition:all .15s;}
+        .trade-avail-chip:hover{background:rgba(15,15,15,.45);color:#8899aa;}
+        .trade-avail-chip.selected{background:rgba(15,15,15,.58);border-color:rgba(37,99,196,.4);color:#e0f0ff;}
+        .trade-coin-input{background:rgba(255,255,255,.05);border:1px solid rgba(126,184,212,.18);border-radius: 0;padding:.48rem .7rem;color:#d0d8e0;font-size:.88rem;width:100%;margin-top:.28rem;}
+        .trade-coin-input:focus{outline:none;border-color:rgba(37,99,196,.4);}
+        .modal-btns{display:flex;gap:.55rem;margin-top:.95rem;}
+        .modal-btn{flex:1;padding:.58rem;font-family:"Exo 2",sans-serif;font-weight:800;font-size:.82rem;border-radius: 0;border:1px solid;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;transition:all .15s;}
+        .modal-btn.send{background:rgba(15,15,15,.45);border-color:rgba(126,184,212,.38);color:#a0aabb;}
+        .modal-btn.send:hover{background:rgba(15,15,15,.75);}
+        .modal-btn.cancel{background:rgba(25,25,25,.38);border-color:rgba(70,70,70,.38);color:#3a5070;}
+
+        .locked-banner{background:rgba(14,28,48,.9);border:1px solid rgba(139,0,0,.38);border-radius: 0;padding:3rem 2rem;text-align:center;margin:0 auto;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+        .locked-icon{font-size:2.8rem;color:#ee4444;margin-bottom:.8rem;}
+        .locked-title{font-family:"Exo 2",sans-serif;font-size:2rem;font-weight:900;color:#d0d8e0;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem;}
+        .locked-sub{color:#7a8a9a;font-size:.8rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
+        .empty{text-align:center;padding:1.75rem;color:#3a5070;font-size:.85rem;}
+        .loading{text-align:center;padding:2rem;color:#7a8a9a;}
+        ::-webkit-scrollbar{width:5px;}
+        ::-webkit-scrollbar-track{background:rgba(255,255,255,.02);}
+        ::-webkit-scrollbar-thumb{background:rgba(126,184,212,.22);border-radius: 0;}
+        ::-webkit-scrollbar-thumb:hover{background:rgba(126,184,212,.42);}
+    
+        @media (max-width: 640px) {
+            .container { padding: 1rem; border-radius: 0; }
+            .profile-top { flex-direction: column; align-items: center; text-align: center; }
+            .profile-avatar-wrap { margin: 0 auto; }
+            .profile-stats { justify-content: center; flex-wrap: wrap; }
+            .profile-actions { justify-content: center; flex-wrap: wrap; }
+            .profile-tabs { overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+            .profile-tabs::-webkit-scrollbar { display: none; }
+            .inventory-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: .5rem; }
+        }
+        @media (max-width: 400px) {
+            .profile-name { font-size: 1.3rem; }
+        }
+    </style>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0 !important; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+</head>
+<body id="mainBody">
+<div class="wrap">
+
+    <div class="nav">
+        <div class="nav-title"><i class="fas fa-user-circle"></i> PROFILE</div>
+        <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i> BACK</a>
+    </div>
+
+    <div id="loadingSection" class="loading"><i class="fas fa-spinner fa-spin"></i> Loading profile&hellip;</div>
+
+    <div id="lockedSection" style="display:none;">
+        <div class="locked-banner">
+            <div class="locked-icon"><i class="fas fa-lock"></i></div>
+            <div class="locked-title">LOCKED</div>
+            <div class="locked-sub">This account has been suspended</div>
+        </div>
+    </div>
+
+    <div id="profileContent" style="display:none;">
+
+        <div class="panel" id="profileCard">
+            <div class="hero-inner">
+                <div class="av-wrap">
+                    <div class="avatar-ring" id="avatarRing">
+                        <canvas id="avatarCanvas3D" width="110" height="110"></canvas>
+                    </div>
+                    <span class="av-dot offline" id="avDot" title="Offline"></span>
+                </div>
+                <div class="identity">
+                    <div class="username-row">
+                        <img id="nameBadgeIcon" src="" alt="" style="display:none;width:28px;height:28px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 1px 4px rgba(0,0,0,.5));">
+                        <div class="username" id="username">Username</div>
+                    </div>
+                    <div id="profileBio" class="bio-text" style="display:none;"></div>
+                    <div id="statusPill" class="status-pill sp-offline">
+                        <span class="sp-dot"></span>
+                        <span id="statusLabel">Offline</span>
+                    </div>
+                    <div class="badges-row" id="allBadgesRow">
+                        <div id="ampere_plusDisplay" style="display:none;">
+                            <span class="badge badge-ampere" onclick="window.location.href='/badges.html'" title="Click to view all badges">
+                                <img src="/images/ampere-plus-icon.png" alt="Ampere+">
+                                <span class="badge-label">Ampere+</span>
+                            </span>
+                        </div>
+                        <div id="badgesContainer" style="display:contents;"></div>
+                    </div>
+                    <div class="actions">
+                        <button id="editProfileBtn" class="btn btn-customize" style="display:none;" onclick="toggleCustomize()">
+                            <i class="fas fa-paint-brush"></i> CUSTOMIZE
+                        </button>
+                        <button id="friendBtn" class="btn btn-friend" style="display:none;" onclick="handleFriendAction()">
+                            <i class="fas fa-user-plus"></i> Add Friend
+                        </button>
+                        <button id="dmBtn" class="btn" style="display:none;background:rgba(15,15,15,.3);border:1px solid rgba(126,184,212,.3);color:#8899aa;font-size:.82rem;" onclick="sendDM()">
+                            <i class="fas fa-envelope"></i> Message
+                        </button>
+                        <button id="blockBtn" class="btn" style="display:none;background:rgba(100,30,30,.3);border:1px solid rgba(200,80,80,.3);color:#ee8080;font-size:.82rem;" onclick="toggleBlock()">
+                            <i class="fas fa-ban"></i> Block
+                        </button>
+                        <button id="reportUserBtn" class="btn" style="display:none;background:rgba(140,40,40,0.25);border:1px solid rgba(200,80,80,0.3);color:#ee8080;font-size:0.82rem;" onclick="reportThisUser()">
+                            <i class="fas fa-flag"></i> Report
+                        </button>
+                        <div id="ownerControls" style="display:none;gap:.38rem;flex-wrap:wrap;">
+                            <button id="lockBtn"   class="btn btn-lock"   onclick="ownerLockUser()"><i class="fas fa-lock"></i> Lock</button>
+                            <button id="unlockBtn" class="btn btn-unlock" style="display:none;" onclick="ownerUnlockUser()"><i class="fas fa-lock-open"></i> Unlock</button>
+                            <button class="btn" style="background:rgba(15,15,15,.3);border:1px solid rgba(126,184,212,.3);color:#8899aa;font-size:.8rem;" onclick="ownerManageBadges()"><i class="fas fa-certificate"></i> Badges</button>
+                            <button class="btn" style="background:rgba(30,80,120,.3);border:1px solid rgba(60,140,200,.3);color:#80c4e8;font-size:.8rem;" onclick="ownerViewDMs()"><i class="fas fa-envelope-open-text"></i> View DMs</button>
+                            <button id="grantModBtn"  class="btn" style="background:rgba(30,100,60,.3);border:1px solid rgba(80,200,120,.3);color:#80e0a0;font-size:.8rem;display:none;" onclick="ownerSetMod(true)"><i class="fas fa-shield-alt"></i> Grant Mod</button>
+                            <button id="revokeModBtn" class="btn" style="background:rgba(139,0,0,.25);border:1px solid rgba(220,60,60,.3);color:#ee8080;font-size:.8rem;display:none;" onclick="ownerSetMod(false)"><i class="fas fa-shield-alt"></i> Revoke Mod</button>
+                            <button class="btn" style="background:rgba(241,196,15,.12);border:1px solid rgba(241,196,15,.35);color:#f1d070;font-size:.8rem;" onclick="ownerGiveCoins()"><i class="fas fa-coins"></i> Give Coins</button>
+                            <button class="btn" style="background:rgba(139,0,0,.2);border:1px solid rgba(220,60,60,.35);color:#ee8080;font-size:.8rem;" onclick="ownerRemoveCoins()"><i class="fas fa-minus-circle"></i> Remove Coins</button>
+                            <button class="btn" style="background:rgba(80,40,120,.3);border:1px solid rgba(160,100,220,.35);color:#c8a0f0;font-size:.8rem;" onclick="ownerResetPassword()"><i class="fas fa-key"></i> Reset Password</button>
+                            <button class="btn" style="background:rgba(200,120,0,.2);border:1px solid rgba(255,165,0,.4);color:#ffb347;font-size:.8rem;" onclick="ownerWarnUser()"><i class="fas fa-exclamation-triangle"></i> Warn</button>
+                            <button id="removeWarnBtn" class="btn" style="display:none;background:rgba(0,160,80,.15);border:1px solid rgba(0,220,100,.35);color:#60e090;font-size:.8rem;" onclick="ownerRemoveWarning()"><i class="fas fa-shield-alt"></i> Remove Warning</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="customizePanel" class="customize-panel">
+                <div class="cust-heading"><i class="fas fa-paint-brush"></i> CUSTOMIZE PROFILE</div>
+                <div class="cust-section-lbl"><i class="fas fa-unlock"></i> FREE</div>
+                <div class="cust-grid">
+                    <div class="cust-item" style="grid-column:1/-1;">
+                        <label><i class="fas fa-palette"></i> Theme</label>
+                        <div class="theme-options" id="freeThemes">
+                            <button class="theme-btn" data-theme="default"  onclick="selectTheme('default')"><div class="theme-preview" style="background:#060606;background-image:radial-gradient(circle at 30% 40%,rgba(15,15,15,.6),transparent 70%);"></div><div class="theme-label" style="background:#0d1e36;color:#8899aa;">Default</div></button>
+                            <button class="theme-btn" data-theme="midnight" onclick="selectTheme('midnight')"><div class="theme-preview" style="background:#0b0b1f;background-image:radial-gradient(circle at 50% 50%,rgba(100,100,255,.4),transparent 70%);"></div><div class="theme-label" style="background:#10102a;color:#aaf;">Midnight</div></button>
+                            <button class="theme-btn" data-theme="sunset"   onclick="selectTheme('sunset')"><div class="theme-preview" style="background:linear-gradient(135deg,#ff7e5f,#feb47b);"></div><div class="theme-label" style="background:#c05030;color:#fff;">Sunset</div></button>
+                            <button class="theme-btn" data-theme="forest"   onclick="selectTheme('forest')"><div class="theme-preview" style="background:linear-gradient(135deg,#1a3d24,#2e5e3e);"></div><div class="theme-label" style="background:#1a3320;color:#8bc34a;">Forest</div></button>
+                            <button class="theme-btn" data-theme="ocean"    onclick="selectTheme('ocean')"><div class="theme-preview" style="background:linear-gradient(135deg,#1b4f72,#2e86c1);"></div><div class="theme-label" style="background:#163d58;color:#5dade2;">Ocean</div></button>
+                            <button class="theme-btn" data-theme="lavender" onclick="selectTheme('lavender')"><div class="theme-preview" style="background:linear-gradient(135deg,#7b6ba6,#b09de0);"></div><div class="theme-label" style="background:#6a5a9a;color:#e8d5ff;">Lavender</div></button>
+                            <button class="theme-btn" data-theme="crimson"  onclick="selectTheme('crimson')"><div class="theme-preview" style="background:linear-gradient(135deg,#5a0000,#8b0000);"></div><div class="theme-label" style="background:#4a0000;color:#f66;">Crimson</div></button>
+                            <button class="theme-btn" data-theme="gold"     onclick="selectTheme('gold')"><div class="theme-preview" style="background:linear-gradient(135deg,#7a5500,#daa520);"></div><div class="theme-label" style="background:#5a3e00;color:#ffd700;">Gold</div></button>
+                            <button class="theme-btn" data-theme="neon"     onclick="selectTheme('neon')"><div class="theme-preview" style="background:#001a00;background-image:radial-gradient(circle at 50% 50%,rgba(0,255,0,.35),transparent 70%);"></div><div class="theme-label" style="background:#001500;color:#0f0;">Neon</div></button>
+                            <button class="theme-btn" data-theme="pastel"   onclick="selectTheme('pastel')"><div class="theme-preview" style="background:linear-gradient(135deg,#f8d7e3,#d4f0f0);"></div><div class="theme-label" style="background:#dcc8d4;color:#555;">Pastel</div></button>
+                        </div>
+                    </div>
+                    <div class="cust-item">
+                        <label><i class="fas fa-border-all"></i> Avatar Border</label>
+                        <input type="color" id="customBorder" value="#1c1c1c" oninput="document.getElementById('avatarRing').style.borderColor=this.value">
+                    </div>
+                    <div class="cust-item">
+                        <label><i class="fas fa-fill-drip"></i> Avatar Background</label>
+                        <input type="color" id="customColor" value="#111111" oninput="document.getElementById('avatarRing').style.backgroundColor=this.value">
+                    </div>
+                </div>
+                <div class="cust-section-lbl plus-lbl" id="plusSectionLabel">
+                    <i class="fas fa-crown"></i> AMPERE+ EXCLUSIVE
+                    <span id="plusLockedNotice" style="display:none;font-size:.72rem;font-weight:700;color:#ff8c42;margin-left:.5rem;">&#8212; <a href="/novaplus-shop.html" style="color:#ff8c42;">Upgrade</a></span>
+                </div>
+                <div class="cust-grid" id="plusSection">
+                    <div class="cust-item" style="grid-column:1/-1;">
+                        <label><i class="fas fa-crown"></i> Exclusive Themes</label>
+                        <div class="theme-options" id="plusThemes">
+                            <button class="theme-btn plus-theme-btn" data-theme="cherry"  onclick="selectPlusTheme('cherry')"><div class="theme-preview" style="background:linear-gradient(135deg,#2d0a0a,#6b1020);"></div><div class="theme-label" style="background:#1e0608;color:#f68;">Cherry</div></button>
+                            <button class="theme-btn plus-theme-btn" data-theme="slate"   onclick="selectPlusTheme('slate')"><div class="theme-preview" style="background:linear-gradient(135deg,#1a1f2e,#2d3a55);"></div><div class="theme-label" style="background:#161b28;color:#8ac;">Slate</div></button>
+                            <button class="theme-btn plus-theme-btn" data-theme="amber"   onclick="selectPlusTheme('amber')"><div class="theme-preview" style="background:linear-gradient(135deg,#2a1800,#7a4400);"></div><div class="theme-label" style="background:#1e1000;color:#fa0;">Amber</div></button>
+                            <button class="theme-btn plus-theme-btn" data-theme="candy"   onclick="selectPlusTheme('candy')"><div class="theme-preview" style="background:linear-gradient(135deg,#ff44aa,#ff99cc);"></div><div class="theme-label" style="background:#cc2288;color:#fff;">Candy</div></button>
+                            <button class="theme-btn plus-theme-btn" data-theme="mono"    onclick="selectPlusTheme('mono')"><div class="theme-preview" style="background:linear-gradient(135deg,#111,#333);"></div><div class="theme-label" style="background:#0a0a0a;color:#aaa;">Mono</div></button>
+                            <button class="theme-btn plus-theme-btn" data-theme="aqua"    onclick="selectPlusTheme('aqua')"><div class="theme-preview" style="background:linear-gradient(135deg,#003344,#006688);"></div><div class="theme-label" style="background:#002233;color:#0cd;">Aqua</div></button>
+                            <button class="theme-btn plus-theme-btn" data-theme="rose"    onclick="selectPlusTheme('rose')"><div class="theme-preview" style="background:linear-gradient(135deg,#3d0020,#880044);"></div><div class="theme-label" style="background:#2a0016;color:#f69;">Rose</div></button>
+                            <button class="theme-btn plus-theme-btn" data-theme="void"    onclick="selectPlusTheme('void')"><div class="theme-preview" style="background:#000;background-image:radial-gradient(circle at 50% 50%,rgba(102,0,204,.5),transparent 70%);"></div><div class="theme-label" style="background:#0a0010;color:#93f;">Void</div></button>
+                            <button class="theme-btn plus-theme-btn" data-theme="galaxy"  onclick="selectPlusTheme('galaxy')"><div class="theme-preview" style="background:#050518;background-image:radial-gradient(circle at 30% 40%,rgba(168,85,247,.6),transparent 60%),radial-gradient(circle at 70% 70%,rgba(59,130,246,.4),transparent 60%);"></div><div class="theme-label" style="background:#050415;color:#a855f7;">Galaxy</div></button>
+                            <button class="theme-btn plus-theme-btn" data-theme="aurora"  onclick="selectPlusTheme('aurora')"><div class="theme-preview" style="background:#001a0e;background-image:radial-gradient(circle at 40% 40%,rgba(0,255,136,.5),transparent 60%),radial-gradient(circle at 70% 65%,rgba(0,180,255,.3),transparent 55%);"></div><div class="theme-label" style="background:#001208;color:#0f8;">Aurora</div></button>
+                            <button class="theme-btn plus-theme-btn" data-theme="lava"    onclick="selectPlusTheme('lava')"><div class="theme-preview" style="background:#1a0500;background-image:radial-gradient(circle at 40% 60%,rgba(255,68,0,.6),transparent 60%);"></div><div class="theme-label" style="background:#100200;color:#f40;">Lava</div></button>
+                            <button class="theme-btn plus-theme-btn" data-theme="arctic"  onclick="selectPlusTheme('arctic')"><div class="theme-preview" style="background:linear-gradient(135deg,#c8e6f5,#e8f4f8);"></div><div class="theme-label" style="background:#b8d8ea;color:#004466;">Arctic</div></button>
+                        </div>
+                    </div>
+                    <div class="cust-item" style="grid-column:1/-1;">
+                        <label><i class="fas fa-quote-left"></i> Bio <span style="color:#3a5070;font-weight:400;font-size:.78rem;">(max 150 chars &mdash; requires admin approval)</span></label>
+                        <textarea id="bioInput" maxlength="150" placeholder="Tell the world about yourself..."></textarea>
+                        <div style="display:flex;justify-content:space-between;margin-top:3px;">
+                            <span id="bioPendingNotice" style="display:none;color:#ff8c42;font-size:.72rem;font-weight:700;"><i class="fas fa-clock"></i> Pending approval</span>
+                            <span style="color:#3a5070;font-size:.72rem;margin-left:auto;"><span id="bioCount">0</span>/150</span>
+                        </div>
+                    </div>
+                    <div class="cust-item">
+                        <label><i class="fas fa-font"></i> Username Color</label>
+                        <input type="color" id="nameColorPicker" value="#d0d8e0" oninput="previewNameColor(this.value)">
+                    </div>
+                    <div class="cust-item">
+                        <label><i class="fas fa-layer-group"></i> Card Style</label>
+                        <select id="cardStyleSelect">
+                            <option value="default">Default</option>
+                            <option value="glass">Glass</option>
+                            <option value="solid">Solid</option>
+                            <option value="neon-outline">Neon Outline</option>
+                            <option value="gradient">Gradient</option>
+                        </select>
+                    </div>
+                    <div class="cust-item">
+                        <label><i class="fas fa-magic"></i> Animated Border</label>
+                        <select id="animatedBorderSelect">
+                            <option value="none">None</option>
+                            <option value="rainbow">Rainbow Spin</option>
+                            <option value="pulse-gold">Gold Pulse</option>
+                            <option value="pulse-cyan">Cyan Pulse</option>
+                            <option value="fire">Fire Glow</option>
+                            <option value="ice">Ice Shimmer</option>
+                        </select>
+                    </div>
+                    <div class="cust-item">
+                        <label><i class="fas fa-text-height"></i> Profile Font</label>
+                        <select id="fontSelect">
+                            <option value="default">Default (Exo 2)</option>
+                            <option value="exo">Exo 2 (Bold)</option>
+                            <option value="mono">Monospace</option>
+                            <option value="serif">Serif</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="save-btn" onclick="saveCustomization()"><i class="fas fa-save"></i> SAVE ALL CHANGES</button>
+            </div>
+
+            <div class="stats-strip">
+                <div class="stat-box"><div class="stat-value" id="coins">0</div><div class="stat-label"><img src="/images/coin-icon.png" alt="coin" style="width:1.1em;height:1.1em;object-fit:contain;vertical-align:middle;margin-right:0.2em;position:relative;top:-0.05em;display:inline-block;"> Coins</div></div>
+                <div class="stat-box"><div class="stat-value" id="streak">0</div><div class="stat-label"><i class="fas fa-fire"></i> Streak</div></div>
+                <div class="stat-box"><div class="stat-value" id="shouts">0</div><div class="stat-label"><i class="fas fa-bullhorn"></i> Shouts</div></div>
+                <div class="stat-box" id="warningStatBox" style="display:none;border-color:rgba(255,165,0,.35);"><div class="stat-value" id="warningCount" style="color:#ffb347;">0</div><div class="stat-label" style="color:#ffb347;"><i class="fas fa-exclamation-triangle"></i> Warnings</div></div>
+            </div>
+
+            <div class="tiles">
+                <div class="tile"><div class="tile-lbl"><i class="fas fa-calendar-alt"></i> Member since</div><div class="tile-val" id="joined">&mdash;</div></div>
+                <div class="tile"><div class="tile-lbl"><i class="fas fa-clock"></i> Last active</div><div class="tile-val" id="lastActive">&mdash;</div></div>
+                <div class="tile"><div class="tile-lbl"><i class="fas fa-users"></i> Group</div><div class="tile-val" id="group">&mdash;</div></div>
+                <div class="tile"><div class="tile-lbl"><i class="fas fa-crown"></i> Ampere+</div><div class="tile-val" id="ampere_plusStatus">&mdash;</div></div>
+            </div>
+        </div>
+
+        <div class="panel section" id="inventorySection" style="margin-top:1rem;">
+            <div class="section-heading"><i class="fas fa-box-open"></i> INVENTORY <span id="inventoryCount" style="font-size:.7rem;font-weight:600;color:#2e4060;margin-left:.3rem;"></span></div>
+            <div id="inventoryGrid" class="inventory-grid"><div class="empty">Loading&hellip;</div></div>
+        </div>
+
+        <div class="panel section" id="friendsSection" style="display:none;margin-top:1rem;">
+            <div class="section-heading"><i class="fas fa-user-friends"></i> FRIENDS</div>
+            <div id="profileFriendsList" class="friends-grid"><div class="empty">Loading&hellip;</div></div>
+        </div>
+
+        <div class="panel section" style="margin-top:1rem;">
+            <div class="section-heading"><i class="fas fa-bullhorn"></i> RECENT SHOUTS</div>
+            <div id="shoutsList"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-bg" id="tradeModalOverlay">
+    <div class="modal-box">
+        <h3><i class="fas fa-exchange-alt"></i> Send Trade to <span id="tradeTargetName"></span></h3>
+        <div class="trade-slbl">You offer</div>
+        <div class="trade-item-row" id="tradeOfferItems"><span style="color:#2e4060;font-size:.68rem;">Click items below to add</span></div>
+        <div class="trade-avail-grid" id="tradeMyItems"></div>
+        <input type="number" class="trade-coin-input" id="tradeOfferCoins" placeholder="Coins to offer (0)" min="0" value="0">
+        <div class="trade-slbl">You want</div>
+        <div class="trade-item-row" id="tradeWantItems"><span style="color:#2e4060;font-size:.68rem;">Click items below to add</span></div>
+        <div class="trade-avail-grid" id="tradeTheirItems"></div>
+        <input type="number" class="trade-coin-input" id="tradeWantCoins" placeholder="Coins to request (0)" min="0" value="0">
+        <div id="tradeModalErr" style="color:#ee8080;font-size:.76rem;margin-top:.45rem;display:none;"></div>
+        <div class="modal-btns">
+            <button class="modal-btn send"   onclick="submitTradeOffer()"><i class="fas fa-paper-plane"></i> Send Offer</button>
+            <button class="modal-btn cancel" onclick="closeTradeModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>window.AMPEHERE_PROFILE_PAGE = true;</script>
+<script src="/sidebar.js"></script>
+<script>
+var Swal             = window.Swal;
+var urlParams        = new URLSearchParams(window.location.search);
+var profileUsername  = urlParams.get('user');
+if (!profileUsername) window.location.href = '/';
+
+var isOwnProfile  = false;
+var _userIsAmpere = false;
+
+var ALL_THEMES  = ['default','midnight','sunset','forest','ocean','lavender','crimson','gold','neon','pastel',
+                   'cherry','slate','amber','candy','mono','aqua','rose','void','galaxy','aurora','lava','arctic'];
+var PLUS_THEMES = new Set(['cherry','slate','amber','candy','mono','aqua','rose','void','galaxy','aurora','lava','arctic']);
+
+/* ── helpers ──────────────────────────────────── */
+function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function waitForAR() {
+    return new Promise(function(resolve) {
+        if (window.AvatarRenderer) { resolve(); return; }
+        var t = setInterval(function() { if (window.AvatarRenderer) { clearInterval(t); resolve(); } }, 80);
+        setTimeout(function() { clearInterval(t); resolve(); }, 5000);
+    });
+}
+
+function applyTheme(name) {
+    var b = document.getElementById('mainBody');
+    ALL_THEMES.forEach(function(t) { b.classList.remove('theme-' + t); });
+    b.classList.remove('default-theme');
+    if (name && name !== 'default') b.classList.add('theme-' + name);
+    else b.classList.add('default-theme');
+}
+
+function applyStatus(status) {
+    var dot  = document.getElementById('avDot');
+    var pill = document.getElementById('statusPill');
+    var lbl  = document.getElementById('statusLabel');
+    var map  = {
+        online : { cls:'online',  sp:'sp-online',  label:'Online'  },
+        playing: { cls:'playing', sp:'sp-playing', label:'Playing' },
+        offline: { cls:'offline', sp:'sp-offline', label:'Offline' }
+    };
+    var s = map[status] || map.offline;
+    dot.className  = 'av-dot ' + s.cls;
+    dot.title      = s.label;
+    pill.className = 'status-pill ' + s.sp;
+    lbl.textContent = s.label;
+}
+
+/* ── profile ──────────────────────────────────── */
+async function loadProfile() {
+    try {
+        var res  = await fetch('/api/get-profile?username=' + encodeURIComponent(profileUsername));
+        var data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Failed');
+
+        document.getElementById('loadingSection').style.display = 'none';
+        var user = data.user;
+
+        if (user.locked) {
+            document.getElementById('lockedSection').style.display = 'block';
+            try {
+                var ud = await (await fetch('/api/get-user')).json();
+                if (ud.user && ud.user.is_owner) {
+                    var oc = document.getElementById('ownerControls');
+                    oc.style.display = 'flex';
+                    document.getElementById('lockBtn').style.display   = 'none';
+                    document.getElementById('unlockBtn').style.display = 'inline-flex';
+                    document.getElementById('lockedSection').appendChild(oc);
+                }
+            } catch(e) {}
+            return;
+        }
+
+        document.getElementById('profileContent').style.display = 'block';
+
+        var _isOwner = false;
+        var cd = {};
+        try { cd = await (await fetch('/api/get-balance')).json(); } catch(e) {}
+        isOwnProfile = !!(cd.username && cd.username === profileUsername);
+
+        // Always check ownership — needed even on own profile for self-badge button
+        try {
+            var ud2 = await (await fetch('/api/get-user')).json();
+            _isOwner = !!(ud2.user && ud2.user.is_owner);
+        } catch(e) {}
+
+        document.getElementById('username').textContent = user.username;
+        document.getElementById('coins').textContent    = (user.coins || 0).toLocaleString();
+        document.getElementById('streak').textContent   = user.streak || 0;
+
+        if (user.ampere_plus && user.ampere_plus.active) {
+            document.getElementById('ampere_plusDisplay').style.display = 'block';
+            document.getElementById('ampere_plusStatus').innerHTML =
+                '<span style="color:#44ff44;"><i class="fas fa-crown"></i> ACTIVE</span>';
+        } else {
+            document.getElementById('ampere_plusStatus').innerHTML =
+                '<span style="color:#8b0000;">Inactive</span>';
+        }
+
+        applyStatus(user.status || 'offline');
+
+        if (isOwnProfile) {
+            document.getElementById('editProfileBtn').style.display = 'inline-flex';
+            document.getElementById('avatarRing').classList.add('editable');
+            _userIsAmpere = !!(user.ampere_plus && user.ampere_plus.active);
+            initCustomizePanel(_userIsAmpere);
+            // If this is the owner's own profile, show self-badge button
+            if (_isOwner) {
+                var selfBadgeBtn = document.createElement('button');
+                selfBadgeBtn.className = 'btn';
+                selfBadgeBtn.style.cssText = 'background:rgba(15,15,15,.3);border:1px solid rgba(126,184,212,.3);color:#8899aa;font-size:.8rem;';
+                selfBadgeBtn.innerHTML = '<i class="fas fa-certificate"></i> Badges';
+                selfBadgeBtn.onclick = ownerManageBadges;
+                document.querySelector('.actions').appendChild(selfBadgeBtn);
+            }
+        } else {
+            loadFriendStatus(profileUsername);
+            if (_isOwner) {
+                document.getElementById('ownerControls').style.display = 'flex';
+                document.getElementById('lockBtn').style.display   = user.locked ? 'none' : 'inline-flex';
+                document.getElementById('unlockBtn').style.display = user.locked ? 'inline-flex' : 'none';
+                // Show grant or revoke mod button based on current is_mod status
+                var isMod = !!user.is_mod;
+                document.getElementById('grantModBtn').style.display  = isMod ? 'none' : 'inline-flex';
+                document.getElementById('revokeModBtn').style.display = isMod ? 'inline-flex' : 'none';
+                // Show warning count (owner-only)
+                if (typeof user.warningCount === 'number') {
+                    document.getElementById('warningStatBox').style.display = 'block';
+                    document.getElementById('warningCount').textContent = user.warningCount + '/3';
+                    document.getElementById('removeWarnBtn').style.display = user.warningCount > 0 ? 'inline-flex' : 'none';
+                }
+            }
+            // Show DM + block buttons for logged-in non-self users
+            if (cd.username) {
+                document.getElementById('dmBtn').style.display = 'inline-flex';
+                if (!_isOwner) loadBlockState(profileUsername);
+            }
+            // Show report button only for logged-in non-owners viewing a non-owner's profile
+            if (!_isOwner && !user.is_owner && cd.username) {
+                document.getElementById('reportUserBtn').style.display = 'inline-flex';
+            } else {
+                document.getElementById('reportUserBtn').style.display = 'none';
+            }
+        }
+
+        loadProfileFriends(profileUsername);
+
+        var c = user.customization || {};
+        applyCustomization(c);
+        if (isOwnProfile) await populatePanelFromCustomization(c);
+
+        // Badge definitions — image, CSS class, label
+        var BADGE_DEFS = {
+            'Meowl':   { img: '/images/badge-meowl.png',      cls: 'badge-meowl',   label: 'Meowl' },
+                        'Rich':    { img: '/images/badge-rich.png',       cls: 'badge-rich',    label: 'Rich' },
+            'Forumer': { img: '/images/badge-forumer.png',    cls: 'badge-forumer', label: 'Forumer' },
+            'Admin':   { img: '/images/badge-admin.png',      cls: 'badge-admin',   label: 'Admin' },
+            'Friends': { img: '/images/badge-friends.png',    cls: 'badge-friends', label: 'Friends' },
+        };
+        var LEGACY_SKIP = ['Dedicated','Active','Poster','Endorsed','Veteran','Ampere+'];
+        if (user.badges && user.badges.length) {
+            var filtered = user.badges.filter(function(b) { return !LEGACY_SKIP.includes(b); });
+            document.getElementById('badgesContainer').innerHTML = filtered.map(function(badge) {
+                var def = BADGE_DEFS[badge];
+                if (!def) return '';
+                return '<span class="badge ' + def.cls + '" onclick="window.location.href=\'/badges.html\'" title="Click to view all badges">'
+                    + '<img src="' + def.img + '" alt="' + esc(def.label) + '">'
+                    + '<span class="badge-label">' + esc(def.label) + '</span>'
+                    + '</span>';
+            }).filter(Boolean).join('');
+            var ring = document.getElementById('avatarRing');
+                ring.classList.remove('ring-admin');
+            var nameBadge = document.getElementById('nameBadgeIcon');
+            if (user.badges.includes('Meowl')) {
+                ring.classList.add('ring-meowl');
+                if (nameBadge) { nameBadge.src = '/images/badge-meowl.png'; nameBadge.alt = 'Meowl'; nameBadge.style.display = 'block'; }
+            } else if (user.badges.includes('Admin')) {
+                ring.classList.add('ring-admin');
+                if (nameBadge) { nameBadge.src = '/images/badge-admin.png'; nameBadge.alt = 'Admin'; nameBadge.style.display = 'block'; }
+            } else {
+                if (nameBadge) nameBadge.style.display = 'none';
+            }
+        }
+
+        if (user.created)    document.getElementById('joined').textContent     = new Date(user.created).toLocaleDateString();
+        if (user.lastActive) document.getElementById('lastActive').textContent = new Date(user.lastActive).toLocaleDateString();
+
+        if (user.group) {
+            try {
+                var gd = await (await fetch('/api/get-group-by-id?id=' + encodeURIComponent(user.group))).json();
+                if (gd.success) {
+                    var slug = gd.group.name.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+                    document.getElementById('group').innerHTML =
+                        '<a href="/group/' + slug + '" class="group-link">' + esc(gd.group.name) + '</a>';
+                }
+            } catch(e) { document.getElementById('group').textContent = 'No group'; }
+        } else {
+            document.getElementById('group').textContent = 'No group';
+        }
+
+        loadInventory();
+        await loadShouts();
+
+    } catch(err) {
+        console.error('Profile error:', err);
+        var ls = document.getElementById('loadingSection');
+        ls.innerHTML = '<span style="color:#ee8080;"><i class="fas fa-exclamation-circle"></i> User not found or an error occurred.</span>';
+        ls.style.display = 'block';
+    }
+}
+
+/* ── inventory ────────────────────────────────── */
+var _allItems       = [];
+var _myLimitedOwned = [];
+var _theirLimited   = [];
+var _tradeOfferSel  = new Set();
+var _tradeWantSel   = new Set();
+var _invRenderers   = {};
+
+async function loadInventory() {
+    Object.values(_invRenderers).forEach(function(r) { if (r && r.destroy) r.destroy(); });
+    _invRenderers = {};
+    try {
+        var results = await Promise.all([
+            fetch('/api/inventory?username=' + encodeURIComponent(profileUsername)).then(function(r){ return r.json(); }),
+            fetch('/api/avatar/get-items').then(function(r){ return r.json(); })
+        ]);
+        var inv    = results[0];
+        var items_ = results[1];
+        _allItems     = items_.items || [];
+        var items     = inv.items || [];
+        _theirLimited = items;
+
+        var grid = document.getElementById('inventoryGrid');
+        var cnt  = document.getElementById('inventoryCount');
+        if (cnt) cnt.textContent = items.length ? '(' + items.length + ')' : '';
+        grid.className = 'inventory-grid';
+
+        if (!items.length) {
+            grid.innerHTML = '<div class="empty" style="color:#2e4060;font-style:italic;font-size:.82rem;grid-column:1/-1;">No limited items yet.</div>';
+            return;
+        }
+
+        grid.innerHTML = '';
+        var RC = { common:'#7a8a9a', uncommon:'#44cc88', rare:'#5588ff', epic:'#aa44ff', legendary:'#f90' };
+
+        items.forEach(function(item) {
+            var card = document.createElement('div');
+            card.className = 'inv-card' + (!isOwnProfile ? ' tradeable' : '');
+            card.title = item.name;
+
+            var cvs = document.createElement('canvas');
+            cvs.width = 90; cvs.height = 90;
+            card.appendChild(cvs);
+
+            var n = document.createElement('div');
+            n.className = 'inv-name';
+            n.textContent = item.name;
+            card.appendChild(n);
+
+            var r = document.createElement('div');
+            r.className = 'inv-rarity';
+            r.style.color = RC[item.rarity] || '#7a8a9a';
+            r.textContent = item.rarity || '';
+            card.appendChild(r);
+
+            if (!isOwnProfile) {
+                var tb = document.createElement('button');
+                tb.className = 'inv-trade-btn';
+                tb.innerHTML = '<i class="fas fa-exchange-alt"></i> Trade';
+                (function(i) { tb.onclick = function() { openTradeModal(i); }; })(item);
+                card.appendChild(tb);
+            }
+
+            grid.appendChild(card);
+
+            (function(canvas) {
+                requestAnimationFrame(async function() {
+                    await waitForAR();
+                    if (!canvas.isConnected) return;
+                    _invRenderers[item.id] = AvatarRenderer.init(canvas, [item], { autoRotate:true, interactive:true, size:90 });
+                });
+            })(cvs);
+        });
+    } catch(e) { console.error('inventory error:', e); }
+}
+
+/* ── trade modal ──────────────────────────────── */
+async function openTradeModal(targetItem) {
+    _tradeOfferSel = new Set();
+    _tradeWantSel  = targetItem ? new Set([targetItem.id]) : new Set();
+    document.getElementById('tradeTargetName').textContent = profileUsername;
+    document.getElementById('tradeOfferCoins').value = '0';
+    document.getElementById('tradeWantCoins').value  = '0';
+    document.getElementById('tradeModalErr').style.display = 'none';
+    try {
+        var r = await fetch('/api/inventory?username=' + encodeURIComponent(window.currentUsername || ''));
+        var d = await r.json();
+        _myLimitedOwned = d.items || [];
+    } catch(e) { _myLimitedOwned = []; }
+    renderTradeModal();
+    document.getElementById('tradeModalOverlay').classList.add('open');
+}
+
+function _emptyHint(msg) {
+    var s = document.createElement('span');
+    s.style.cssText = 'color:#2e4060;font-size:.68rem;';
+    s.textContent = msg;
+    return s;
+}
+
+function renderTradeModal() {
+    var oRow = document.getElementById('tradeOfferItems');
+    oRow.innerHTML = '';
+    if (!_tradeOfferSel.size) {
+        oRow.appendChild(_emptyHint('Click items below to add'));
+    } else {
+        _tradeOfferSel.forEach(function(id) {
+            var item = _myLimitedOwned.find(function(i){ return i.id === id; });
+            if (!item) return;
+            var c = document.createElement('span');
+            c.className = 'trade-sel-chip';
+            c.textContent = item.name + ' \xd7';
+            (function(capturedId) { c.onclick = function() { _tradeOfferSel.delete(capturedId); renderTradeModal(); }; })(id);
+            oRow.appendChild(c);
+        });
+    }
+
+    var wRow = document.getElementById('tradeWantItems');
+    wRow.innerHTML = '';
+    if (!_tradeWantSel.size) {
+        wRow.appendChild(_emptyHint('Click items below to add'));
+    } else {
+        _tradeWantSel.forEach(function(id) {
+            var item = _theirLimited.find(function(i){ return i.id === id; });
+            if (!item) return;
+            var c = document.createElement('span');
+            c.className = 'trade-sel-chip';
+            c.textContent = item.name + ' \xd7';
+            (function(capturedId) { c.onclick = function() { _tradeWantSel.delete(capturedId); renderTradeModal(); }; })(id);
+            wRow.appendChild(c);
+        });
+    }
+
+    var mg = document.getElementById('tradeMyItems');
+    mg.innerHTML = '';
+    if (!_myLimitedOwned.length) {
+        mg.appendChild(_emptyHint('You have no limited items to offer.'));
+    } else {
+        _myLimitedOwned.forEach(function(item) {
+            var c = document.createElement('span');
+            c.className = 'trade-avail-chip' + (_tradeOfferSel.has(item.id) ? ' selected' : '');
+            c.textContent = item.name;
+            (function(i) {
+                c.onclick = function() {
+                    if (_tradeOfferSel.has(i.id)) _tradeOfferSel.delete(i.id);
+                    else _tradeOfferSel.add(i.id);
+                    renderTradeModal();
+                };
+            })(item);
+            mg.appendChild(c);
+        });
+    }
+
+    var tg = document.getElementById('tradeTheirItems');
+    tg.innerHTML = '';
+    if (!_theirLimited.length) {
+        tg.appendChild(_emptyHint('They have no limited items.'));
+    } else {
+        _theirLimited.forEach(function(item) {
+            var c = document.createElement('span');
+            c.className = 'trade-avail-chip' + (_tradeWantSel.has(item.id) ? ' selected' : '');
+            c.textContent = item.name;
+            (function(i) {
+                c.onclick = function() {
+                    if (_tradeWantSel.has(i.id)) _tradeWantSel.delete(i.id);
+                    else _tradeWantSel.add(i.id);
+                    renderTradeModal();
+                };
+            })(item);
+            tg.appendChild(c);
+        });
+    }
+}
+
+function closeTradeModal() {
+    document.getElementById('tradeModalOverlay').classList.remove('open');
+}
+
+async function submitTradeOffer() {
+    var errEl = document.getElementById('tradeModalErr');
+    errEl.style.display = 'none';
+    var oc = parseInt(document.getElementById('tradeOfferCoins').value) || 0;
+    var wc = parseInt(document.getElementById('tradeWantCoins').value)  || 0;
+    if (!_tradeOfferSel.size && oc <= 0 && !_tradeWantSel.size && wc <= 0) {
+        errEl.textContent = 'Trade must include something.'; errEl.style.display = 'block'; return;
+    }
+    try {
+        var r = await fetch('/api/trade/send', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ toUsername: profileUsername, offerItems: Array.from(_tradeOfferSel),
+                offerCoins: oc, wantItems: Array.from(_tradeWantSel), wantCoins: wc })
+        });
+        var d = await r.json();
+        if (d.success) {
+            closeTradeModal();
+            Swal.fire({ toast:true, position:'top-end', icon:'success', title:'Trade offer sent!',
+                background:'#0c0c0c', color:'#d0d8e0', showConfirmButton:false, timer:2500 });
+        } else { errEl.textContent = d.error || 'Failed.'; errEl.style.display = 'block'; }
+    } catch(e) { errEl.textContent = 'Network error.'; errEl.style.display = 'block'; }
+}
+
+document.getElementById('tradeModalOverlay').addEventListener('click', function(e) {
+    if (e.target === document.getElementById('tradeModalOverlay')) closeTradeModal();
+});
+
+/* ── shouts ───────────────────────────────────── */
+async function loadShouts() {
+    try {
+        var shouts = await (await fetch('/api/get-user-shouts?username=' + encodeURIComponent(profileUsername))).json();
+        var list = document.getElementById('shoutsList');
+        var cnt  = document.getElementById('shouts');
+        if (!shouts || !shouts.length) {
+            list.innerHTML = '<div class="empty">No shouts yet</div>';
+            if (cnt) cnt.textContent = '0';
+            return;
+        }
+        if (cnt) cnt.textContent = shouts.length;
+        list.innerHTML = shouts.map(function(s) {
+            return '<div class="shout-item">' +
+                '<div class="shout-meta">' +
+                '<span class="shout-grp"><i class="fas fa-bullhorn"></i> ' + esc(s.groupName) + '</span>' +
+                '<span class="shout-date">' + new Date(s.createdAt).toLocaleDateString() + '</span>' +
+                '</div><div class="shout-msg">' + esc(s.message) + '</div></div>';
+        }).join('');
+    } catch(e) {
+        document.getElementById('shoutsList').innerHTML = '<div class="empty">Could not load shouts</div>';
+    }
+}
+
+/* ── customization ────────────────────────────── */
+function applyCustomization(c) {
+    if (!c) return;
+    applyTheme(c.theme || 'default');
+
+    (async function() {
+        await waitForAR();
+        var cvs = document.getElementById('avatarCanvas3D');
+        if (!cvs || !window.AvatarRenderer) return;
+        if (window._profileAvatarInstance) { try { window._profileAvatarInstance.destroy(); } catch(e) {} }
+        var ids = c.equippedAvatarItems || [];
+        try {
+            var id_ = await fetch('/api/avatar/get-items').then(function(r){ return r.json(); });
+            var allItems = id_.items || [];
+            var defs = ids.map(function(id) {
+                return allItems.find(function(i){ return i.id === id; });
+            }).filter(Boolean);
+            // If no skin equipped, fall back to the platform default skin
+            var hasSkin = defs.some(function(d){ return d.category === 'skin'; });
+            if (!hasSkin) {
+                var defaultSkin = allItems.find(function(i){ return i.category === 'skin' && i.is_default; });
+                if (defaultSkin) defs.push(defaultSkin);
+            }
+            window._profileAvatarInstance = AvatarRenderer.init(cvs, defs, { autoRotate:true, interactive:true, size:110 });
+        } catch(e) {
+            window._profileAvatarInstance = AvatarRenderer.init(cvs, [], { autoRotate:true, interactive:true, size:110 });
+        }
+    })();
+
+    var ring = document.getElementById('avatarRing');
+    if (c.bgColor)     ring.style.backgroundColor = c.bgColor;
+    if (c.borderColor) ring.style.borderColor      = c.borderColor;
+    ring.classList.remove('anim-rainbow','anim-pulse-gold','anim-pulse-cyan','anim-fire','anim-ice');
+    if (c.animatedBorder && c.animatedBorder !== 'none') ring.classList.add('anim-' + c.animatedBorder);
+
+    var card = document.getElementById('profileCard');
+    card.classList.remove('card-glass','card-solid','card-neon-outline','card-gradient');
+    if (c.cardStyle && c.cardStyle !== 'default') card.classList.add('card-' + c.cardStyle);
+
+    var bio = document.getElementById('profileBio');
+    if (c.bio) { bio.textContent = '"' + c.bio + '"'; bio.style.display = 'block'; }
+    else bio.style.display = 'none';
+
+    if (c.nameColor) document.getElementById('username').style.color = c.nameColor;
+
+    var fm = { exo:"'Exo 2',sans-serif", mono:'monospace', serif:'Georgia,serif', default:"'Exo 2',sans-serif" };
+    if (c.font && fm[c.font]) card.style.fontFamily = fm[c.font];
+}
+
+async function populatePanelFromCustomization(c) {
+    if (!c) return;
+    if (c.theme) {
+        var b = document.querySelector('.theme-btn[data-theme="' + c.theme + '"]');
+        if (b) b.classList.add('selected');
+    }
+    if (c.bgColor)     document.getElementById('customColor').value  = c.bgColor;
+    if (c.borderColor) document.getElementById('customBorder').value = c.borderColor;
+    if (c.bio) { document.getElementById('bioInput').value = c.bio; document.getElementById('bioCount').textContent = c.bio.length; }
+    try {
+        var r = await fetch('/api/get-pending-bios-status');
+        if (r.ok) {
+            var d = await r.json();
+            if (d.hasPending) {
+                document.getElementById('bioPendingNotice').style.display = 'inline';
+                if (d.bio) { document.getElementById('bioInput').value = d.bio; document.getElementById('bioCount').textContent = d.bio.length; }
+            }
+        }
+    } catch(e) {}
+    if (c.nameColor)      document.getElementById('nameColorPicker').value      = c.nameColor;
+    if (c.cardStyle)      document.getElementById('cardStyleSelect').value      = c.cardStyle;
+    if (c.animatedBorder) document.getElementById('animatedBorderSelect').value = c.animatedBorder;
+    if (c.font)           document.getElementById('fontSelect').value           = c.font;
+}
+
+function initCustomizePanel(isAmpere) {
+    var ps = document.getElementById('plusSection'), notice = document.getElementById('plusLockedNotice');
+    if (!isAmpere) {
+        ps.classList.add('plus-locked');
+        ps.querySelectorAll('input,select,textarea,button,.plus-theme-btn').forEach(function(el) {
+            el.style.pointerEvents = 'none'; el.tabIndex = -1;
+        });
+        notice.style.display = 'inline';
+    } else { ps.classList.remove('plus-locked'); notice.style.display = 'none'; }
+    document.getElementById('bioInput').addEventListener('input', function() {
+        document.getElementById('bioCount').textContent = this.value.length;
+    });
+}
+
+function toggleCustomize() {
+    var p = document.getElementById('customizePanel');
+    p.style.display = p.style.display === 'none' ? 'block' : 'none';
+}
+function selectTheme(t) {
+    document.querySelectorAll('.theme-btn').forEach(function(b){ b.classList.remove('selected'); });
+    var b = document.querySelector('.theme-btn[data-theme="' + t + '"]');
+    if (b) b.classList.add('selected');
+    applyTheme(t);
+}
+function selectPlusTheme(t) { if (_userIsAmpere) selectTheme(t); }
+function previewNameColor(c) { document.getElementById('username').style.color = c; }
+
+async function saveCustomization() {
+    var theme = 'default';
+    document.querySelectorAll('.theme-btn.selected').forEach(function(b) { if (b.dataset.theme) theme = b.dataset.theme; });
+    var cust = { theme: theme, bgColor: document.getElementById('customColor').value, borderColor: document.getElementById('customBorder').value };
+    if (_userIsAmpere) {
+        Object.assign(cust, {
+            bio:            document.getElementById('bioInput').value.trim(),
+            nameColor:      document.getElementById('nameColorPicker').value,
+            cardStyle:      document.getElementById('cardStyleSelect').value,
+            animatedBorder: document.getElementById('animatedBorderSelect').value,
+            font:           document.getElementById('fontSelect').value
+        });
+    }
+    var d = await (await fetch('/api/save-customization', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ customization: cust })
+    })).json();
+    if (d.success) {
+        if (d.pendingBio) {
+            document.getElementById('bioPendingNotice').style.display = 'inline';
+            Swal.fire({ icon:'info', title:'Profile Updated', text:'Your bio will appear once approved.',
+                background:'#0c0c0c', color:'#d0d8e0', confirmButtonColor:'#111111' });
+        } else {
+            Swal.fire({ icon:'success', title:'Saved!', background:'#0c0c0c', color:'#d0d8e0', timer:2000, showConfirmButton:false });
+        }
+        var disp = Object.assign({}, cust); delete disp.bio;
+        applyCustomization(disp);
+        document.getElementById('customizePanel').style.display = 'none';
+        loadInventory();
+    } else { Swal.fire('Error', d.error || 'Failed to save', 'error'); }
+}
+
+/* ── friends ──────────────────────────────────── */
+async function loadProfileFriends(username) {
+    try {
+        var d  = await (await fetch('/api/get-user-by-username?username=' + encodeURIComponent(username))).json();
+        if (!d.success || !d.user) return;
+        var d2 = await (await fetch('/api/get-friends?userId=' + encodeURIComponent(d.user.id))).json();
+        var friends = d2.friends || [];
+        document.getElementById('friendsSection').style.display = 'block';
+        var list = document.getElementById('profileFriendsList');
+        if (!friends.length) { list.innerHTML = '<div class="empty">No friends yet</div>'; return; }
+
+        // Build chips with img placeholders
+        list.innerHTML = '';
+        friends.forEach(function(f) {
+            var a = document.createElement('a');
+            a.className = 'friend-chip';
+            a.href = '/profile.html?user=' + encodeURIComponent(f.username);
+
+            var av = document.createElement('div');
+            av.className = 'fc-av';
+            var img = document.createElement('img');
+            img.width = 32; img.height = 32;
+            img.alt = f.username;
+            // Default avatar immediately so circle isn't empty
+            if (window.Avatar2D) {
+                img.src = Avatar2D.renderToDataURL([], 32);
+            }
+            av.appendChild(img);
+
+            var nm = document.createElement('span');
+            nm.className = 'fc-name';
+            nm.textContent = f.username;
+
+            a.appendChild(av);
+            a.appendChild(nm);
+            list.appendChild(a);
+
+            // Fetch their profile to get real avatar items + badges, then re-render
+            fetch('/api/get-profile?username=' + encodeURIComponent(f.username))
+                .then(function(r) { return r.json(); })
+                .then(function(pd) {
+                    if (!pd.success) return;
+                    // Badge icon next to name
+                    var badges = pd.user.badges || [];
+                    if (badges.includes('Meowl')) {
+                        nm.innerHTML = '<img src="/images/badge-meowl.png" alt="Meowl" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:3px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5));">' + esc(f.username);
+                    } else if (badges.includes('Admin')) {
+                        nm.innerHTML = '<img src="/images/badge-admin.png" alt="Admin" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:3px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5));">' + esc(f.username);
+                    }
+                    if (!window.Avatar2D) return;
+                    var cust    = pd.user.customization || {};
+                    var itemIds = cust.equippedAvatarItems || [];
+                    // Fetch item definitions then render, applying default skin if none equipped
+                    fetch('/api/avatar/get-items')
+                        .then(function(r) { return r.json(); })
+                        .then(function(id_) {
+                            var allItems = id_.items || [];
+                            var defs = itemIds.map(function(id) {
+                                return allItems.find(function(i) { return i.id === id; });
+                            }).filter(Boolean);
+                            var hasSkin = defs.some(function(d){ return d.category === 'skin'; });
+                            if (!hasSkin) {
+                                var defaultSkin = allItems.find(function(i){ return i.category === 'skin' && i.is_default; });
+                                if (defaultSkin) defs.push(defaultSkin);
+                            }
+                            Avatar2D.renderImg(img, defs, 32);
+                        })
+                        .catch(function() { Avatar2D.renderImg(img, [], 32); });
+                })
+                .catch(function() {});
+        });
+    } catch(e) { console.error('loadProfileFriends error:', e); }
+}
+
+/* ── friend button ────────────────────────────── */
+var _friendState = null, _friendReqId = null;
+
+async function loadFriendStatus(targetUname) {
+    var btn = document.getElementById('friendBtn');
+    if (!btn) return;
+    try {
+        var d = await (await fetch('/api/get-friends')).json();
+        if (!d.success) return;
+        var lc = targetUname.toLowerCase();
+        // Already friends?
+        if (d.friends && d.friends.some(function(f){ return f.username.toLowerCase() === lc; })) {
+            _friendState = 'friends'; setFriendBtn('friends'); btn.style.display = 'inline-flex'; return;
+        }
+        // They sent us a request (incoming pending)?
+        var inc = d.pending && d.pending.find(function(p){ return p.username.toLowerCase() === lc; });
+        if (inc) { _friendState = 'pending_received'; _friendReqId = inc.requester_id; setFriendBtn('pending_received'); btn.style.display = 'inline-flex'; return; }
+        // We sent them a request (outgoing pending) — check via a targeted API call
+        try {
+            var chk = await (await fetch('/api/get-friends?checkOutgoing=' + encodeURIComponent(targetUname))).json();
+            if (chk.outgoingPending) { _friendState = 'pending_sent'; setFriendBtn('pending_sent'); btn.style.display = 'inline-flex'; return; }
+        } catch(e2) {}
+        _friendState = 'none'; setFriendBtn('none'); btn.style.display = 'inline-flex';
+    } catch(e) {}
+}
+
+function setFriendBtn(state) {
+    var btn = document.getElementById('friendBtn');
+    btn.className = 'btn btn-friend';
+    if      (state === 'friends')          { btn.className += ' is-friend';  btn.innerHTML = '<i class="fas fa-user-check"></i> Friends'; }
+    else if (state === 'pending_received') { btn.innerHTML = '<i class="fas fa-user-clock"></i> Accept Request'; }
+    else if (state === 'pending_sent')     { btn.className += ' is-pending'; btn.innerHTML = '<i class="fas fa-clock"></i> Pending\u2026'; btn.disabled = true; }
+    else                                   { btn.innerHTML = '<i class="fas fa-user-plus"></i> Add Friend'; btn.disabled = false; }
+}
+
+var _sw = { background:'#0c0c0c', color:'#d0d8e0', confirmButtonColor:'#111111', cancelButtonColor:'#8b0000' };
+function _toast(icon, title) {
+    if (Swal) Swal.fire({ toast:true, position:'top-end', icon:icon, title:title,
+        background:'#0c0c0c', color:'#d0d8e0', showConfirmButton:false, timer:2500, timerProgressBar:true });
+}
+
+async function handleFriendAction() {
+    var btn = document.getElementById('friendBtn');
+    btn.disabled = true;
+    if (_friendState === 'friends') {
+        var r = await Swal.fire(Object.assign({ title:'Remove Friend?', text:'Remove ' + profileUsername + ' from your friends?',
+            icon:'warning', showCancelButton:true, confirmButtonText:'Remove' }, _sw));
+        if (!r.isConfirmed) { btn.disabled = false; return; }
+        var d = await (await fetch('/api/get-friends')).json();
+        var row = d.friends && d.friends.find(function(f){ return f.username.toLowerCase() === profileUsername.toLowerCase(); });
+        if (!row) { btn.disabled = false; return; }
+        await fetch('/api/remove-friend', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ friendId: row.friend_id }) });
+        _friendState = 'none'; setFriendBtn('none'); _toast('success', 'Friend Removed');
+    } else if (_friendState === 'pending_received') {
+        await fetch('/api/respond-friend-request', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ requesterId: _friendReqId, action:'accept' }) });
+        _friendState = 'friends'; setFriendBtn('friends'); _toast('success', 'Friend Added!');
+    } else {
+        var d2 = await (await fetch('/api/send-friend-request', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ targetUsername: profileUsername }) })).json();
+        if (d2.success) { _friendState = 'pending_sent'; setFriendBtn('pending_sent'); _toast('success', 'Request Sent!'); fetch('/api/complete-task',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({taskId:'friend'})}).catch(()=>{}); }
+        else { Swal.fire(Object.assign({ icon:'error', title:'Could Not Send', text:d2.error || 'Try again' }, _sw)); btn.disabled = false; }
+    }
+}
+
+/* ── owner controls ───────────────────────────── */
+async function ownerLockUser() {
+    var result = await Swal.fire({
+        title: 'Lock @' + profileUsername + '?',
+        html: '<input id="swal-reason" type="text" maxlength="200" placeholder="Reason for locking (optional)" style="width:100%;padding:.55rem .9rem;background:rgba(255,255,255,.06);border:1px solid rgba(126,184,212,.25);border-radius: 0;color:#d0d8e0;font-family:"Exo 2",sans-serif;font-size:.92rem;margin-bottom:.75rem;">' +
+              '<label style="display:flex;align-items:center;gap:.6rem;justify-content:center;">' +
+              '<input type="checkbox" id="swal-wipe" style="width:18px;height:18px;">' +
+              '<span>Also wipe posts &amp; shouts <em style="color:#ee8080;">(sets to [DELETED])</em></span></label>',
+        icon: 'warning', showCancelButton: true, confirmButtonText: 'Lock',
+        confirmButtonColor: '#8b0000', cancelButtonColor: '#1c1c1c', background: '#0c0c0c', color: '#d0d8e0',
+        preConfirm: function() {
+            return {
+                wipe: document.getElementById('swal-wipe').checked,
+                reason: document.getElementById('swal-reason').value.trim()
+            };
+        }
+    });
+    if (!result.isConfirmed || result.value === undefined) return;
+    var d = await (await fetch('/api/owner/lock-user', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ username: profileUsername, wipeContent: result.value.wipe, reason: result.value.reason }) })).json();
+    if (d.success) { await Swal.fire({ icon:'success', title:'Locked', text:d.message, background:'#0c0c0c', color:'#d0d8e0' }); location.reload(); }
+    else Swal.fire({ icon:'error', title:'Error', text:d.error, background:'#0c0c0c', color:'#d0d8e0' });
+}
+
+async function ownerUnlockUser() {
+    var r = await Swal.fire({ title:'Unlock @' + profileUsername + '?', icon:'question',
+        showCancelButton:true, confirmButtonText:'Unlock', confirmButtonColor:'#1c1c1c', background:'#0c0c0c', color:'#d0d8e0' });
+    if (!r.isConfirmed) return;
+    var d = await (await fetch('/api/owner/unlock-user', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ username: profileUsername }) })).json();
+    if (d.success) { await Swal.fire({ icon:'success', title:'Unlocked', text:d.message, background:'#0c0c0c', color:'#d0d8e0' }); location.reload(); }
+    else Swal.fire({ icon:'error', title:'Error', text:d.error, background:'#0c0c0c', color:'#d0d8e0' });
+}
+
+async function ownerManageBadges() {
+    var ALL_BADGES = ['Meowl','Rich','Forumer','Admin','Friends'];
+    // Fetch current badges
+    var pd = await (await fetch('/api/get-profile?username=' + encodeURIComponent(profileUsername))).json();
+    var current = (pd.user && pd.user.badges) ? pd.user.badges.filter(function(b){ return ALL_BADGES.includes(b); }) : [];
+
+    var checkboxes = ALL_BADGES.map(function(b) {
+        return '<label style="display:flex;align-items:center;gap:.6rem;padding:.4rem 0;cursor:pointer;font-size:.9rem;color:#8899aa;">'
+            + '<input type="checkbox" value="' + b + '"' + (current.includes(b) ? ' checked' : '') + ' style="width:16px;height:16px;accent-color:#8899aa;"> '
+            + b + '</label>';
+    }).join('');
+
+    var result = await Swal.fire({
+        title: 'Manage Badges — @' + profileUsername,
+        html: '<div style="text-align:left;padding:0 .5rem;">' + checkboxes + '</div>',
+        showCancelButton: true,
+        confirmButtonText: 'Save',
+        confirmButtonColor: '#1c1c1c',
+        background: '#0c0c0c', color: '#d0d8e0',
+        preConfirm: function() {
+            return ALL_BADGES.filter(function(b) {
+                return document.querySelector('input[value="' + b + '"]').checked;
+            });
+        }
+    });
+    if (!result.isConfirmed) return;
+
+    var d = await (await fetch('/api/owner/set-badges', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: profileUsername, badges: result.value })
+    })).json();
+
+    if (d.success) {
+        await Swal.fire({ icon:'success', title:'Badges updated', background:'#0c0c0c', color:'#d0d8e0', timer:1200, showConfirmButton:false });
+        location.reload();
+    } else {
+        Swal.fire({ icon:'error', title:'Error', text:d.error, background:'#0c0c0c', color:'#d0d8e0' });
+    }
+}
+
+async function ownerSetMod(grantMod) {
+    var action = grantMod ? 'Grant mod access to' : 'Revoke mod access from';
+    var note   = grantMod
+        ? '<br><small style="color:#8a9ab0;">They must enable 2FA before they can access the mod panel.</small>'
+        : '';
+    var result = await Swal.fire({
+        title: action + ' @' + profileUsername + '?',
+        html: '<p style="color:#8a9ab0;font-size:.88rem;">Mod access allows this account to approve/reject content and review reports. It does not grant owner-level access.' + note + '</p>',
+        icon: 'question', showCancelButton: true,
+        confirmButtonText: grantMod ? 'Grant Mod' : 'Revoke Mod',
+        confirmButtonColor: grantMod ? '#2a6640' : '#8b0000',
+        cancelButtonColor: '#1c1c1c', background: '#0c0c0c', color: '#d0d8e0'
+    });
+    if (!result.isConfirmed) return;
+    var d = await (await fetch('/api/owner/set-mod', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: profileUsername, isMod: grantMod })
+    })).json();
+    if (d.success) {
+        await Swal.fire({ icon:'success', title: grantMod ? 'Mod access granted' : 'Mod access revoked', background:'#0c0c0c', color:'#d0d8e0', timer:1400, showConfirmButton:false });
+        location.reload();
+    } else {
+        Swal.fire({ icon:'error', title:'Error', text:d.error, background:'#0c0c0c', color:'#d0d8e0' });
+    }
+}
+
+/* ── owner give coins ───────────────────────────── */
+async function ownerGiveCoins() {
+    var result = await Swal.fire({
+        title: '💰 Give Coins to @' + profileUsername,
+        html: '<p style="color:#8a9ab0;font-size:.88rem;margin-bottom:.75rem;">Enter the amount of coins to give. This is free — coins are created from thin air, site-owner only.</p>'
+            + '<input id="swal-coin-amount" type="number" min="1" max="1000000" value="100" style="width:100%;padding:.6rem .9rem;background:rgba(255,255,255,.06);border:1px solid rgba(126,184,212,.3);border-radius: 0;color:#d0d8e0;font-family:"Exo 2",sans-serif;font-size:1rem;text-align:center;">',
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: '💰 Give',
+        confirmButtonColor: '#b8860b',
+        cancelButtonColor: '#1c1c1c',
+        background: '#0c0c0c', color: '#d0d8e0',
+        preConfirm: () => {
+            var val = parseInt(document.getElementById('swal-coin-amount').value);
+            if (!val || val < 1) { Swal.showValidationMessage('Enter a valid amount (min 1)'); return false; }
+            if (val > 1000000) { Swal.showValidationMessage('Max 1,000,000 coins at once'); return false; }
+            return val;
+        }
+    });
+    if (!result.isConfirmed || !result.value) return;
+    var d = await (await fetch('/api/owner/give-coins', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: profileUsername, amount: result.value })
+    })).json();
+    if (d.success) {
+        await Swal.fire({ icon: 'success', title: '✅ Coins given!', html: '<p style="color:#8a9ab0;">Gave <strong style="color:#f1d070;">' + result.value.toLocaleString() + ' coins</strong> to @' + profileUsername + '.<br>New balance: <strong style="color:#f1d070;">' + (d.newBalance || '?').toLocaleString() + '</strong></p>', background: '#0c0c0c', color: '#d0d8e0', confirmButtonColor: '#1c1c1c', timer: 3000 });
+        location.reload();
+    } else {
+        Swal.fire({ icon: 'error', title: 'Error', text: d.error, background: '#0c0c0c', color: '#d0d8e0' });
+    }
+}
+
+/* ── owner remove coins ─────────────────────────── */
+async function ownerRemoveCoins() {
+    var result = await Swal.fire({
+        title: '💸 Remove Coins from @' + profileUsername,
+        html: '<p style="color:#8a9ab0;font-size:.88rem;margin-bottom:.75rem;">Enter the amount of coins to deduct. The user\'s balance cannot go below 0.</p>'
+            + '<input id="swal-coin-remove" type="number" min="1" max="1000000" value="100" style="width:100%;padding:.6rem .9rem;background:rgba(255,255,255,.06);border:1px solid rgba(220,60,60,.3);border-radius: 0;color:#d0d8e0;font-family:"Exo 2",sans-serif;font-size:1rem;text-align:center;">',
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: '💸 Remove',
+        confirmButtonColor: '#8b0000',
+        cancelButtonColor: '#1c1c1c',
+        background: '#0c0c0c', color: '#d0d8e0',
+        preConfirm: () => {
+            var val = parseInt(document.getElementById('swal-coin-remove').value);
+            if (!val || val < 1) { Swal.showValidationMessage('Enter a valid amount (min 1)'); return false; }
+            if (val > 1000000) { Swal.showValidationMessage('Max 1,000,000 coins at once'); return false; }
+            return val;
+        }
+    });
+    if (!result.isConfirmed || !result.value) return;
+    var d = await (await fetch('/api/owner/give-coins', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: profileUsername, amount: -result.value })
+    })).json();
+    if (d.success) {
+        await Swal.fire({ icon: 'success', title: '✅ Coins removed!', html: '<p style="color:#8a9ab0;">Removed <strong style="color:#ee8080;">' + result.value.toLocaleString() + ' coins</strong> from @' + profileUsername + '.<br>New balance: <strong style="color:#f1d070;">' + (d.newBalance || 0).toLocaleString() + '</strong></p>', background: '#0c0c0c', color: '#d0d8e0', confirmButtonColor: '#1c1c1c', timer: 3000 });
+        location.reload();
+    } else {
+        Swal.fire({ icon: 'error', title: 'Error', text: d.error, background: '#0c0c0c', color: '#d0d8e0' });
+    }
+}
+
+/* ── owner reset password ───────────────────────── */
+async function ownerResetPassword() {
+    var result = await Swal.fire({
+        title: '🔑 Reset Password for @' + profileUsername,
+        html: '<p style="color:#8a9ab0;font-size:.88rem;margin-bottom:.75rem;">Set a new password for this account. Their sessions will be invalidated — they must log in again with the new password.</p>'
+            + '<input id="swal-new-pw" type="password" minlength="6" maxlength="256" placeholder="New password (min 6 characters)" style="width:100%;padding:.6rem .9rem;background:rgba(255,255,255,.06);border:1px solid rgba(160,100,220,.3);border-radius: 0;color:#d0d8e0;font-family:"Exo 2",sans-serif;font-size:.95rem;margin-bottom:.5rem;">'
+            + '<input id="swal-new-pw2" type="password" minlength="6" maxlength="256" placeholder="Confirm new password" style="width:100%;padding:.6rem .9rem;background:rgba(255,255,255,.06);border:1px solid rgba(160,100,220,.3);border-radius: 0;color:#d0d8e0;font-family:"Exo 2",sans-serif;font-size:.95rem;">',
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: '🔑 Reset Password',
+        confirmButtonColor: '#6030a0',
+        cancelButtonColor: '#1c1c1c',
+        background: '#0c0c0c', color: '#d0d8e0',
+        preConfirm: () => {
+            var pw  = document.getElementById('swal-new-pw').value;
+            var pw2 = document.getElementById('swal-new-pw2').value;
+            if (!pw || pw.length < 6) { Swal.showValidationMessage('Password must be at least 6 characters'); return false; }
+            if (pw !== pw2) { Swal.showValidationMessage('Passwords do not match'); return false; }
+            return pw;
+        }
+    });
+    if (!result.isConfirmed || !result.value) return;
+    var d = await (await fetch('/api/owner/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: profileUsername, newPassword: result.value })
+    })).json();
+    if (d.success) {
+        Swal.fire({ icon: 'success', title: '✅ Password reset!', text: d.message, background: '#0c0c0c', color: '#d0d8e0', confirmButtonColor: '#1c1c1c' });
+    } else {
+        Swal.fire({ icon: 'error', title: 'Error', text: d.error, background: '#0c0c0c', color: '#d0d8e0' });
+    }
+}
+
+/* ── owner warn user ───────────────────────────── */
+async function ownerWarnUser() {
+    var result = await Swal.fire({
+        title: '⚠️ Warn @' + profileUsername,
+        html: '<p style="color:#8a9ab0;font-size:.88rem;margin-bottom:.75rem;">Issue a formal warning. At <strong style="color:#ffb347;">3 warnings</strong> the account will be <strong style="color:#ee8080;">automatically locked</strong>.</p>'
+            + '<input id="swal-warn-reason" type="text" maxlength="300" placeholder="Reason for warning (required, min 3 chars)" style="width:100%;padding:.6rem .9rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,165,0,.3);border-radius: 0;color:#d0d8e0;font-family:"Exo 2",sans-serif;font-size:.92rem;">',
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: '⚠️ Issue Warning',
+        confirmButtonColor: '#b06000',
+        cancelButtonColor: '#1c1c1c',
+        background: '#0c0c0c', color: '#d0d8e0',
+        preConfirm: () => {
+            var r = document.getElementById('swal-warn-reason').value.trim();
+            if (!r || r.length < 3) { Swal.showValidationMessage('Please enter a reason (min 3 characters)'); return false; }
+            return r;
+        }
+    });
+    if (!result.isConfirmed || !result.value) return;
+    var d = await (await fetch('/api/owner/warn-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: profileUsername, reason: result.value })
+    })).json();
+    if (d.success) {
+        var icon = d.autoLocked ? 'error' : 'warning';
+        await Swal.fire({ icon, title: d.autoLocked ? '🔒 Account Locked' : '⚠️ Warning Issued', text: d.message, background: '#0c0c0c', color: '#d0d8e0', confirmButtonColor: '#1c1c1c' });
+        location.reload();
+    } else {
+        Swal.fire({ icon: 'error', title: 'Error', text: d.error, background: '#0c0c0c', color: '#d0d8e0' });
+    }
+}
+
+/* ── owner remove warning ──────────────────────── */
+async function ownerRemoveWarning() {
+    var result = await Swal.fire(Object.assign({
+        title: '🛡️ Remove Warning',
+        text: 'Remove the most recent warning from @' + profileUsername + '?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Remove Warning',
+        confirmButtonColor: '#1a6640',
+    }, _sw));
+    if (!result.isConfirmed) return;
+    var d = await (await fetch('/api/owner/remove-warning', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: profileUsername })
+    })).json();
+    if (d.success) {
+        await Swal.fire({ icon: 'success', title: 'Warning Removed', text: d.message, background: '#0c0c0c', color: '#d0d8e0', confirmButtonColor: '#1c1c1c' });
+        location.reload();
+    } else {
+        Swal.fire({ icon: 'error', title: 'Error', text: d.error, background: '#0c0c0c', color: '#d0d8e0' });
+    }
+}
+
+/* ── DM ────────────────────────────────────────── */
+async function sendDM() {
+    var result = await Swal.fire(Object.assign({
+        title: '💬 Message @' + profileUsername,
+        html: '<textarea id="swal-dm-msg" maxlength="1000" placeholder="Write your message... (max 1000 chars)" rows="5" style="width:100%;padding:.6rem .9rem;background:rgba(255,255,255,.06);border:1px solid rgba(126,184,212,.3);border-radius: 0;color:#d0d8e0;font-family:\'Exo 2\',sans-serif;font-size:.92rem;resize:vertical;"></textarea>'
+            + '<div style="font-size:.72rem;color:#4a5a6a;margin-top:.4rem;">Messages are reviewed by moderators before delivery.</div>',
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: '<i class="fas fa-paper-plane"></i> Send',
+        confirmButtonColor: '#111111',
+        preConfirm: function() {
+            var msg = document.getElementById('swal-dm-msg').value.trim();
+            if (!msg) { Swal.showValidationMessage('Please write a message'); return false; }
+            return msg;
+        }
+    }, _sw));
+    if (!result.isConfirmed || !result.value) return;
+    var d = await (await fetch('/api/dm/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ toUsername: profileUsername, message: result.value })
+    })).json();
+    if (d.success) {
+        _toast('success', 'Message sent — pending approval');
+    } else {
+        Swal.fire(Object.assign({ icon: 'error', title: 'Error', text: d.error }, _sw));
+    }
+}
+
+/* ── Block ─────────────────────────────────────── */
+var _isBlocked = false;
+async function loadBlockState(username) {
+    try {
+        var d = await (await fetch('/api/get-blocked')).json();
+        if (!d.success) return;
+        _isBlocked = d.blocked.some(function(b) { return b.username === username; });
+        var btn = document.getElementById('blockBtn');
+        if (btn) {
+            btn.style.display = 'inline-flex';
+            btn.innerHTML = _isBlocked
+                ? '<i class="fas fa-ban"></i> Unblock'
+                : '<i class="fas fa-ban"></i> Block';
+            btn.style.color   = _isBlocked ? '#60e090' : '#ee8080';
+            btn.style.borderColor = _isBlocked ? 'rgba(0,220,100,.3)' : 'rgba(200,80,80,.3)';
+        }
+    } catch(e) {}
+}
+async function toggleBlock() {
+    var action = _isBlocked ? 'Unblock' : 'Block';
+    var result = await Swal.fire(Object.assign({
+        title: action + ' @' + profileUsername + '?',
+        text: _isBlocked
+            ? 'They will be able to DM you and view your profile again.'
+            : 'They won\'t be able to DM you or view your profile.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: action,
+        confirmButtonColor: _isBlocked ? '#1a6640' : '#8b0000'
+    }, _sw));
+    if (!result.isConfirmed) return;
+    var endpoint = _isBlocked ? '/api/unblock-user' : '/api/block-user';
+    var d = await (await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: profileUsername })
+    })).json();
+    if (d.success) {
+        _isBlocked = !_isBlocked;
+        loadBlockState(profileUsername);
+        _toast('success', _isBlocked ? 'User blocked' : 'User unblocked');
+    } else {
+        Swal.fire(Object.assign({ icon: 'error', title: 'Error', text: d.error }, _sw));
+    }
+}
+
+/* ── Owner view DMs ────────────────────────────── */
+async function ownerViewDMs() {
+    var d = await (await fetch('/api/owner/view-dms?username=' + encodeURIComponent(profileUsername))).json();
+    if (!d.success) { Swal.fire(Object.assign({ icon:'error', title:'Error', text: d.error }, _sw)); return; }
+    var dms = d.dms;
+    if (!dms.length) { Swal.fire(Object.assign({ icon:'info', title:'No DMs', text: '@' + profileUsername + ' has no messages.' }, _sw)); return; }
+    function fmt(ts) { return new Date(ts).toLocaleDateString() + ' ' + new Date(ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+    function esc2(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    var statusColor = { pending:'#ffb347', approved:'#2ecc71', rejected:'#ee8080' };
+    var html = '<div style="max-height:420px;overflow-y:auto;text-align:left;">'
+        + dms.map(function(dm) {
+            var dir = dm.from_username === profileUsername ? '→' : '←';
+            var other = dm.from_username === profileUsername ? dm.to_username : dm.from_username;
+            return '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.04);border-radius: 0;padding:.7rem .9rem;margin-bottom:.5rem;">'
+                + '<div style="display:flex;justify-content:space-between;margin-bottom:.3rem;">'
+                + '<span style="font-size:.75rem;font-weight:800;color:#8899aa;">' + esc2(dm.from_username) + ' ' + dir + ' ' + esc2(dm.to_username) + '</span>'
+                + '<span style="font-size:.68rem;color:#4a5a6a;">' + fmt(dm.created_at) + '</span>'
+                + '</div>'
+                + '<div style="font-size:.88rem;color:#8899aa;word-break:break-word;">' + esc2(dm.message) + '</div>'
+                + '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-top:.3rem;color:' + (statusColor[dm.status]||'#7a8a9a') + ';">' + dm.status + '</div>'
+                + '</div>';
+        }).join('')
+        + '</div>';
+    Swal.fire(Object.assign({ title: '📨 DMs — @' + profileUsername, html: html, confirmButtonText: 'Close', width: 600 }, _sw));
+}
+
+/* ── boot ─────────────────────────────────────── */
+loadProfile();
+</script>
+<script src="/report-modal.js"></script>
+<script>
+function reportThisUser() {
+    var targetUser = document.getElementById('username').textContent || profileUsername;
+    // Get the user id from the profile data already fetched
+    openReportModal({ type: 'user', targetId: profileUsername, targetLabel: '@' + targetUser });
+}
+</script>
+</body>
+</html>

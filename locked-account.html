@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/logo.png" type="image/png">
+    <title>Ampehere · Account Locked</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --bg:#060606; --surface:#0c0c0c; --border:#1a1a1a; --border-hi:#252525; --blue:#2563c4; --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677; --red:#c0392b; }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; border-radius:0 !important; }
+        body { font-family:'Exo 2',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1.5rem; }
+        .card { width:100%; max-width:420px; background:var(--surface); border:1px solid var(--border); }
+        .card-header { padding:1.25rem 1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:.75rem; }
+        .lock-icon { width:34px; height:34px; background:rgba(192,57,43,.12); border:1px solid rgba(192,57,43,.3); display:flex; align-items:center; justify-content:center; color:var(--red); font-size:.95rem; flex-shrink:0; }
+        .header-text .label { font-size:.6rem; font-weight:800; text-transform:uppercase; letter-spacing:.12em; color:var(--red); }
+        .header-text .title { font-size:1rem; font-weight:800; color:var(--text); }
+        .card-body { padding:0; }
+        .info-row { display:flex; align-items:flex-start; gap:.85rem; padding:1rem 1.5rem; border-bottom:1px solid var(--border); }
+        .info-row:last-child { border-bottom:none; }
+        .info-icon { width:28px; height:28px; background:var(--border); display:flex; align-items:center; justify-content:center; font-size:.75rem; color:var(--text-muted); flex-shrink:0; margin-top:.1rem; }
+        .info-label { font-size:.6rem; font-weight:800; text-transform:uppercase; letter-spacing:.1em; color:var(--text-dim); margin-bottom:.2rem; }
+        .info-value { font-size:.82rem; color:var(--text); line-height:1.55; }
+        .info-value.warning { color:var(--red); font-family:'Exo 2',sans-serif; font-weight:800; font-size:.9rem; }
+        .card-footer { padding:1rem 1.5rem; border-top:1px solid var(--border); display:flex; gap:.6rem; }
+        .btn { display:inline-flex; align-items:center; gap:.4rem; padding:.55rem 1rem; font-family:'Exo 2',sans-serif; font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; text-decoration:none; cursor:pointer; border:none; transition:background .12s; }
+        .btn-ghost { background:var(--border); color:var(--text-muted); }
+        .btn-ghost:hover { background:var(--border-hi); color:var(--text); }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="card-header">
+        <div class="lock-icon"><i class="fas fa-lock"></i></div>
+        <div class="header-text">
+            <div class="label">Account Status</div>
+            <div class="title">Account Locked</div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="info-row">
+            <div class="info-icon"><i class="fas fa-comment-alt"></i></div>
+            <div>
+                <div class="info-label">Reason</div>
+                <div class="info-value" id="lockReason">No reason provided.</div>
+            </div>
+        </div>
+        <div class="info-row">
+            <div class="info-icon"><i class="fas fa-clock"></i></div>
+            <div>
+                <div class="info-label">Account deletion in</div>
+                <div class="info-value warning" id="countdown">Calculating…</div>
+            </div>
+        </div>
+        <div class="info-row">
+            <div class="info-icon"><i class="fas fa-info-circle"></i></div>
+            <div>
+                <div class="info-label">What happens next</div>
+                <div class="info-value">Your account and all associated data will be permanently deleted after the countdown. To appeal, contact support via Discord.</div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-ghost" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+    </div>
+</div>
+<script>
+var _lockedAt = null;
+var _DELETION_MS = 48 * 60 * 60 * 1000;
+
+(async function() {
+    try {
+        var res  = await fetch('/api/get-user');
+        var data = await res.json();
+        if (!data.success) {
+            var params = new URLSearchParams(location.search);
+            var reason = params.get('reason');
+            var at = parseInt(params.get('at'));
+            document.getElementById('lockReason').textContent = reason || 'No reason provided.';
+            if (at) { _lockedAt = at; updateCountdown(); setInterval(updateCountdown, 1000); }
+            else document.getElementById('countdown').textContent = '48h from lock';
+            return;
+        }
+        if (!data.user.locked) { location.href = '/'; return; }
+        document.getElementById('lockReason').textContent = data.user.lock_reason || 'No reason provided.';
+        _lockedAt = data.user.locked_at;
+        if (_lockedAt) { updateCountdown(); setInterval(updateCountdown, 1000); }
+        else document.getElementById('countdown').textContent = '48h from lock';
+    } catch(e) {
+        var params = new URLSearchParams(location.search);
+        document.getElementById('lockReason').textContent = params.get('reason') || 'No reason provided.';
+        var at = parseInt(params.get('at'));
+        if (at) { _lockedAt = at; updateCountdown(); setInterval(updateCountdown, 1000); }
+    }
+})();
+
+function updateCountdown() {
+    var remaining = (_lockedAt + _DELETION_MS) - Date.now();
+    if (remaining <= 0) { document.getElementById('countdown').textContent = 'Imminent'; return; }
+    var h = Math.floor(remaining / 3600000);
+    var m = Math.floor((remaining % 3600000) / 60000);
+    var s = Math.floor((remaining % 60000) / 1000);
+    document.getElementById('countdown').textContent = String(h).padStart(2,'0') + 'h ' + String(m).padStart(2,'0') + 'm ' + String(s).padStart(2,'0') + 's';
+}
+
+async function doLogout() {
+    try { await fetch('/api/logout', { method:'POST' }); } catch {}
+    location.href = '/login.html';
+}
+</script>
+</body>
+</html>

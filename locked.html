@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="logo.png" type="image/png">
+  <title>Game Locked · Ampehere</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+    <link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0 !important; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+    <style>
+        :root { --bg:#060606; --surface:#0c0c0c; --border:#1a1a1a; --border-hi:#252525; --blue:#2563c4; --blue-hi:#3b7de0; --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677; --red:#c0392b; --gold:#f1c40f; --green:#27ae60; }
+        *, *::before, *::after { border-radius: 0 !important; }
+        body { background: #060606 !important; background-image: none !important; color: #d0d8e0; }
+        a { color: #2563c4; } a:hover { color: #3b7de0; }
+    </style>
+    <style>
+    *{margin:0;padding:0;box-sizing:border-box;user-select:none;}
+    body{background:#060606;background-image:radial-gradient(ellipse at 20% 10%,rgba(15,15,15,0.4) 0%,transparent 50%),radial-gradient(ellipse at 80% 90%,rgba(255,255,255,0.04) 0%,transparent 50%);font-family:'Exo 2',sans-serif;min-height:100vh;padding:1.5rem;display:flex;align-items:center;justify-content:center;}
+    .container{max-width:680px;margin:0 auto;background:linear-gradient(145deg,rgba(12,12,12,0.9),rgba(8,8,8,0.95));border:1px solid rgba(126,184,212,0.25);border-radius: 0;padding:2.5rem;box-shadow:0 30px 80px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.08);backdrop-filter:blur(20px);text-align:center;}
+    .header{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:1rem;flex-wrap:wrap;}
+    .logo{width:56px;height:56px;background-image:url('logo.png');background-size:contain;background-repeat:no-repeat;background-position:center;flex-shrink:0;}
+    h1{font-family:'Exo 2',sans-serif;font-size:2rem;font-weight:900;color:#d0d8e0;text-transform:uppercase;letter-spacing:0.08em;}
+    .lock-icon{font-size:4rem;margin:1rem 0;display:inline-block;filter:drop-shadow(0 4px 20px rgba(220,38,38,0.4));animation:shake 0.8s ease-in-out infinite;}
+    @keyframes shake{0%,100%{transform:rotate(0deg)}25%{transform:rotate(8deg)}75%{transform:rotate(-8deg)}}
+    .lock-stamp{background:rgba(220,38,38,0.2);color:#fca5a5;font-family:'Exo 2',sans-serif;font-size:1.8rem;font-weight:900;padding:0.5rem 1.75rem;border:1px solid rgba(220,38,38,0.4);border-radius: 0;transform:rotate(-2deg);display:inline-block;margin:0.75rem 0;letter-spacing:4px;box-shadow:0 4px 20px rgba(220,38,38,0.15);}
+    .lock-code{background:rgba(15,15,15,0.2);color:#8899aa;font-size:1.2rem;font-weight:700;padding:0.5rem 1.25rem;border:1px solid rgba(126,184,212,0.3);border-radius: 0;display:inline-block;margin-bottom:1.25rem;letter-spacing:1px;}
+    .message-box{background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.3);border-radius: 0;padding:1.5rem;margin-bottom:1.5rem;}
+    .message-title{font-family:'Exo 2',sans-serif;font-size:1.5rem;font-weight:900;color:#fca5a5;text-transform:uppercase;margin-bottom:0.75rem;letter-spacing:0.05em;}
+    .message-text{font-size:1rem;color:#8899aa;line-height:1.6;}
+    .locker-info{background:rgba(15,15,15,0.15);color:#8899aa;padding:0.5rem 1rem;border:1px solid rgba(37,99,196,0.18);border-radius: 0;display:inline-block;margin-bottom:1.25rem;font-weight:600;font-size:0.9rem;}
+    .reason-box{background:rgba(255,255,255,0.03);border:1px solid rgba(37,99,196,0.18);border-radius: 0;padding:1.25rem;margin:1.5rem 0;text-align:left;}
+    .reason-title{font-weight:700;color:#8a95a3;text-transform:uppercase;margin-bottom:0.5rem;font-size:0.85rem;letter-spacing:0.1em;display:flex;align-items:center;gap:0.5rem;}
+    .reason-text{color:#8899aa;font-size:1rem;padding:0.75rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);border-radius: 0;word-break:break-word;font-weight:500;}
+    .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin:1.5rem 0;}
+    .info-card{background:rgba(15,15,15,0.12);border:1px solid rgba(126,184,212,0.18);border-radius: 0;padding:1rem;}
+    .info-card span{font-size:1.75rem;display:block;margin-bottom:0.4rem;}
+    .info-card p{font-weight:600;color:#8a95a3;text-transform:uppercase;font-size:0.78rem;letter-spacing:0.08em;}
+    .info-card .info-value{font-size:0.95rem;color:#8899aa;margin-top:0.25rem;font-weight:600;}
+    .discord-panel{background:rgba(88,101,242,0.1);border:1px solid rgba(88,101,242,0.3);border-radius: 0;padding:1.5rem;margin:1.5rem 0;}
+    .discord-title{font-family:'Exo 2',sans-serif;font-size:1.1rem;font-weight:800;color:#d0d8e0;text-transform:uppercase;margin-bottom:0.5rem;letter-spacing:0.05em;}
+    .discord-text{color:#8a95a3;margin-bottom:1.25rem;font-size:0.9rem;}
+    .discord-button{background:#5865F2;border:1px solid rgba(88,101,242,0.5);color:white;font-family:'Exo 2',sans-serif;font-weight:700;font-size:1rem;padding:0.75rem 1.75rem;text-decoration:none;text-transform:uppercase;border-radius: 0;display:inline-block;transition:all .2s;letter-spacing:0.05em;}
+    .discord-button:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(88,101,242,0.4);}
+    .ampehere-button{background:linear-gradient(135deg,#1c1c1c,#111111);color:#d0d8e0;border:1px solid rgba(126,184,212,0.3);font-family:'Exo 2',sans-serif;font-weight:700;font-size:0.95rem;padding:0.75rem 1.5rem;text-decoration:none;text-transform:uppercase;border-radius: 0;cursor:pointer;transition:all .2s;display:inline-block;letter-spacing:0.05em;}
+    .ampehere-button:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(15,15,15,0.4);}
+    .button-grid{display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;margin:1.5rem 0 1rem;}
+    .game-suggestion{background:rgba(126,184,212,0.08);color:#8899aa;padding:0.85rem;border:1px solid rgba(37,99,196,0.18);border-radius: 0;margin-top:1.25rem;font-weight:500;font-size:0.9rem;}
+    .footer{margin-top:1.5rem;border-top:1px solid rgba(255,255,255,0.04);padding-top:0.85rem;font-size:0.78rem;color:rgba(192,200,212,0.3);}
+    @media(max-width:600px){.container{padding:1.5rem;}h1{font-size:1.6rem;}.info-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo"></div>
+      <h1>Ampehere</h1>
+    </div>
+    <div class="lock-icon">🔒</div>
+    <div class="lock-stamp">LOCKED</div>
+    <div class="lock-code">⚡ GAME UNAVAILABLE ⚡</div>
+    <div class="message-box">
+      <div class="message-title">This Game Is Locked</div>
+      <div class="message-text">This game has been locked by its owner or a moderator.</div>
+    </div>
+    <div id="lockerInfo" class="locker-info">🔒 Locked by: Moderator</div>
+    <div class="reason-box">
+      <div class="reason-title"><span>🔒</span> Reason for Locking:</div>
+      <div class="reason-text" id="lockReason">Game is under maintenance</div>
+    </div>
+    <div class="info-grid">
+      <div class="info-card"><span>📅</span><p>Locked Since</p><div class="info-value" id="lockDate">2026-03-05</div></div>
+      <div class="info-card"><span>👤</span><p>Locked By</p><div class="info-value" id="lockedBy">Moderator</div></div>
+      <div class="info-card"><span>🔢</span><p>Reference</p><div class="info-value" id="lockRef">LOCK-123456</div></div>
+    </div>
+    <div class="discord-panel">
+      <div class="discord-title">🕊️ Questions?</div>
+      <div class="discord-text">If you're the owner and want to unlock your game, join our Discord.</div>
+      <a href="https://discord.gg/JpmBDy9p7K" class="discord-button" target="_blank">⚡ Ask on Discord</a>
+    </div>
+    <div class="game-suggestion">🎮 Check out other games while this one is locked!</div>
+    <div class="button-grid">
+      <a href="/" class="ampehere-button">⬅ Browse Games</a>
+      <a href="javascript:history.back()" class="ampehere-button">↩ Go Back</a>
+    </div>
+    <div class="footer">© 2026 Ampehere · Game Lock Notification</div>
+  </div>
+  <script>
+    (function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const reason = urlParams.get('reason') || 'Game is under maintenance';
+      const ref = urlParams.get('ref') || 'LOCK-' + new Date().getTime().toString().slice(-6);
+      const lockedBy = urlParams.get('by') || 'Administrator';
+      const dateParam = urlParams.get('date');
+      const el = id => document.getElementById(id);
+      if (el('lockReason')) el('lockReason').textContent = decodeURIComponent(reason);
+      if (el('lockRef')) el('lockRef').textContent = ref;
+      if (el('lockedBy')) el('lockedBy').textContent = lockedBy;
+      if (el('lockerInfo')) el('lockerInfo').innerHTML = '🔒 Locked by: ' + lockedBy;
+      if (el('lockDate')) {
+        if (dateParam) el('lockDate').textContent = dateParam;
+        else { const t = new Date(); el('lockDate').textContent = t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); }
+      }
+    })();
+  </script>
+</body>
+</html>

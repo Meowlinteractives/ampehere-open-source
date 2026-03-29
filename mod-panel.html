@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+    <title>Ampehere · Mod Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* === THEME OVERRIDE === */
+        :root {
+            --bg: #060606 !important;
+            --surface: #0c0c0c !important;
+            --surface2: #0a0a0a !important;
+            --border: #1a1a1a !important;
+            --border2: #222222 !important;
+        }
+        body { background: #060606 !important; }
+        *, *::before, *::after { border-radius: 0 !important; }
+
+        :root {
+            --bg:       #080d14;
+            --surface:  #0e1520;
+            --surface2: #131d2a;
+            --border:   #1a2535;
+            --border2:  #243044;
+            --text:     #d8e4f0;
+            --text2:    #7a96b0;
+            --muted:    #3a5068;
+            --accent:   #4ade80;
+            --deny:     #f87171;
+            --warn:     #fbbf24;
+            --mono:     'Exo 2', sans-serif;
+            --sans:     'Exo 2', sans-serif;
+            --sidebar-w: 210px;
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html, body { height:100%; overflow:hidden; }
+
+        body {
+            background: var(--bg);
+            font-family: var(--sans);
+            color: var(--text);
+            display: flex;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            background: var(--surface);
+            border-right: 1px solid var(--border2);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: fixed;
+            left:0; top:0;
+            z-index: 100;
+            transition: transform .25s cubic-bezier(.4,0,.2,1);
+        }
+
+        .sidebar-brand {
+            padding: 1.1rem 1.1rem .9rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+        }
+        .brand-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+            flex-shrink: 0;
+            animation: blink 2.5s ease-in-out infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
+        .brand-text { font-family: var(--mono); }
+        .brand-name { font-size: .82rem; font-weight: 700; color: var(--text); letter-spacing: .04em; }
+        .brand-role { font-size: .6rem; color: var(--muted); margin-top: .1rem; letter-spacing: .06em; text-transform: uppercase; }
+
+        .sidebar-nav { flex:1; padding: .5rem 0; overflow-y: auto; scrollbar-width: none; }
+        .sidebar-nav::-webkit-scrollbar { display:none; }
+
+        .nav-group-label {
+            padding: .6rem 1rem .2rem;
+            font-family: var(--mono);
+            font-size: .55rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: .55rem;
+            padding: .45rem 1rem;
+            cursor: pointer;
+            transition: background .1s, color .1s;
+            border-left: 2px solid transparent;
+            font-size: .82rem;
+            font-weight: 600;
+            color: var(--text2);
+            user-select: none;
+        }
+        .nav-item:hover { background: rgba(255,255,255,.035); color: var(--text); }
+        .nav-item.active {
+            background: rgba(74,222,128,.06);
+            color: var(--accent);
+            border-left-color: var(--accent);
+        }
+        .nav-icon { font-size: .85rem; width:18px; text-align:center; flex-shrink:0; }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--deny);
+            color: #fff;
+            font-family: var(--mono);
+            font-size: .58rem;
+            font-weight: 700;
+            padding: .1rem .32rem;
+            border-radius: 0;
+            min-width: 16px;
+            text-align: center;
+            display: none;
+        }
+        .nav-badge.visible { display: block; }
+
+        .sidebar-footer {
+            padding: .85rem 1rem;
+            border-top: 1px solid var(--border);
+        }
+        .session-pill {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            font-family: var(--mono);
+            font-size: .65rem;
+            color: var(--muted);
+        }
+        .session-dot {
+            width:6px; height:6px; border-radius:50%;
+            background: var(--accent);
+            box-shadow: 0 0 5px var(--accent);
+            animation: blink 2s infinite;
+            flex-shrink:0;
+        }
+        .session-pill.warning .session-dot { background: var(--warn); box-shadow: 0 0 5px var(--warn); }
+        .session-pill.warning { color: var(--warn); }
+
+        /* ── MAIN ── */
+        .main {
+            margin-left: var(--sidebar-w);
+            flex:1;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .75rem 1.5rem;
+            background: rgba(14,21,32,.96);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top:0; z-index:50;
+        }
+        .topbar-path {
+            font-family: var(--mono);
+            font-size: .72rem;
+            color: var(--muted);
+            flex:1;
+        }
+        .topbar-path span { color: var(--text); }
+
+        .refresh-btn {
+            display: flex; align-items: center; gap: .35rem;
+            padding: .35rem .8rem;
+            background: transparent;
+            border: 1px solid var(--border2);
+            color: var(--text2);
+            font-family: var(--mono);
+            font-size: .65rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .13s;
+            border-radius: 0;
+        }
+        .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .refresh-btn.spinning .icon { display: inline-block; animation: spin .6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── CONTENT ── */
+        .content { padding: 1.5rem; flex:1; }
+
+        .tab-pane { display:none; }
+        .tab-pane.active { display:block; animation: fadeUp .18s ease; }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:none} }
+
+        /* Stats row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: .6rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 0;
+            padding: .85rem 1rem;
+        }
+        .stat-label {
+            font-family: var(--mono);
+            font-size: .56rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 600;
+        }
+        .stat-value {
+            font-family: var(--mono);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: .2rem;
+            line-height: 1;
+        }
+        .stat-value.has-pending { color: var(--deny); }
+
+        /* Section head */
+        .section-head {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            margin-bottom: .85rem;
+        }
+        .section-title {
+            font-family: var(--mono);
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--text2);
+            white-space: nowrap;
+        }
+        .section-line { flex:1; height:1px; background: var(--border); }
+        .count-tag {
+            font-family: var(--mono);
+            font-size: .6rem;
+            color: var(--muted);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: .12rem .4rem;
+            border-radius: 0;
+            white-space: nowrap;
+        }
+
+        /* Queue cards */
+        .queue { display:flex; flex-direction:column; gap:.45rem; }
+
+        .queue-card {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 0;
+            padding: .9rem 1.1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: .85rem;
+            transition: background .12s, border-color .12s;
+            animation: slideIn .2s ease both;
+        }
+        @keyframes slideIn { from{opacity:0;transform:translateX(-5px)} to{opacity:1;transform:none} }
+        .queue-card:hover { background: var(--surface2); border-color: var(--border2); }
+        .queue-card.acting { border-left: 2px solid var(--accent); opacity: .6; }
+
+        .card-tag {
+            font-family: var(--mono);
+            font-size: .58rem;
+            color: var(--muted);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: .15rem .4rem;
+            border-radius: 0;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            flex-shrink: 0;
+            margin-top: .1rem;
+        }
+        .card-body { flex:1; min-width:0; }
+        .card-title {
+            font-size: .88rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: .15rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .card-meta {
+            font-family: var(--mono);
+            font-size: .64rem;
+            color: var(--muted);
+            margin-bottom: .3rem;
+        }
+        .card-preview {
+            font-size: .78rem;
+            color: var(--text2);
+            line-height: 1.45;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .card-actions {
+            display: flex;
+            gap: .35rem;
+            flex-shrink: 0;
+            align-items: flex-start;
+        }
+
+        /* Buttons */
+        .btn-approve, .btn-deny, .btn-neutral {
+            padding: .35rem .7rem;
+            border-radius: 0;
+            font-family: var(--mono);
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .12s;
+            border: 1px solid;
+        }
+        .btn-approve { background: rgba(74,222,128,.1); color: var(--accent); border-color: rgba(74,222,128,.3); }
+        .btn-approve:hover:not(:disabled) { background: var(--accent); color: #051510; }
+        .btn-deny    { background: rgba(248,113,113,.1); color: var(--deny); border-color: rgba(248,113,113,.3); }
+        .btn-deny:hover:not(:disabled)    { background: var(--deny); color: #fff; }
+        .btn-neutral { background: rgba(255,255,255,.05); color: var(--text2); border-color: var(--border2); }
+        .btn-neutral:hover:not(:disabled) { background: rgba(255,255,255,.09); color: var(--text); }
+        .btn-approve:disabled, .btn-deny:disabled, .btn-neutral:disabled { opacity:.3; cursor:not-allowed; }
+
+        /* Empty state */
+        .empty-state {
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            color: var(--muted);
+            border: 1px dashed var(--border2);
+            border-radius: 0;
+        }
+        .empty-state .icon { font-size:1.75rem; margin-bottom:.5rem; }
+        .empty-state .msg  { font-family: var(--mono); font-size:.72rem; letter-spacing:.05em; }
+        .empty-state .sub  { font-size:.74rem; margin-top:.2rem; opacity:.55; }
+
+        /* Log table */
+        .log-wrap { background: var(--surface); border: 1px solid var(--border2); border-radius:0; overflow:auto; }
+        .log-table { width:100%; border-collapse:collapse; font-size:.8rem; }
+        .log-table th {
+            font-family: var(--mono); font-size:.57rem; letter-spacing:.1em;
+            text-transform:uppercase; color: var(--muted); font-weight:600;
+            padding:.55rem 1rem; text-align:left;
+            background: var(--bg); border-bottom: 1px solid var(--border2);
+        }
+        .log-table td { padding:.65rem 1rem; border-bottom:1px solid var(--border); color: var(--text2); }
+        .log-table tr:hover td { background: rgba(255,255,255,.02); }
+        .action-pill {
+            font-family: var(--mono); font-size:.6rem; font-weight:700;
+            letter-spacing:.06em; padding:.12rem .4rem; border-radius:0;
+            text-transform:uppercase;
+        }
+        .action-pill.approve { background:rgba(74,222,128,.1); color: var(--accent); }
+        .action-pill.reject  { background:rgba(248,113,113,.1); color: var(--deny); }
+
+        /* Settings toggles */
+        .setting-block {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 0;
+            padding: 1.1rem 1.25rem;
+            margin-bottom: .85rem;
+        }
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .setting-name {
+            font-family: var(--mono);
+            font-size: .75rem;
+            font-weight: 700;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: .15rem;
+        }
+        .setting-desc { font-size: .76rem; color: var(--muted); }
+        .setting-status { font-family: var(--mono); font-size: .68rem; color: var(--muted); margin-top: .5rem; }
+
+        /* Toggle switch */
+        .toggle { position:relative; display:inline-block; width:40px; height:22px; flex-shrink:0; }
+        .toggle input { opacity:0; width:0; height:0; }
+        .toggle-slider {
+            position:absolute; inset:0; cursor:pointer;
+            background: var(--border2); border-radius:0;
+            transition: background .2s;
+        }
+        .toggle-slider::before {
+            content:''; position:absolute;
+            height:16px; width:16px; left:3px; bottom:3px;
+            background:#fff; border-radius:50%;
+            transition: transform .2s;
+        }
+        .toggle input:checked + .toggle-slider { background: var(--accent); }
+        .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+        /* Danger zone */
+        .danger-block {
+            background: rgba(200,40,60,.06);
+            border: 1px solid rgba(200,40,60,.2);
+            border-radius: 0;
+            padding: 1rem 1.25rem;
+            margin-top: 1.25rem;
+        }
+        .danger-title { font-family: var(--mono); font-size: .68rem; font-weight:700; color: var(--deny); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.5rem; }
+        .danger-desc  { font-size:.8rem; color: var(--text2); margin-bottom:.75rem; line-height:1.5; }
+
+        /* Report badges */
+        .report-tag {
+            font-family: var(--mono); font-size:.62rem; font-weight:700;
+            padding:.1rem .4rem; border-radius:0; text-transform:uppercase;
+        }
+        .report-tag.type { background:rgba(77,157,224,.12); color:#8eaac4; border:1px solid rgba(77,157,224,.2); }
+        .report-tag.reason { background:rgba(220,80,80,.1); color:#ee8080; border:1px solid rgba(220,80,80,.2); }
+        .report-tag.escalated { background:rgba(251,191,36,.1); color: var(--warn); border:1px solid rgba(251,191,36,.25); }
+
+        /* Toast */
+        #toast-area {
+            position:fixed; bottom:1.25rem; right:1.25rem; z-index:999;
+            display:flex; flex-direction:column; gap:.4rem; pointer-events:none;
+        }
+        .toast {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-left: 3px solid var(--accent);
+            padding: .55rem .9rem;
+            font-family: var(--mono);
+            font-size: .68rem;
+            color: var(--text);
+            min-width: 220px;
+            border-radius: 0;
+            animation: toastIn .2s ease;
+            letter-spacing: .02em;
+        }
+        .toast.error { border-left-color: var(--deny); }
+        .toast.fade-out { animation: toastOut .2s ease forwards; }
+        @keyframes toastIn  { from{opacity:0;transform:translateX(10px)} to{opacity:1;transform:none} }
+        @keyframes toastOut { to{opacity:0;transform:translateX(10px)} }
+
+        /* Skeleton */
+        .skeleton {
+            height:68px; border-radius:0; margin-bottom:.45rem;
+            background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+        }
+        @keyframes shimmer { to { background-position: -200% 0; } }
+
+        /* Mobile hamburger */
+        .mob-btn {
+            display:none;
+            flex-direction:column; justify-content:center; align-items:center; gap:5px;
+            width:32px; height:32px;
+            background:transparent; border:1px solid var(--border2);
+            border-radius:0; cursor:pointer; padding:0; flex-shrink:0;
+        }
+        .mob-btn span { display:block; width:15px; height:2px; background:var(--text2); border-radius:0; transition:all .2s; }
+        .mob-btn:hover { border-color: var(--accent); }
+        .mob-btn:hover span { background: var(--accent); }
+
+        #mob-overlay {
+            display:none; position:fixed; inset:0;
+            background:rgba(0,0,0,.65); z-index:99;
+        }
+        #mob-overlay.open { display:block; }
+
+        /* Responsive */
+        @media (max-width:900px) { .stats-row { grid-template-columns: repeat(3,1fr); } }
+        @media (max-width:640px) {
+            :root { --sidebar-w: 0px; }
+            .sidebar { transform: translateX(-100%); width: 210px; }
+            .sidebar.mob-open { transform: translateX(0); }
+            .main { margin-left:0; }
+            .mob-btn { display:flex; }
+            .content { padding:1rem; }
+            .stats-row { grid-template-columns: repeat(2,1fr); gap:.5rem; margin-bottom:1rem; }
+            .topbar { padding:.6rem 1rem; }
+            .queue-card { flex-wrap:wrap; }
+            .card-actions { width:100%; }
+        }
+        @media (max-width:400px) {
+            .stats-row { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-dot"></div>
+        <div class="brand-text">
+            <div class="brand-name">Mod Panel</div>
+            <div class="brand-role">Ampehere</div>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <div class="nav-group-label">Queues</div>
+        <div class="nav-item active" onclick="switchTab('users')"  id="nav-users"><span class="nav-icon">👤</span>Users<span class="nav-badge" id="badge-users">0</span></div>
+        <div class="nav-item"        onclick="switchTab('shouts')" id="nav-shouts"><span class="nav-icon">💬</span>Shouts<span class="nav-badge" id="badge-shouts">0</span></div>
+        <div class="nav-item"        onclick="switchTab('topics')" id="nav-topics"><span class="nav-icon">📋</span>Topics<span class="nav-badge" id="badge-topics">0</span></div>
+        <div class="nav-item"        onclick="switchTab('posts')"  id="nav-posts"><span class="nav-icon">📝</span>Posts<span class="nav-badge" id="badge-posts">0</span></div>
+        <div class="nav-item"        onclick="switchTab('groups')" id="nav-groups"><span class="nav-icon">🏘️</span>Groups<span class="nav-badge" id="badge-groups">0</span></div>
+        <div class="nav-item"        onclick="switchTab('bios')"   id="nav-bios"><span class="nav-icon">✏️</span>Bios<span class="nav-badge" id="badge-bios">0</span></div>
+        <div class="nav-item"        onclick="switchTab('games')"  id="nav-games"><span class="nav-icon">🎮</span>Games<span class="nav-badge" id="badge-games"></span></div>
+        <div class="nav-item"        onclick="switchTab('reports')"id="nav-reports"><span class="nav-icon">🚩</span>Reports<span class="nav-badge" id="badge-reports">0</span></div>
+        <div class="nav-item"        onclick="switchTab('dms')"    id="nav-dms"><span class="nav-icon">✉️</span>DMs<span class="nav-badge" id="badge-dms">0</span></div>
+
+        <div id="nav-section-owner" style="display:none;">
+            <div class="nav-group-label" style="margin-top:.4rem;">Owner</div>
+            <div class="nav-item" onclick="switchTab('log')"       id="nav-log"><span class="nav-icon">📊</span>Activity Log</div>
+            <div class="nav-item" onclick="switchTab('escalated')" id="nav-escalated"><span class="nav-icon">🔺</span>Escalated<span class="nav-badge" id="badge-escalated">0</span></div>
+            <div class="nav-item" onclick="switchTab('settings')"  id="nav-settings"><span class="nav-icon">⚙️</span>Site Settings</div>
+        </div>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="session-pill" id="sessionPill">
+            <span class="session-dot"></span>
+            <span id="timerDisplay">60:00</span>
+            <span>session left</span>
+        </div>
+    </div>
+</aside>
+
+<div id="mob-overlay" onclick="closeSidebar()"></div>
+
+<!-- MAIN -->
+<main class="main">
+    <div class="topbar">
+        <button class="mob-btn" id="mobBtn" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+        <div class="topbar-path" id="topbarPath">ampehere / mod-panel / <span>users</span></div>
+        <button class="refresh-btn" id="refreshBtn" onclick="refreshAll()"><span class="icon">↻</span> Refresh</button>
+    </div>
+
+    <div class="content">
+
+        <!-- USERS -->
+        <div class="tab-pane active" id="tab-users">
+            <div class="stats-row" id="statsRow">
+                <div class="stat-card"><div class="stat-label">Pending Users</div><div class="stat-value" id="stat-users">—</div></div>
+                <div class="stat-card"><div class="stat-label">Pending Shouts</div><div class="stat-value" id="stat-shouts">—</div></div>
+                <div class="stat-card"><div class="stat-label">Forum Topics</div><div class="stat-value" id="stat-topics">—</div></div>
+                <div class="stat-card"><div class="stat-label">Forum Posts</div><div class="stat-value" id="stat-posts">—</div></div>
+                <div class="stat-card"><div class="stat-label">Pending Groups</div><div class="stat-value" id="stat-groups">—</div></div>
+            </div>
+            <div class="section-head"><div class="section-title">Pending Users</div><div class="section-line"></div><div class="count-tag" id="count-users">0 items</div></div>
+            <div class="queue" id="queue-users"><div class="skeleton"></div><div class="skeleton"></div></div>
+        </div>
+
+        <!-- SHOUTS -->
+        <div class="tab-pane" id="tab-shouts">
+            <div class="section-head"><div class="section-title">Pending Shouts</div><div class="section-line"></div><div class="count-tag" id="count-shouts">0 items</div></div>
+            <div class="queue" id="queue-shouts"><div class="skeleton"></div><div class="skeleton"></div></div>
+        </div>
+
+        <!-- TOPICS -->
+        <div class="tab-pane" id="tab-topics">
+            <div class="section-head"><div class="section-title">Pending Forum Topics</div><div class="section-line"></div><div class="count-tag" id="count-topics">0 items</div></div>
+            <div class="queue" id="queue-topics"><div class="skeleton"></div><div class="skeleton"></div></div>
+        </div>
+
+        <!-- POSTS -->
+        <div class="tab-pane" id="tab-posts">
+            <div class="section-head"><div class="section-title">Pending Forum Posts</div><div class="section-line"></div><div class="count-tag" id="count-posts">0 items</div></div>
+            <div class="queue" id="queue-posts"><div class="skeleton"></div><div class="skeleton"></div></div>
+        </div>
+
+        <!-- GROUPS -->
+        <div class="tab-pane" id="tab-groups">
+            <div class="section-head"><div class="section-title">Pending Groups</div><div class="section-line"></div><div class="count-tag" id="count-groups">0 items</div></div>
+            <div class="queue" id="queue-groups"><div class="skeleton"></div><div class="skeleton"></div></div>
+        </div>
+
+        <!-- BIOS -->
+        <div class="tab-pane" id="tab-bios">
+            <div class="section-head"><div class="section-title">Pending Bios</div><div class="section-line"></div><div class="count-tag" id="count-bios">0 items</div></div>
+            <div class="queue" id="queue-bios"><div class="skeleton"></div><div class="skeleton"></div></div>
+        </div>
+
+        <!-- GAMES -->
+        <div class="tab-pane" id="tab-games">
+            <div class="section-head"><div class="section-title">Pending Games</div><div class="section-line"></div><div class="count-tag" id="games-count-tag">—</div></div>
+            <div class="queue" id="games-list"><div class="skeleton"></div><div class="skeleton"></div></div>
+        </div>
+
+        <!-- REPORTS -->
+        <div class="tab-pane" id="tab-reports">
+            <div class="section-head"><div class="section-title">User Reports</div><div class="section-line"></div><div class="count-tag" id="count-reports">0 pending</div></div>
+            <div class="queue" id="queue-reports"><div class="skeleton"></div><div class="skeleton"></div></div>
+        </div>
+
+        <div class="tab-pane" id="tab-dms">
+            <div class="section-head"><div class="section-title">Pending Direct Messages</div><div class="section-line"></div><div class="count-tag" id="count-dms">0 pending</div></div>
+            <div class="queue" id="queue-dms"><div class="skeleton"></div><div class="skeleton"></div></div>
+        </div>
+
+        <!-- LOG (owner only) -->
+        <div class="tab-pane" id="tab-log">
+            <div class="section-head"><div class="section-title">Activity Log</div><div class="section-line"></div><div class="count-tag">Last 200 actions</div></div>
+            <div class="log-wrap">
+                <table class="log-table">
+                    <thead><tr><th>Action</th><th>Target</th><th>Moderator</th><th>Time</th></tr></thead>
+                    <tbody id="log-body"><tr><td colspan="4" style="color:var(--muted);font-family:var(--mono);font-size:.7rem;">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ESCALATED (owner only) -->
+        <div class="tab-pane" id="tab-escalated">
+            <div class="section-head"><div class="section-title">Escalated Reports</div><div class="section-line"></div><div class="count-tag" id="count-escalated">Owner only</div></div>
+            <div class="queue" id="queue-escalated"><div class="skeleton"></div><div class="skeleton"></div></div>
+        </div>
+
+        <!-- SETTINGS (owner only) -->
+        <div class="tab-pane" id="tab-settings">
+            <div class="section-head"><div class="section-title">Site Settings</div><div class="section-line"></div><div class="count-tag">Owner only</div></div>
+
+            <div class="setting-block">
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-name">🔧 Maintenance Mode</div>
+                        <div class="setting-desc">When on, all visitors see the maintenance page. You can still access everything.</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" id="maintenance-toggle-input" onchange="toggleMaintenance(this.checked)"><span class="toggle-slider"></span></label>
+                </div>
+                <div style="margin-top:.75rem;">
+                    <div style="font-size:.65rem;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem;">Message shown to users</div>
+                    <textarea id="maintenance-message" rows="3" oninput="scheduleMsgSave()"
+                        style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:0;color:var(--text);font-family:var(--mono);font-size:.76rem;padding:.5rem .7rem;resize:vertical;outline:none;"
+                        placeholder="Ampehere is undergoing scheduled maintenance. Check back soon!"></textarea>
+                </div>
+                <div class="setting-status" id="maintenance-status">Loading...</div>
+            </div>
+
+            <div class="setting-block">
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-name">📝 Registrations</div>
+                        <div class="setting-desc">When off, the signup page is disabled and new accounts cannot be created.</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" id="registrations-toggle-input" onchange="toggleRegistrations(this.checked)"><span class="toggle-slider"></span></label>
+                </div>
+                <div class="setting-status" id="registrations-status">Loading...</div>
+            </div>
+
+            <div class="danger-block">
+                <div class="danger-title">🗑 Locked Account Purge</div>
+                <div class="danger-desc">Permanently deletes all accounts locked for 48+ hours, including all their content (games, posts, groups, trades). This cannot be undone.</div>
+                <button onclick="purgeLocked()" id="purgeBtn" style="background:rgba(200,40,60,.25);border:1px solid rgba(220,60,60,.4);border-radius:0;color:var(--deny);font-family:var(--mono);font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.4rem 1rem;cursor:pointer;">Run Purge</button>
+                <div class="setting-status" id="purge-status"></div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<div id="toast-area"></div>
+
+<script>
+// ── Security: gated server-side by functions/mod-panel.js ──────────
+// If this JS is running, the Cloudflare Pages Function already verified
+// the session has is_mod=1 + 2FA, or is_owner=1. No client-side auth needed.
+
+// ── API helper ─────────────────────────────────────────────────────
+async function apiFetch(url, opts = {}) {
+    opts.credentials = 'include';
+    opts.headers = { ...(opts.headers || {}), 'Content-Type': 'application/json' };
+    try {
+        const res = await fetch(url, opts);
+        if (res.status === 403) { toast('Session error — try refreshing', true); return null; }
+        return res.json();
+    } catch { toast('Network error', true); return null; }
+}
+
+// ── XSS-safe escaping ──────────────────────────────────────────────
+function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function timeAgo(ts) {
+    const d = Date.now() - ts;
+    if (d < 60000)    return 'just now';
+    if (d < 3600000)  return Math.floor(d/60000) + 'm ago';
+    if (d < 86400000) return Math.floor(d/3600000) + 'h ago';
+    return Math.floor(d/86400000) + 'd ago';
+}
+function fmtDate(ts) {
+    if (!ts) return '—';
+    return new Date(ts).toLocaleString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+}
+
+// ── Toast ──────────────────────────────────────────────────────────
+function toast(msg, isError = false) {
+    const area = document.getElementById('toast-area');
+    const el = document.createElement('div');
+    el.className = 'toast' + (isError ? ' error' : '');
+    el.textContent = msg;
+    area.appendChild(el);
+    setTimeout(() => { el.classList.add('fade-out'); setTimeout(() => el.remove(), 250); }, 2800);
+}
+
+// ── Session countdown ──────────────────────────────────────────────
+const SESSION_MS = 60 * 60 * 1000;
+const LOGIN_TIME = Date.now();
+function updateTimer() {
+    const left = Math.max(0, SESSION_MS - (Date.now() - LOGIN_TIME));
+    const mins = Math.floor(left / 60000);
+    const secs = Math.floor((left % 60000) / 1000);
+    const el = document.getElementById('timerDisplay');
+    if (el) el.textContent = String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
+    const pill = document.getElementById('sessionPill');
+    if (pill) pill.classList.toggle('warning', mins < 5);
+    if (left === 0) window.location.href = '/login.html';
+}
+setInterval(updateTimer, 1000);
+updateTimer();
+
+// ── Mobile sidebar ─────────────────────────────────────────────────
+function toggleSidebar() {
+    const open = document.getElementById('sidebar').classList.toggle('mob-open');
+    document.getElementById('mob-overlay').classList.toggle('open', open);
+}
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('mob-open');
+    document.getElementById('mob-overlay').classList.remove('open');
+}
+document.querySelectorAll('.nav-item').forEach(el =>
+    el.addEventListener('click', () => { if (window.innerWidth <= 640) closeSidebar(); })
+);
+
+// ── Tab switching ──────────────────────────────────────────────────
+let activeTab = 'users';
+function switchTab(tab) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('tab-' + tab)?.classList.add('active');
+    document.getElementById('nav-' + tab)?.classList.add('active');
+    activeTab = tab;
+    const path = document.getElementById('topbarPath');
+    if (path) path.innerHTML = 'ampehere / mod-panel / <span>' + esc(tab) + '</span>';
+    if (tab === 'log')       loadLog();
+    if (tab === 'games')     loadPendingGames();
+    if (tab === 'settings')  loadSettings();
+    if (tab === 'reports')   loadReports();
+    if (tab === 'escalated') loadEscalated();
+    if (tab === 'dms')       loadPendingDMs();
+}
+
+// ── Badge + count helpers ──────────────────────────────────────────
+function setBadge(id, count) {
+    const el   = document.getElementById('badge-' + id);
+    const stat = document.getElementById('stat-' + id);
+    if (el)   { el.textContent = count; el.classList.toggle('visible', count > 0); }
+    if (stat) { stat.textContent = count; stat.classList.toggle('has-pending', count > 0); }
+}
+function setCount(id, count) {
+    const el = document.getElementById('count-' + id);
+    if (el) el.textContent = count + (count === 1 ? ' item' : ' items');
+}
+function setCardActing(id) {
+    const card = document.getElementById(id);
+    if (!card) return;
+    card.classList.add('acting');
+    card.querySelectorAll('button, a').forEach(b => b.disabled = true);
+}
+function removeCard(id) {
+    const card = document.getElementById(id);
+    if (!card) return;
+    card.style.transition = 'opacity .18s, transform .18s';
+    card.style.opacity = '0';
+    card.style.transform = 'translateX(-6px)';
+    setTimeout(() => card.remove(), 200);
+}
+
+function emptyState(icon, msg, sub) {
+    return `<div class="empty-state"><div class="icon">${icon}</div><div class="msg">${esc(msg)}</div><div class="sub">${esc(sub)}</div></div>`;
+}
+
+// ── USERS ──────────────────────────────────────────────────────────
+async function loadUsers() {
+    const data = await apiFetch('/api/mod/get-pending-users');
+    if (!data) return;
+    const queue = document.getElementById('queue-users');
+    const users = data.users || [];
+    setBadge('users', users.length);
+    setCount('users', users.length);
+    if (!users.length) { queue.innerHTML = emptyState('✓', 'All clear', 'No pending users'); return; }
+    queue.innerHTML = users.map(u => `
+        <div class="queue-card" id="ucard-${esc(u.username)}">
+            <div class="card-tag">User</div>
+            <div class="card-body">
+                <div class="card-title">${esc(u.username)}</div>
+                <div class="card-meta">Requested ${timeAgo(u.requested_at)}</div>
+            </div>
+            <div class="card-actions">
+                <button class="btn-approve" onclick="approveUser('${esc(u.username)}')">Approve</button>
+                <button class="btn-deny"    onclick="denyUser('${esc(u.username)}')">Deny</button>
+            </div>
+        </div>`).join('');
+}
+async function approveUser(username) {
+    if (!confirm(`Approve @${username}?`)) return;
+    setCardActing('ucard-' + username);
+    const data = await apiFetch('/api/mod/approve-user', { method:'POST', body:JSON.stringify({ username }) });
+    if (data?.success) { toast(`✓ Approved ${username}`); removeCard('ucard-' + username); loadUsers(); }
+    else toast(data?.error || 'Failed', true);
+}
+async function denyUser(username) {
+    if (!confirm(`Deny and delete @${username}? This cannot be undone.`)) return;
+    setCardActing('ucard-' + username);
+    const data = await apiFetch('/api/mod/reject-user', { method:'POST', body:JSON.stringify({ username }) });
+    if (data?.success) { toast(`✗ Denied ${username}`); removeCard('ucard-' + username); loadUsers(); }
+    else toast(data?.error || 'Failed', true);
+}
+
+// ── SHOUTS ─────────────────────────────────────────────────────────
+async function loadShouts() {
+    const data = await apiFetch('/api/get-pending-shouts');
+    if (!data) return;
+    const queue = document.getElementById('queue-shouts');
+    const shouts = data.pendingShouts || [];
+    setBadge('shouts', shouts.length);
+    setCount('shouts', shouts.length);
+    if (!shouts.length) { queue.innerHTML = emptyState('✓', 'All clear', 'No pending shouts'); return; }
+    queue.innerHTML = shouts.map(s => `
+        <div class="queue-card" id="scard-${esc(s.id)}">
+            <div class="card-tag">Shout</div>
+            <div class="card-body">
+                <div class="card-title">${esc(s.username)} → ${esc(s.group_name || 'Unknown group')}</div>
+                <div class="card-meta">${timeAgo(s.created_at)}</div>
+                <div class="card-preview">${esc(s.message)}</div>
+            </div>
+            <div class="card-actions">
+                <button class="btn-approve" onclick="approveShout('${esc(s.id)}')">Approve</button>
+                <button class="btn-deny"    onclick="denyShout('${esc(s.id)}')">Deny</button>
+            </div>
+        </div>`).join('');
+}
+async function approveShout(id) {
+    setCardActing('scard-' + id);
+    const data = await apiFetch('/api/approve-shout', { method:'POST', body:JSON.stringify({ shoutId:id }) });
+    if (data?.success) { toast('✓ Shout approved'); removeCard('scard-' + id); loadShouts(); }
+    else toast(data?.error || 'Failed', true);
+}
+async function denyShout(id) {
+    if (!confirm('Deny and delete this shout?')) return;
+    setCardActing('scard-' + id);
+    const data = await apiFetch('/api/reject-shout', { method:'POST', body:JSON.stringify({ shoutId:id }) });
+    if (data?.success) { toast('✗ Shout denied'); removeCard('scard-' + id); loadShouts(); }
+    else toast(data?.error || 'Failed', true);
+}
+
+// ── TOPICS ─────────────────────────────────────────────────────────
+async function loadTopics() {
+    const data = await apiFetch('/api/mod/get-pending-topics');
+    if (!data) return;
+    const queue = document.getElementById('queue-topics');
+    const topics = data.topics || [];
+    setBadge('topics', topics.length);
+    setCount('topics', topics.length);
+    if (!topics.length) { queue.innerHTML = emptyState('✓', 'All clear', 'No pending topics'); return; }
+    queue.innerHTML = topics.map(t => `
+        <div class="queue-card" id="tcard-${esc(t.id)}">
+            <div class="card-tag">Topic</div>
+            <div class="card-body">
+                <div class="card-title">${esc(t.title)}</div>
+                <div class="card-meta">by ${esc(t.author)} · ${timeAgo(t.created_at)}</div>
+                ${t.content ? `<div class="card-preview">${esc(t.content)}</div>` : ''}
+            </div>
+            <div class="card-actions">
+                <button class="btn-approve" onclick="approveTopic('${esc(t.id)}')">Approve</button>
+                <button class="btn-deny"    onclick="denyTopic('${esc(t.id)}')">Deny</button>
+            </div>
+        </div>`).join('');
+}
+async function approveTopic(id) {
+    setCardActing('tcard-' + id);
+    const data = await apiFetch('/api/mod/approve-topic', { method:'POST', body:JSON.stringify({ topicId:id }) });
+    if (data?.success) { toast('✓ Topic approved'); removeCard('tcard-' + id); loadTopics(); }
+    else toast(data?.error || 'Failed', true);
+}
+async function denyTopic(id) {
+    if (!confirm('Deny and delete this topic?')) return;
+    setCardActing('tcard-' + id);
+    const data = await apiFetch('/api/mod/reject-topic', { method:'POST', body:JSON.stringify({ topicId:id }) });
+    if (data?.success) { toast('✗ Topic denied'); removeCard('tcard-' + id); loadTopics(); }
+    else toast(data?.error || 'Failed', true);
+}
+
+// ── POSTS ──────────────────────────────────────────────────────────
+async function loadPosts() {
+    const data = await apiFetch('/api/mod/get-pending-posts');
+    if (!data) return;
+    const queue = document.getElementById('queue-posts');
+    const posts = data.posts || [];
+    setBadge('posts', posts.length);
+    setCount('posts', posts.length);
+    if (!posts.length) { queue.innerHTML = emptyState('✓', 'All clear', 'No pending posts'); return; }
+    queue.innerHTML = posts.map(p => `
+        <div class="queue-card" id="pcard-${esc(p.id)}">
+            <div class="card-tag">Post</div>
+            <div class="card-body">
+                <div class="card-title">In: ${esc(p.topicTitle || 'Unknown topic')}</div>
+                <div class="card-meta">by ${esc(p.author)} · ${timeAgo(p.created_at)}</div>
+                <div class="card-preview">${esc(p.content)}</div>
+            </div>
+            <div class="card-actions">
+                <button class="btn-approve" onclick="approvePost('${esc(p.id)}')">Approve</button>
+                <button class="btn-deny"    onclick="denyPost('${esc(p.id)}')">Deny</button>
+            </div>
+        </div>`).join('');
+}
+async function approvePost(id) {
+    setCardActing('pcard-' + id);
+    const data = await apiFetch('/api/mod/approve-post', { method:'POST', body:JSON.stringify({ postId:id }) });
+    if (data?.success) { toast('✓ Post approved'); removeCard('pcard-' + id); loadPosts(); }
+    else toast(data?.error || 'Failed', true);
+}
+async function denyPost(id) {
+    if (!confirm('Deny and delete this post?')) return;
+    setCardActing('pcard-' + id);
+    const data = await apiFetch('/api/mod/reject-post', { method:'POST', body:JSON.stringify({ postId:id }) });
+    if (data?.success) { toast('✗ Post denied'); removeCard('pcard-' + id); loadPosts(); }
+    else toast(data?.error || 'Failed', true);
+}
+
+// ── GROUPS ─────────────────────────────────────────────────────────
+async function loadGroups() {
+    const data = await apiFetch('/api/mod/get-pending-groups');
+    if (!data) return;
+    const queue = document.getElementById('queue-groups');
+    const groups = data.groups || [];
+    setBadge('groups', groups.length);
+    setCount('groups', groups.length);
+    if (!groups.length) { queue.innerHTML = emptyState('✓', 'All clear', 'No pending groups'); return; }
+    queue.innerHTML = groups.map(g => `
+        <div class="queue-card" id="gcard-${esc(g.id)}">
+            <div class="card-tag">Group</div>
+            <div class="card-body">
+                <div class="card-title">${esc(g.name)}</div>
+                <div class="card-meta">by ${esc(g.created_by || 'unknown')} · ${timeAgo(g.requested_at)}</div>
+            </div>
+            <div class="card-actions">
+                <button class="btn-approve" onclick="approveGroup('${esc(g.id)}')">Approve</button>
+                <button class="btn-deny"    onclick="denyGroup('${esc(g.id)}')">Deny</button>
+            </div>
+        </div>`).join('');
+}
+async function approveGroup(id) {
+    setCardActing('gcard-' + id);
+    const data = await apiFetch('/api/mod/approve-group', { method:'POST', body:JSON.stringify({ groupId:id }) });
+    if (data?.success) { toast('✓ Group approved'); removeCard('gcard-' + id); loadGroups(); }
+    else toast(data?.error || 'Failed', true);
+}
+async function denyGroup(id) {
+    if (!confirm('Deny and delete this group? Cannot be undone.')) return;
+    setCardActing('gcard-' + id);
+    const data = await apiFetch('/api/mod/reject-group', { method:'POST', body:JSON.stringify({ groupId:id }) });
+    if (data?.success) { toast('✗ Group denied'); removeCard('gcard-' + id); loadGroups(); }
+    else toast(data?.error || 'Failed', true);
+}
+
+// ── BIOS ───────────────────────────────────────────────────────────
+async function loadBios() {
+    const data = await apiFetch('/api/get-pending-bios');
+    if (!data) return;
+    const queue = document.getElementById('queue-bios');
+    const bios = data.pendingBios || [];
+    setBadge('bios', bios.length);
+    setCount('bios', bios.length);
+    if (!bios.length) { queue.innerHTML = emptyState('✓', 'All clear', 'No pending bios'); return; }
+    queue.innerHTML = bios.map(b => `
+        <div class="queue-card" id="bcard-${esc(b.id)}">
+            <div class="card-tag">Bio</div>
+            <div class="card-body">
+                <div class="card-title">${esc(b.username)}</div>
+                <div class="card-meta">${timeAgo(b.submitted_at)}</div>
+                <div class="card-preview" style="font-style:italic;">"${esc(b.bio)}"</div>
+            </div>
+            <div class="card-actions">
+                <button class="btn-approve" onclick="approveBio('${esc(b.id)}')">Approve</button>
+                <button class="btn-deny"    onclick="denyBio('${esc(b.id)}')">Deny</button>
+            </div>
+        </div>`).join('');
+}
+async function approveBio(id) {
+    setCardActing('bcard-' + id);
+    const data = await apiFetch('/api/approve-bio', { method:'POST', body:JSON.stringify({ bioId:id }) });
+    if (data?.success) { toast('✓ Bio approved'); removeCard('bcard-' + id); loadBios(); }
+    else toast(data?.error || 'Failed', true);
+}
+async function denyBio(id) {
+    if (!confirm('Deny and delete this bio?')) return;
+    setCardActing('bcard-' + id);
+    const data = await apiFetch('/api/reject-bio', { method:'POST', body:JSON.stringify({ bioId:id }) });
+    if (data?.success) { toast('✗ Bio denied'); removeCard('bcard-' + id); loadBios(); }
+    else toast(data?.error || 'Failed', true);
+}
+
+// ── GAMES ──────────────────────────────────────────────────────────
+const SKYBOX_EMO = { none:'🌫',day:'☀️',sunset:'🌅',space:'🌌',nebula:'🔭',city:'🏙',storm:'⛈',desert:'🏜',underwater:'🌊',arctic:'❄️',volcano:'🌋' };
+
+async function loadPendingGames() {
+    const list = document.getElementById('games-list');
+    list.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
+    const data = await apiFetch('/api/games/list?status=pending');
+    const games = data?.games || [];
+    setBadge('games', games.length);
+    const tag = document.getElementById('games-count-tag');
+    if (tag) tag.textContent = games.length + ' pending';
+    if (!games.length) { list.innerHTML = emptyState('✓', 'All clear', 'No pending games'); return; }
+    list.innerHTML = games.map(g => `
+        <div class="queue-card" id="gcard-${esc(g.id)}">
+            <div class="card-tag">Game</div>
+            <div class="card-body">
+                <div class="card-title">${esc(g.title)}</div>
+                <div class="card-meta">by ${esc(g.author_name)} · ${g.block_count} blocks · ${SKYBOX_EMO[g.skybox]||'🌫'} ${esc(g.skybox)} · ${timeAgo(g.created_at)}</div>
+                ${g.description ? `<div class="card-preview">${esc(g.description)}</div>` : ''}
+            </div>
+            <div class="card-actions">
+                <a href="/game-player.html?id=${esc(g.id)}" target="_blank" class="btn-neutral" style="text-decoration:none;display:inline-flex;align-items:center;">🎮 Test</a>
+                <button class="btn-approve" onclick="approveGame('${esc(g.id)}')">Approve</button>
+                <button class="btn-deny"    onclick="denyGame('${esc(g.id)}')">Deny</button>
+            </div>
+        </div>`).join('');
+}
+async function approveGame(id) {
+    const note = prompt('Approval note (optional):') ?? '';
+    const data = await apiFetch('/api/games/moderate', { method:'POST', body:JSON.stringify({ gameId:id, action:'approve', note }) });
+    if (data?.success) { toast('✓ Game approved — now live!'); removeCard('gcard-' + id); loadPendingGames(); }
+    else toast(data?.error || 'Failed', true);
+}
+async function denyGame(id) {
+    const note = prompt('Reason for denial:') ?? '';
+    if (!note.trim()) return;
+    const data = await apiFetch('/api/games/moderate', { method:'POST', body:JSON.stringify({ gameId:id, action:'deny', note }) });
+    if (data?.success) { toast('✗ Game denied'); removeCard('gcard-' + id); loadPendingGames(); }
+    else toast(data?.error || 'Failed', true);
+}
+
+// ── REPORTS ────────────────────────────────────────────────────────
+const TYPE_LABELS   = { user:'👤 User', group:'👥 Group', game:'🎮 Game', shout:'📣 Shout', forum_post:'💬 Post', forum_topic:'📋 Topic' };
+const REASON_LABELS = { spam:'Spam', harassment:'Harassment', inappropriate:'Inappropriate', scam:'Scam', hate_speech:'Hate Speech', other:'Other' };
+
+async function loadReports() {
+    const queue = document.getElementById('queue-reports');
+    queue.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
+    const data = await apiFetch('/api/mod/get-reports');
+    const reports = data?.reports || [];
+    setBadge('reports', reports.length);
+    const ct = document.getElementById('count-reports');
+    if (ct) ct.textContent = reports.length + ' pending';
+    if (!reports.length) { queue.innerHTML = emptyState('✅', 'All clear', 'No pending reports'); return; }
+    queue.innerHTML = reports.map(r => `
+        <div class="queue-card" id="rcard-${esc(r.id)}">
+            <div class="card-tag">Report</div>
+            <div class="card-body">
+                <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.3rem;">
+                    <span class="report-tag type">${esc(TYPE_LABELS[r.type]||r.type)}</span>
+                    <span class="report-tag reason">${esc(REASON_LABELS[r.reason]||r.reason)}</span>
+                </div>
+                <div class="card-title">${esc(r.target_label)}</div>
+                <div class="card-meta">by @${esc(r.reporter)} · ${fmtDate(r.created_at)}</div>
+                ${r.details ? `<div class="card-preview">"${esc(r.details)}"</div>` : ''}
+            </div>
+            <div class="card-actions">
+                <button class="btn-approve" onclick="dismissReport('${esc(r.id)}')">Dismiss</button>
+                <button class="btn-deny"    onclick="escalateReport('${esc(r.id)}')">Escalate</button>
+            </div>
+        </div>`).join('');
+}
+async function dismissReport(id) {
+    setCardActing('rcard-' + id);
+    const data = await apiFetch('/api/mod/dismiss-report', { method:'POST', body:JSON.stringify({ reportId:id }) });
+    if (data?.success) { toast('✓ Report dismissed'); removeCard('rcard-' + id); loadReports(); }
+    else toast(data?.error || 'Failed', true);
+}
+async function escalateReport(id) {
+    setCardActing('rcard-' + id);
+    const data = await apiFetch('/api/mod/escalate-report', { method:'POST', body:JSON.stringify({ reportId:id }) });
+    if (data?.success) { toast('⬆ Escalated to owner'); removeCard('rcard-' + id); loadReports(); }
+    else toast(data?.error || 'Failed', true);
+}
+
+// ── DIRECT MESSAGES ────────────────────────────────────────────────
+async function loadPendingDMs() {
+    const queue = document.getElementById('queue-dms');
+    queue.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
+    const data = await apiFetch('/api/mod/pending-dms');
+    const dms = data?.dms || [];
+    setBadge('dms', dms.length);
+    const ct = document.getElementById('count-dms');
+    if (ct) ct.textContent = dms.length + ' pending';
+    if (!dms.length) { queue.innerHTML = emptyState('✅', 'All clear', 'No pending messages'); return; }
+    queue.innerHTML = dms.map(dm => `
+        <div class="queue-card" id="dmcard-${esc(dm.id)}">
+            <div class="card-tag">DM</div>
+            <div class="card-body">
+                <div class="card-title" style="font-size:.8rem;color:#8eaac4;">@${esc(dm.from_username)} → @${esc(dm.to_username)}</div>
+                <div class="card-preview">"${esc(dm.message.length > 200 ? dm.message.slice(0, 200) + '…' : dm.message)}"</div>
+                <div class="card-meta">${fmtDate(dm.created_at)}</div>
+            </div>
+            <div class="card-actions">
+                <button class="btn-approve" onclick="approveDM('${esc(dm.id)}')">Approve</button>
+                <button class="btn-deny"    onclick="rejectDM('${esc(dm.id)}')">Reject</button>
+            </div>
+        </div>`).join('');
+}
+async function approveDM(id) {
+    setCardActing('dmcard-' + id);
+    const data = await apiFetch('/api/mod/resolve-dm', { method:'POST', body:JSON.stringify({ id, action:'approve' }) });
+    if (data?.success) { toast('✓ Message approved'); removeCard('dmcard-' + id); loadPendingDMs(); }
+    else toast(data?.error || 'Failed', true);
+}
+async function rejectDM(id) {
+    setCardActing('dmcard-' + id);
+    const data = await apiFetch('/api/mod/resolve-dm', { method:'POST', body:JSON.stringify({ id, action:'reject' }) });
+    if (data?.success) { toast('✗ Message rejected'); removeCard('dmcard-' + id); loadPendingDMs(); }
+    else toast(data?.error || 'Failed', true);
+}
+
+// ── ACTIVITY LOG ───────────────────────────────────────────────────
+async function loadLog() {
+    const data = await apiFetch('/api/mod/get-logs');
+    if (!data) return;
+    const tbody = document.getElementById('log-body');
+    const logs = data.logs || [];
+    if (!logs.length) {
+        tbody.innerHTML = `<tr><td colspan="4" style="color:var(--muted);font-family:var(--mono);font-size:.7rem;">No actions logged yet.</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = logs.map(l => {
+        const isApprove = l.action?.startsWith('approve');
+        return `<tr>
+            <td><span class="action-pill ${isApprove ? 'approve' : 'reject'}">${esc(l.action)}</span></td>
+            <td style="font-family:var(--mono);font-size:.7rem;">${esc(l.target)}</td>
+            <td style="font-family:var(--mono);font-size:.7rem;color:var(--text2);">${esc(l.moderator || '—')}</td>
+            <td style="font-family:var(--mono);font-size:.7rem;color:var(--muted);">${fmtDate(l.timestamp)}</td>
+        </tr>`;
+    }).join('');
+}
+
+// ── ESCALATED (owner only) ─────────────────────────────────────────
+async function loadEscalated() {
+    const queue = document.getElementById('queue-escalated');
+    queue.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
+    try {
+        const res = await fetch('/api/owner/get-escalated-reports', { credentials:'include' });
+        const data = await res.json();
+        if (!data.success) { queue.innerHTML = `<div style="color:var(--deny);padding:1rem;font-size:.85rem;">Error: ${esc(data.error||'Failed')}</div>`; return; }
+        const reports = data.reports || [];
+        setBadge('escalated', reports.length);
+        const ct = document.getElementById('count-escalated');
+        if (ct) ct.textContent = reports.length + ' escalated';
+        if (!reports.length) { queue.innerHTML = emptyState('✅', 'All clear', 'No escalated reports'); return; }
+        queue.innerHTML = reports.map(r => `
+            <div class="queue-card" id="ecard-${esc(r.id)}" style="border-color:rgba(251,191,36,.2);">
+                <div class="card-tag" style="color:var(--warn);border-color:rgba(251,191,36,.3);">Escalated</div>
+                <div class="card-body">
+                    <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.3rem;">
+                        <span class="report-tag escalated">⬆ Escalated</span>
+                        <span class="report-tag type">${esc(TYPE_LABELS[r.type]||r.type)}</span>
+                        <span class="report-tag reason">${esc(REASON_LABELS[r.reason]||r.reason)}</span>
+                    </div>
+                    <div class="card-title">${esc(r.target_label)}</div>
+                    <div class="card-meta">by @${esc(r.reporter)} · ${fmtDate(r.created_at)}</div>
+                    ${r.details ? `<div class="card-preview">"${esc(r.details)}"</div>` : ''}
+                </div>
+                <div class="card-actions">
+                    <button class="btn-approve" onclick="ownerResolve('${esc(r.id)}','dismiss')">Dismiss</button>
+                    <button class="btn-deny"    onclick="ownerResolve('${esc(r.id)}','lock_user')">🔒 Lock User</button>
+                </div>
+            </div>`).join('');
+    } catch { queue.innerHTML = `<div style="color:var(--deny);padding:1rem;">Network error</div>`; }
+}
+async function ownerResolve(id, action) {
+    if (action === 'lock_user' && !confirm('Lock this user and wipe their content? Cannot be undone.')) return;
+    try {
+        const res = await fetch('/api/owner/resolve-report', {
+            method:'POST', credentials:'include',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ reportId:id, action })
+        });
+        const data = await res.json();
+        if (data.success) { toast(action === 'lock_user' ? '🔒 User locked & wiped' : '✓ Dismissed'); removeCard('ecard-' + id); loadEscalated(); }
+        else toast(data.error || 'Failed', true);
+    } catch { toast('Network error', true); }
+}
+
+// ── SETTINGS ───────────────────────────────────────────────────────
+let _msgTimer = null;
+async function loadSettings() {
+    try {
+        const res = await fetch('/api/owner/maintenance', { credentials:'include' });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('maintenance-toggle-input').checked = data.enabled;
+            document.getElementById('maintenance-message').value = data.message || '';
+            document.getElementById('maintenance-status').textContent =
+                data.enabled ? '🔴 Maintenance is ON' : '🟢 Site is live';
+        }
+    } catch {}
+    try {
+        const res = await fetch('/api/owner/registrations', { credentials:'include' });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('registrations-toggle-input').checked = data.enabled;
+            document.getElementById('registrations-status').textContent =
+                data.enabled ? '🟢 Registrations open' : '🔴 Registrations closed';
+        }
+    } catch {}
+}
+async function toggleMaintenance(enabled) {
+    const msg = document.getElementById('maintenance-message').value.trim();
+    const statusEl = document.getElementById('maintenance-status');
+    try {
+        const res = await fetch('/api/owner/maintenance', { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ enabled, message:msg }) });
+        const data = await res.json();
+        if (data.success) { statusEl.textContent = data.enabled ? '🔴 Maintenance is ON' : '🟢 Site is live'; toast(data.enabled ? 'Maintenance enabled' : 'Maintenance disabled'); }
+        else toast(data.error || 'Failed', true);
+    } catch { toast('Network error', true); }
+}
+async function toggleRegistrations(enabled) {
+    const statusEl = document.getElementById('registrations-status');
+    try {
+        const res = await fetch('/api/owner/registrations', { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ enabled }) });
+        const data = await res.json();
+        if (data.success) { statusEl.textContent = data.enabled ? '🟢 Registrations open' : '🔴 Registrations closed'; toast(data.enabled ? 'Registrations opened' : 'Registrations closed'); }
+        else toast(data.error || 'Failed', true);
+    } catch { toast('Network error', true); }
+}
+function scheduleMsgSave() {
+    clearTimeout(_msgTimer);
+    _msgTimer = setTimeout(() => {
+        const enabled = document.getElementById('maintenance-toggle-input').checked;
+        const message = document.getElementById('maintenance-message').value.trim();
+        fetch('/api/owner/maintenance', { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ enabled, message }) })
+            .then(r => r.json())
+            .then(d => { if (d.success) document.getElementById('maintenance-status').textContent = (d.enabled ? '🔴 ON' : '🟢 Live') + ' · Message saved'; })
+            .catch(() => {});
+    }, 1500);
+}
+async function purgeLocked() {
+    const btn = document.getElementById('purgeBtn');
+    const statusEl = document.getElementById('purge-status');
+    if (!confirm('Permanently delete all accounts locked 48+ hours? Cannot be undone.')) return;
+    btn.disabled = true; btn.textContent = 'Running...';
+    try {
+        const res = await fetch('/api/owner/purge-locked', { method:'POST', credentials:'include' });
+        const data = await res.json();
+        if (data.success) {
+            const msg = data.deletedCount === 0 ? 'No accounts eligible yet.' : `Deleted ${data.deletedCount} account(s).`;
+            statusEl.textContent = msg; toast(msg);
+        } else { statusEl.textContent = 'Error: ' + (data.error||'Unknown'); toast(data.error||'Failed', true); }
+    } catch { statusEl.textContent = 'Network error.'; toast('Network error', true); }
+    btn.disabled = false; btn.textContent = 'Run Purge';
+}
+
+// ── Refresh all ────────────────────────────────────────────────────
+async function refreshAll() {
+    const btn = document.getElementById('refreshBtn');
+    btn.classList.add('spinning');
+    await Promise.all([loadUsers(), loadShouts(), loadTopics(), loadPosts(), loadGroups(), loadBios(), loadPendingGames(), loadReports(), loadPendingDMs()]);
+    if (activeTab === 'log') await loadLog();
+    btn.classList.remove('spinning');
+    toast('Queues refreshed');
+}
+
+// ── Boot ───────────────────────────────────────────────────────────
+(async () => {
+    try {
+        const res  = await fetch('/api/get-user', { credentials:'include' });
+        const data = await res.json();
+        if (data.user?.is_owner) {
+            document.getElementById('nav-section-owner').style.display = 'block';
+            loadEscalated();
+        }
+    } catch {}
+})();
+
+loadAll();
+
+function loadAll() {
+    return Promise.all([loadUsers(), loadShouts(), loadTopics(), loadPosts(), loadGroups(), loadBios(), loadPendingGames(), loadReports(), loadPendingDMs()]);
+}
+</script>
+</body>
+</html>

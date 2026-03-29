@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ampehere · Announcements</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+    <style>
+        :root {
+            --bg:#060606; --surface:#0c0c0c; --border:#1a1a1a; --border-hi:#252525;
+            --blue:#2563c4; --blue-hi:#3b7de0;
+            --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+            --red:#c0392b; --gold:#f1c40f; --green:#27ae60;
+        }
+        *, *::before, *::after { border-radius: 0; }
+        body { background: #060606 !important; background-image: none !important; }
+        a { color: #2563c4; }
+        a:hover { color: #3b7de0; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            overflow-x: hidden;background:#060606;background-image:radial-gradient(ellipse at 20% 10%,rgba(15,15,15,.35) 0%,transparent 50%),radial-gradient(ellipse at 80% 90%,rgba(255,255,255,.04) 0%,transparent 50%);min-height:100vh;font-family:'Exo 2',sans-serif;color:#8899aa;}
+        .page{max-width:720px;margin:0 auto;padding:2rem 1.5rem;}
+        .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;gap:1rem;flex-wrap:wrap;}
+        .page-title{font-family:'Exo 2',sans-serif;font-weight:900;font-size:1.6rem;color:#d0d8e0;letter-spacing:.05em;display:flex;align-items:center;gap:.6rem;}
+        .create-btn{background:linear-gradient(135deg,rgba(15,15,15,.8),rgba(12,12,12,.95));border:1px solid rgba(126,184,212,.4);border-radius: 0;color:#c8e8ff;font-family:'Exo 2',sans-serif;font-weight:800;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;padding:.55rem 1.1rem;cursor:pointer;display:none;align-items:center;gap:.4rem;transition:all .15s;}
+        .create-btn:hover{background:linear-gradient(135deg,rgba(55,100,190,.95),rgba(40,70,130,1));border-color:rgba(126,184,212,.65);}
+
+        /* Announcement cards */
+        .ann-list{display:flex;flex-direction:column;gap:1rem;}
+        .ann-card{background:linear-gradient(145deg,rgba(12,12,12,.88),rgba(10,20,40,.92));border:1px solid rgba(255,255,255,.05);border-radius: 0;padding:1.4rem 1.5rem;position:relative;overflow:hidden;}
+        .ann-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius: 0;}
+        .ann-card.blue::before{background:linear-gradient(180deg,#4488ff,#2255cc);}
+        .ann-card.green::before{background:linear-gradient(180deg,#44ee88,#22aa55);}
+        .ann-card.red::before{background:linear-gradient(180deg,#ff4455,#cc2233);}
+        .ann-card.yellow::before{background:linear-gradient(180deg,#ffdd44,#ccaa11);}
+        .ann-card.purple::before{background:linear-gradient(180deg,#aa44ff,#7722cc);}
+        .ann-pin{position:absolute;top:.75rem;right:.75rem;font-size:.65rem;font-weight:800;font-family:'Exo 2',sans-serif;letter-spacing:.07em;text-transform:uppercase;background:rgba(241,196,15,.12);border:1px solid rgba(241,196,15,.25);color:#f1c40f;border-radius: 0;padding:.15rem .6rem;}
+        .ann-title{font-family:'Exo 2',sans-serif;font-weight:900;font-size:1.05rem;color:#d0d8e0;margin-bottom:.5rem;letter-spacing:.03em;}
+        .ann-body{font-size:.88rem;color:#a8bbd0;line-height:1.65;white-space:pre-wrap;}
+        .ann-meta{display:flex;align-items:center;gap:.75rem;margin-top:.9rem;font-size:.72rem;color:#4a6070;}
+        .ann-meta .ann-author{color:#8899aa;font-weight:600;}
+        .ann-delete{margin-left:auto;background:none;border:none;color:#4a3040;cursor:pointer;font-size:.8rem;padding:.2rem .4rem;border-radius: 0;transition:color .15s;}
+        .ann-delete:hover{color:#ff6677;}
+
+        /* Empty state */
+        .empty-state{text-align:center;padding:4rem 2rem;color:#3a5068;}
+        .empty-state .icon{font-size:2.5rem;margin-bottom:1rem;opacity:.4;}
+        .empty-state p{font-size:.9rem;}
+
+        /* Create modal */
+        .swal2-popup{background:rgba(14,28,54,.98)!important;border:1px solid rgba(126,184,212,.25)!important;border-radius: 0;font-family:'Exo 2',sans-serif!important;}
+        .swal2-title{color:#d0d8e0!important;font-family:'Exo 2',sans-serif!important;font-size:1.1em!important;}
+        .swal2-html-container{color:#8899aa!important;}
+        .swal2-confirm{background:linear-gradient(135deg,rgba(15,15,15,.8),rgba(12,12,12,.95))!important;color:#c8e8ff!important;font-family:'Exo 2',sans-serif!important;font-weight:800!important;border:1px solid rgba(126,184,212,.4)!important;border-radius: 0;box-shadow:none!important;}
+        .swal2-cancel{background:rgba(255,255,255,.05)!important;color:#8899aa!important;border:1px solid rgba(37,99,196,.18)!important;border-radius: 0;box-shadow:none!important;}
+        .swal-field{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(37,99,196,.18);border-radius: 0;padding:.6rem .85rem;color:#d0d8e0;font-family:'Exo 2',sans-serif;font-size:.88rem;outline:none;margin-bottom:.6rem;resize:vertical;}
+        .swal-field:focus{border-color:rgba(37,99,196,.4);}
+        .swal-label{display:block;font-size:.72rem;font-weight:600;color:#8899aa;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem;text-align:left;}
+        .swal-row{display:flex;gap:.75rem;align-items:center;margin-bottom:.6rem;}
+        .color-pick{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .12s;}
+        .color-pick:hover,.color-pick.sel{transform:scale(1.2);border-color:#fff;}
+        .swal-check-label{font-size:.8rem;color:#8899aa;display:flex;align-items:center;gap:.4rem;cursor:pointer;}
+    
+        @media (max-width: 600px) {
+            .page-header { flex-direction: column; align-items: flex-start; gap: .5rem; }
+            .ann-list { gap: .75rem; }
+            .ann-card { padding: 1rem; }
+            .ann-meta { flex-wrap: wrap; gap: .35rem; font-size: .72rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <div class="page-header">
+        <div class="page-title">📣 Announcements</div>
+        <button class="create-btn" id="createBtn" onclick="openCreate()">
+            <i class="fas fa-plus"></i> New Announcement
+        </button>
+    </div>
+    <div class="ann-list" id="annList">
+        <div class="empty-state"><div class="icon">📭</div><p>Loading…</p></div>
+    </div>
+</div>
+
+<script src="/sidebar.js"></script>
+<script>
+let _isOwner = false;
+
+async function init() {
+    try {
+        const r = await fetch('/api/get-balance');
+        const d = await r.json();
+        if (d.success !== false && d.username) {
+            _isOwner = !!d.is_owner;
+            if (_isOwner) {
+                const btn = document.getElementById('createBtn');
+                btn.style.display = 'flex';
+            }
+        }
+    } catch {}
+    loadAnnouncements();
+}
+
+async function loadAnnouncements() {
+    try {
+        const r = await fetch('/api/announcements-list');
+        const d = await r.json();
+        const list = document.getElementById('annList');
+        const items = d.announcements || [];
+        if (!items.length) {
+            list.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>No announcements yet.</p></div>`;
+            return;
+        }
+        list.innerHTML = items.map(a => `
+            <div class="ann-card ${a.color}">
+                ${a.pinned ? '<span class="ann-pin">📌 Pinned</span>' : ''}
+                <div class="ann-title">${escHtml(a.title)}</div>
+                <div class="ann-body">${escHtml(a.body)}</div>
+                <div class="ann-meta">
+                    <span>By <span class="ann-author">${escHtml(a.author)}</span></span>
+                    <span>·</span>
+                    <span>${timeAgo(a.created_at)}</span>
+                    ${_isOwner ? `<button class="ann-delete" onclick="deleteAnn(${a.id})" title="Delete"><i class="fas fa-trash"></i></button>` : ''}
+                </div>
+            </div>
+        `).join('');
+    } catch(e) {
+        document.getElementById('annList').innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>Failed to load announcements.</p></div>`;
+    }
+}
+
+async function openCreate() {
+    const { value: formVals } = await Swal.fire({
+        title: '📣 New Announcement',
+        html: `
+            <label class="swal-label">Title</label>
+            <input id="swal-ann-title" class="swal-field" placeholder="Announcement title…" maxlength="100">
+            <label class="swal-label">Message</label>
+            <textarea id="swal-ann-body" class="swal-field" rows="5" placeholder="Write your announcement…" maxlength="1000"></textarea>
+            <div class="swal-row">
+                <label class="swal-label" style="margin:0">Color:</label>
+                <div class="color-pick sel" data-color="blue"   style="background:#4488ff"  onclick="pickColor(this)"></div>
+                <div class="color-pick"    data-color="green"  style="background:#44ee88"  onclick="pickColor(this)"></div>
+                <div class="color-pick"    data-color="red"    style="background:#ff4455"  onclick="pickColor(this)"></div>
+                <div class="color-pick"    data-color="yellow" style="background:#ffdd44"  onclick="pickColor(this)"></div>
+                <div class="color-pick"    data-color="purple" style="background:#aa44ff"  onclick="pickColor(this)"></div>
+                <label class="swal-check-label" style="margin-left:auto">
+                    <input type="checkbox" id="swal-ann-pin"> 📌 Pin
+                </label>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Post',
+        cancelButtonText: 'Cancel',
+        focusConfirm: false,
+        preConfirm: () => {
+            const title = document.getElementById('swal-ann-title').value.trim();
+            const body  = document.getElementById('swal-ann-body').value.trim();
+            const color = document.querySelector('.color-pick.sel')?.dataset.color || 'blue';
+            const pinned = document.getElementById('swal-ann-pin').checked;
+            if (!title || !body) { Swal.showValidationMessage('Title and message are required'); return false; }
+            return { title, body, color, pinned };
+        }
+    });
+
+    if (!formVals) return;
+
+    const res = await fetch('/api/announcements-list', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formVals)
+    });
+    const d = await res.json();
+    if (d.success) {
+        loadAnnouncements();
+    } else {
+        Swal.fire({ icon:'error', title:'Error', text: d.error });
+    }
+}
+
+function pickColor(el) {
+    document.querySelectorAll('.color-pick').forEach(c => c.classList.remove('sel'));
+    el.classList.add('sel');
+}
+
+async function deleteAnn(id) {
+    const { isConfirmed } = await Swal.fire({
+        title: 'Delete announcement?',
+        text: 'This cannot be undone.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel'
+    });
+    if (!isConfirmed) return;
+    const res = await fetch('/api/announcements-list', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+    });
+    const d = await res.json();
+    if (d.success) loadAnnouncements();
+}
+
+function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function timeAgo(ts) {
+    const s = Math.floor((Date.now() - ts) / 1000);
+    if (s < 60) return 'just now';
+    if (s < 3600) return Math.floor(s/60) + 'm ago';
+    if (s < 86400) return Math.floor(s/3600) + 'h ago';
+    if (s < 604800) return Math.floor(s/86400) + 'd ago';
+    return new Date(ts).toLocaleDateString();
+}
+
+init();
+</script>
+</body>
+</html>

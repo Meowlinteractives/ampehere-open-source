@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+    <title>Ampehere · Home</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/avatar-renderer.js"></script>
+    <script src="/avatar2d.js"></script>
+    <script src="/avatar.js"></script>
+    <style>
+        :root {
+            --bg:           #060606;
+            --surface:      #0c0c0c;
+            --surface2:     #0a0a0a;
+            --border:       #1a1a1a;
+            --border-hi:    #252525;
+            --accent:       #c0392b;
+            --blue:         #2563c4;
+            --blue-hi:      #3b7de0;
+            --text:         #d0d8e0;
+            --text-dim:     #556677;
+            --text-muted:   #8899aa;
+            --gold:         #f1c40f;
+            --green:        #27ae60;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; border-radius: 0 !important; }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        a { color: var(--blue); text-decoration: none; }
+        a:hover { color: var(--blue-hi); text-decoration: underline; }
+
+        /* ── Announcement banner ── */
+        #annBanner {
+            display: none;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 0;
+            border-left: 3px solid var(--blue);
+            background: rgba(37,99,196,0.1);
+            cursor: pointer;
+            transition: opacity .15s;
+            position: relative;
+        }
+        #annBanner:hover { opacity: .85; }
+        #annBanner.blue   { background: rgba(37,99,196,.1);  border-left-color: var(--blue); }
+        #annBanner.green  { background: rgba(39,174,96,.1);  border-left-color: #27ae60; }
+        #annBanner.red    { background: rgba(192,57,43,.1);  border-left-color: var(--accent); }
+        #annBanner.yellow { background: rgba(241,196,15,.1); border-left-color: var(--gold); }
+        #annBanner.purple { background: rgba(140,60,220,.1); border-left-color: #aa44ff; }
+        #annBanner .ann-tag   { font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+        #annBanner .ann-title { font-weight: 700; font-size: .92rem; color: #fff; }
+        #annBanner .ann-arrow { position: absolute; right: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--text-dim); }
+
+        /* ── Page shell ── */
+        .page-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        /* ── Hero layout: avatar left | content right ── */
+        .hero-layout {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        /* ── Left column: big avatar card ── */
+        .left-col {
+            width: 200px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: .75rem;
+        }
+
+        .avatar-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            gap: .5rem;
+        }
+
+        .avatar-3d-wrap {
+            width: 140px;
+            height: 180px;
+            background: #050505;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .avatar-3d-wrap canvas,
+        .avatar-3d-wrap img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .avatar-username {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #fff;
+            text-align: center;
+            letter-spacing: .02em;
+        }
+        .avatar-coins {
+            display: flex;
+            align-items: center;
+            gap: .3rem;
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .hero-stats-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding-top: .4rem;
+            border-top: 1px solid var(--border);
+        }
+        .hero-stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .1rem;
+            flex: 1;
+        }
+        .hero-stat-item + .hero-stat-item {
+            border-left: 1px solid var(--border);
+        }
+        .stat-num {
+            font-size: .95rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        .stat-lbl {
+            font-size: .58rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .claim-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .4rem;
+            padding: .55rem;
+            background: var(--accent);
+            border: none;
+            color: #fff;
+            font-family: 'Exo 2', sans-serif;
+            font-size: .78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            cursor: pointer;
+            transition: background .12s;
+        }
+        .claim-btn:hover { background: #e74c3c; }
+        .claim-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+        /* ── Right column ── */
+        .right-col {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: .9rem;
+        }
+
+        /* ── Guest hero ── */
+        .guest-hero {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 1.75rem 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+        .guest-hero h1 { font-size: 1.8rem; font-weight: 800; color: #fff; margin-bottom: .3rem; }
+        .guest-hero h1 span { color: var(--blue); }
+        .guest-hero p { color: var(--text-muted); font-size: .88rem; margin-bottom: 1rem; }
+        .guest-btns { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: 1rem; }
+        .guest-btns a {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .55rem 1.2rem;
+            font-family: 'Exo 2', sans-serif; font-size: .85rem; font-weight: 700;
+            text-decoration: none !important; text-transform: uppercase; letter-spacing: .05em;
+        }
+        .btn-signup { background: var(--blue); color: #fff; border: 1px solid #1a4ea0; }
+        .btn-signup:hover { background: var(--blue-hi); color: #fff !important; }
+        .btn-login { background: transparent; color: var(--text-muted); border: 1px solid var(--border-hi); }
+        .btn-login:hover { color: #fff !important; border-color: #444; }
+        .guest-stats { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .guest-stats span { font-size: .75rem; font-weight: 700; color: var(--text-dim); display: flex; align-items: center; gap: .3rem; }
+        .guest-stats span i { color: var(--blue); }
+
+        /* ── Section card ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+        }
+        .card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .75rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-title {
+            font-size: .75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--text-muted);
+        }
+        .card-link {
+            font-size: .7rem;
+            font-weight: 700;
+            color: var(--blue) !important;
+            text-decoration: none !important;
+            display: flex;
+            align-items: center;
+            gap: .25rem;
+        }
+        .card-link:hover { color: var(--blue-hi) !important; }
+        .card-body { padding: .85rem 1rem; }
+
+        /* ── Friends strip ── */
+        .friends-strip {
+            display: flex;
+            gap: .75rem;
+            overflow-x: auto;
+            padding-bottom: .25rem;
+            scrollbar-width: none;
+        }
+        .friends-strip::-webkit-scrollbar { display: none; }
+        .friend-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .35rem;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: opacity .12s;
+        }
+        .friend-item:hover { opacity: .8; }
+        .friend-av {
+            width: 50px; height: 50px;
+            border: 2px solid var(--border-hi);
+            background: #050505;
+            overflow: hidden;
+            position: relative;
+        }
+        .friend-av img { width: 100%; height: 100%; display: block; object-fit: cover; }
+        .friend-dot {
+            position: absolute; bottom: 1px; right: 1px;
+            width: 9px; height: 9px;
+            background: var(--green);
+            border: 2px solid var(--surface);
+        }
+        .friend-nm {
+            font-size: .65rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            max-width: 54px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            text-align: center;
+        }
+
+        /* ── Games grid ── */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: .65rem;
+        }
+        .game-card {
+            cursor: pointer;
+            transition: opacity .12s;
+        }
+        .game-card:hover { opacity: .8; }
+        .game-thumb {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: .4rem;
+        }
+        .game-badge {
+            position: absolute; top: 5px; left: 5px;
+            font-size: .52rem; font-weight: 800;
+            background: rgba(37,99,196,0.9); color: #fff;
+            padding: 2px 5px; letter-spacing: .05em; text-transform: uppercase;
+        }
+        .game-badge.pinned { background: rgba(241,196,15,.9); color: #111; }
+        .game-badge.locked { background: rgba(200,50,50,.85); }
+        .game-plays { position: absolute; bottom: 4px; right: 6px; font-size: .58rem; color: rgba(180,200,220,.6); font-weight: 700; }
+        .game-name { font-size: .78rem; font-weight: 800; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .game-meta { font-size: .6rem; color: var(--text-dim); display: flex; gap: .4rem; margin-top: .1rem; }
+        .game-meta .up { color: rgba(80,200,120,.7); }
+        .game-meta .dn { color: rgba(200,80,80,.6); }
+
+        /* ── Leaderboard ── */
+        .lb-list { display: flex; flex-direction: column; }
+        .lb-item {
+            display: flex; align-items: center; gap: .6rem;
+            padding: .55rem .85rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background .1s;
+        }
+        .lb-item:last-child { border-bottom: none; }
+        .lb-item:hover { background: rgba(255,255,255,.025); }
+        .lb-rank { font-size: .85rem; font-weight: 700; color: var(--text-dim); width: 22px; text-align: center; flex-shrink: 0; }
+        .lb-av { width: 28px; height: 28px; background: #050505; border: 1px solid var(--border); overflow: hidden; flex-shrink: 0; }
+        .lb-av img { width: 100%; height: 100%; display: block; object-fit: cover; }
+        .lb-name { flex: 1; font-size: .82rem; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .lb-coins { font-size: .78rem; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; gap: .2rem; }
+
+        /* ── Bottom grid ── */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .9rem;
+        }
+
+        /* ── Quick links ── */
+        .quick-links { display: flex; gap: .65rem; flex-wrap: wrap; margin-bottom: .9rem; }
+        .quick-link {
+            display: flex; align-items: center; gap: .5rem;
+            padding: .5rem .85rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-muted) !important;
+            text-decoration: none !important;
+            font-size: .75rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .05em;
+            transition: border-color .1s, color .1s;
+        }
+        .quick-link:hover { border-color: var(--blue); color: var(--text) !important; }
+        .quick-link i { color: var(--blue); font-size: .85rem; }
+
+        /* ── Footer ── */
+        .footer {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-top: .85rem;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap; gap: .5rem;
+        }
+        .footer a { color: var(--text-dim) !important; font-size: .72rem; font-weight: 600; text-decoration: none; }
+        .footer a:hover { color: var(--text-muted) !important; }
+        .footer-copy { font-size: .72rem; color: var(--text-dim); }
+
+        .empty-state { color: var(--text-dim); font-size: .8rem; padding: .5rem 0; }
+
+        /* ── Tasks ── */
+        .tasks-list { display: flex; flex-direction: column; }
+        .task-row {
+            display: flex; align-items: center; gap: .65rem;
+            padding: .5rem .85rem;
+            border-bottom: 1px solid var(--border);
+            transition: background .1s;
+        }
+        .task-row:last-child { border-bottom: none; }
+        .task-row.done { opacity: .45; }
+        .task-row.done .task-name { text-decoration: line-through; }
+        .task-icon { font-size: .95rem; flex-shrink: 0; }
+        .task-name { flex: 1; font-size: .8rem; font-weight: 600; color: var(--text); }
+        .task-reward { font-size: .65rem; font-weight: 800; color: var(--gold); background: rgba(241,196,15,.08); border: 1px solid rgba(241,196,15,.18); padding: .1rem .4rem; flex-shrink: 0; }
+        .task-check { width: 17px; height: 17px; border: 1px solid var(--border-hi); display: flex; align-items: center; justify-content: center; font-size: .6rem; flex-shrink: 0; }
+        .task-row.done .task-check { background: rgba(39,174,96,.15); border-color: #27ae60; color: #27ae60; }
+        .progress-wrap { padding: .6rem 1rem .75rem; border-bottom: 1px solid var(--border); }
+        .progress-bar-bg { background: rgba(255,255,255,.05); height: 3px; }
+        .progress-bar-fill { height: 100%; background: var(--blue); transition: width .4s ease; }
+        .progress-labels { display: flex; justify-content: space-between; font-size: .65rem; color: var(--text-dim); margin-bottom: .35rem; }
+
+        /* ── Groups list ── */
+        .groups-list { display: flex; flex-direction: column; }
+        .group-row {
+            display: flex; align-items: center; gap: .6rem;
+            padding: .55rem .85rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background .1s;
+        }
+        .group-row:last-child { border-bottom: none; }
+        .group-row:hover { background: rgba(255,255,255,.025); }
+        .group-icon { width: 28px; height: 28px; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: .9rem; flex-shrink: 0; }
+        .group-name { flex: 1; font-size: .82rem; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .group-members { font-size: .65rem; color: var(--text-dim); font-weight: 600; }
+
+        /* ── Responsive ── */
+        @media(max-width: 640px) {
+            .hero-layout { flex-direction: column; }
+            .left-col { width: 100%; flex-direction: row; }
+            .avatar-card { flex-direction: row; flex-wrap: wrap; align-items: flex-start; padding: .75rem; gap: .75rem; }
+            .avatar-3d-wrap { width: 90px; height: 115px; flex-shrink: 0; }
+            .hero-stats-row { padding-top: .3rem; }
+            .bottom-grid { grid-template-columns: 1fr; }
+            .games-grid { grid-template-columns: repeat(3, 1fr); }
+            .page-wrap { padding: .75rem; }
+        }
+        @media(max-width: 400px) {
+            .games-grid { grid-template-columns: repeat(2, 1fr); }
+            .left-col { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div id="annBanner" onclick="window.location.href='/announcements.html'">
+        <div class="ann-tag">📣 Announcement</div>
+        <div class="ann-title" id="annBannerTitle"></div>
+        <i class="fas fa-chevron-right ann-arrow"></i>
+    </div>
+
+    <div class="page-wrap">
+
+        <!-- ── LOGGED IN VIEW ── -->
+        <div id="loggedInView" style="display:none;">
+            <div class="hero-layout">
+
+                <!-- Left: Avatar card -->
+                <div class="left-col">
+                    <div class="avatar-card">
+                        <div class="avatar-3d-wrap">
+                            <img id="heroAvatar" width="140" height="180" alt="Your avatar" style="width:100%;height:100%;object-fit:contain;display:block;">
+                        </div>
+                        <div class="avatar-username" id="heroName">—</div>
+                        <div class="avatar-coins">
+                            <img src="/images/coin-icon.png" alt="coin" style="width:16px;height:16px;object-fit:contain;">
+                            <span id="myCoins">—</span>
+                        </div>
+                        <div class="hero-stats-row">
+                            <div class="hero-stat-item">
+                                <span class="stat-num" id="myFriends">—</span>
+                                <span class="stat-lbl">Friends</span>
+                            </div>
+                            <div class="hero-stat-item">
+                                <span class="stat-num" id="myGroups">—</span>
+                                <span class="stat-lbl">Groups</span>
+                            </div>
+                        </div>
+                        <button class="claim-btn" id="claimBtn"><i class="fas fa-gift"></i> Claim Daily</button>
+                    </div>
+                </div>
+
+                <!-- Right: Friends + Games -->
+                <div class="right-col">
+
+                    <!-- Friends -->
+                    <div class="card" id="friendsSection">
+                        <div class="card-head">
+                            <span class="card-title"><i class="fas fa-user-friends" style="margin-right:.4rem;color:var(--blue);"></i>Friends</span>
+                            <a href="/friends.html" class="card-link">View all <i class="fas fa-chevron-right" style="font-size:.6rem;"></i></a>
+                        </div>
+                        <div class="card-body">
+                            <div class="friends-strip" id="friendsList">
+                                <div class="empty-state">Loading…</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recently Played / Featured Games -->
+                    <div class="card">
+                        <div class="card-head">
+                            <span class="card-title"><i class="fas fa-gamepad" style="margin-right:.4rem;color:var(--blue);"></i>Recently Played</span>
+                            <a href="/games.html" class="card-link">All games <i class="fas fa-chevron-right" style="font-size:.6rem;"></i></a>
+                        </div>
+                        <div class="card-body">
+                            <div class="games-grid" id="gamesPreview">
+                                <div class="empty-state">Loading…</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Daily Tasks -->
+            <div class="card" id="tasksSection" style="display:none;margin-bottom:.9rem;">
+                <div class="card-head">
+                    <span class="card-title"><i class="fas fa-tasks" style="margin-right:.4rem;color:var(--blue);"></i>Daily Tasks</span>
+                    <span id="tasksCoinsLabel" style="font-size:.68rem;font-weight:800;color:var(--gold);"></span>
+                </div>
+                <div class="progress-wrap">
+                    <div class="progress-labels">
+                        <span id="tasksDoneLabel">0 / 6 completed</span>
+                    </div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" id="tasksBar" style="width:0%"></div></div>
+                </div>
+                <div class="tasks-list" id="tasksList"></div>
+            </div>
+
+            <!-- Bottom: Leaderboard + Groups -->
+            <div class="bottom-grid" style="margin-bottom:.9rem;">
+                <div class="card">
+                    <div class="card-head">
+                        <span class="card-title"><i class="fas fa-trophy" style="margin-right:.4rem;color:var(--gold);"></i>Top Richest</span>
+                    </div>
+                    <div class="lb-list" id="leaderboard">
+                        <div class="lb-item"><span class="empty-state">Loading…</span></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-head">
+                        <span class="card-title"><i class="fas fa-layer-group" style="margin-right:.4rem;color:var(--blue);"></i>Popular Groups</span>
+                        <a href="/groups.html" class="card-link">View all <i class="fas fa-chevron-right" style="font-size:.6rem;"></i></a>
+                    </div>
+                    <div class="groups-list" id="groupsPreview">
+                        <div class="group-row"><span class="empty-state">Loading…</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── GUEST VIEW ── -->
+        <div id="guestView" style="display:none;">
+            <div class="guest-hero">
+                <h1>Welcome to <span>Ampehere</span></h1>
+                <p>Join the community — play games, make friends, earn coins.</p>
+                <div class="guest-btns">
+                    <a href="/signup.html" class="btn-signup"><i class="fas fa-user-plus"></i> Sign Up</a>
+                    <a href="/login.html" class="btn-login"><i class="fas fa-sign-in-alt"></i> Log In</a>
+                </div>
+                <div class="guest-stats">
+                    <span><i class="fas fa-users"></i> <span id="totalUsers">—</span> members</span>
+                    <span><i class="fas fa-layer-group"></i> <span id="totalGroups">—</span> groups</span>
+                </div>
+            </div>
+
+            <!-- Featured games for guests -->
+            <div class="card" style="margin-bottom:.9rem;">
+                <div class="card-head">
+                    <span class="card-title"><i class="fas fa-gamepad" style="margin-right:.4rem;color:var(--blue);"></i>Featured Games</span>
+                    <a href="/games.html" class="card-link">All games <i class="fas fa-chevron-right" style="font-size:.6rem;"></i></a>
+                </div>
+                <div class="card-body">
+                    <div class="games-grid" id="gamesPreviewGuest">
+                        <div class="empty-state">Loading…</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-grid" style="margin-bottom:.9rem;">
+                <div class="card">
+                    <div class="card-head">
+                        <span class="card-title"><i class="fas fa-trophy" style="margin-right:.4rem;color:var(--gold);"></i>Top Richest</span>
+                    </div>
+                    <div class="lb-list" id="leaderboardGuest">
+                        <div class="lb-item"><span class="empty-state">Loading…</span></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-head">
+                        <span class="card-title"><i class="fas fa-layer-group" style="margin-right:.4rem;color:var(--blue);"></i>Popular Groups</span>
+                        <a href="/groups.html" class="card-link">View all <i class="fas fa-chevron-right" style="font-size:.6rem;"></i></a>
+                    </div>
+                    <div class="groups-list" id="groupsPreviewGuest">
+                        <div class="group-row"><span class="empty-state">Loading…</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick links -->
+        <div class="quick-links">
+            <a class="quick-link" href="/novaplus-shop.html"><i class="fas fa-crown"></i> Ampere+</a>
+            <a class="quick-link" href="/friends.html"><i class="fas fa-user-friends"></i> Friends</a>
+            <a class="quick-link" href="/groups.html"><i class="fas fa-layer-group"></i> Groups</a>
+            <a class="quick-link" href="/forums.html"><i class="fas fa-comments"></i> Forums</a>
+            <a class="quick-link" href="/games.html"><i class="fas fa-gamepad"></i> Games</a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <span class="footer-copy">© 2026 Ampehere</span>
+            <div style="display:flex;gap:1rem;">
+                <a href="/tos.html">Terms</a>
+                <a href="/account.html">Settings</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/sidebar.js"></script>
+    <script>
+    (() => {
+        'use strict';
+
+        const SWL = {
+            toast(icon, title) {
+                Swal.fire({ toast:true, position:'top-end', icon, title,
+                    background:'#0c0c0c', color:'#d0d8e0', showConfirmButton:false, timer:2500, timerProgressBar:true });
+            }
+        };
+
+        function esc(s) {
+            return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        const _avatarCache = {};
+        async function fetchDefs(username) {
+            if (_avatarCache[username]) return _avatarCache[username];
+            try {
+                const [pr, ir] = await Promise.all([
+                    fetch(`/api/get-profile?username=${encodeURIComponent(username)}`),
+                    fetch('/api/avatar/get-items')
+                ]);
+                const pd = await pr.json();
+                const id = await ir.json();
+                const allItems    = id.items || [];
+                const equippedIds = pd.user?.customization?.equippedAvatarItems || [];
+                const defs        = equippedIds.map(id => allItems.find(i => i.id === id)).filter(Boolean);
+                const hasSkin     = defs.some(d => d.category === 'skin');
+                if (!hasSkin) { const ds = allItems.find(i => i.category === 'skin' && i.is_default); if (ds) defs.push(ds); }
+                _avatarCache[username] = defs;
+            } catch { _avatarCache[username] = []; }
+            return _avatarCache[username];
+        }
+
+        async function renderAvatar(el, username) {
+            if (!el || !username) return;
+            const sz = parseInt(el.getAttribute('width')) || 36;
+            if (window.Avatar2D) Avatar2D.renderImg(el, [], sz);
+            const defs = await fetchDefs(username);
+            if (window.Avatar2D) Avatar2D.renderImg(el, defs, sz);
+        }
+
+        // ── Games renderer (shared) ───────────────────────────────────────
+        const SKYBOX_EMOJI = { none:'🌫', day:'☀️', sunset:'🌅', space:'🌌', nebula:'🔭', city:'🏙', storm:'⛈', desert:'🏜', underwater:'🌊', arctic:'❄️', volcano:'🌋' };
+        const SKYBOX_BG = {
+            none:'#0a0a0a', day:'#0a1520', sunset:'#150a04', space:'#030308',
+            nebula:'#0a0410', city:'#04040c', storm:'#080810', desert:'#100a04',
+            underwater:'#040c10', arctic:'#080c10', volcano:'#100404'
+        };
+
+        function renderGames(games, elId) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            if (!games.length) { el.innerHTML = '<div class="empty-state">No games yet</div>'; return; }
+            el.innerHTML = games.map(g => {
+                const isPinned = !!g.pinned, isLocked = !!g.locked_game;
+                const sky = g.skybox || 'none';
+                const badge = isPinned ? '<span class="game-badge pinned">📌 Pinned</span>'
+                            : isLocked ? '<span class="game-badge locked">🔒</span>' : '';
+                return `<div class="game-card" onclick="${isLocked ? '' : `window.location.href='/game-player.html?id=${encodeURIComponent(g.id)}'`}" style="${isLocked ? 'opacity:.4;pointer-events:none;' : ''}">
+                    <div class="game-thumb" style="background:${SKYBOX_BG[sky]||SKYBOX_BG.none};">
+                        ${badge}
+                        <span>${SKYBOX_EMOJI[sky]||'🌫'}</span>
+                        <span class="game-plays"><i class="fas fa-play" style="font-size:.45rem;margin-right:2px;"></i>${(g.plays||0).toLocaleString()}</span>
+                    </div>
+                    <div class="game-name">${esc(g.title)}</div>
+                    <div class="game-meta">
+                        <span class="up"><i class="fas fa-thumbs-up"></i> ${g.likes||0}</span>
+                        <span class="dn"><i class="fas fa-thumbs-down"></i> ${g.dislikes||0}</span>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ── Leaderboard (shared) ─────────────────────────────────────────
+        function renderLeaderboard(users, elId) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            const top8 = users.slice(0, 8);
+            if (!top8.length) { el.innerHTML = '<div class="lb-item"><span class="empty-state">No users yet</span></div>'; return; }
+            const trophies = ['👑','🥈','🥉'];
+            el.innerHTML = top8.map((u, i) => {
+                const cvId = `lb_${elId}_${i}`;
+                return `<div class="lb-item" onclick="window.location.href='/profile.html?user=${encodeURIComponent(u.username)}'">
+                    <span class="lb-rank">${trophies[i] || ('#'+(i+1))}</span>
+                    <div class="lb-av"><img id="${cvId}" width="28" height="28" alt="" style="width:100%;height:100%;display:block;object-fit:cover;"></div>
+                    <span class="lb-name" id="lbname_${elId}_${i}">${esc(u.username)}</span>
+                    <span class="lb-coins"><img src="/images/coin-icon.png" alt="coin" style="width:14px;height:14px;object-fit:contain;opacity:.8;"> ${(u.coins||0).toLocaleString()}</span>
+                </div>`;
+            }).join('');
+            top8.forEach(async (u, i) => {
+                const img = document.getElementById(`lb_${elId}_${i}`);
+                if (img) renderAvatar(img, u.username);
+            });
+        }
+
+        // ── Groups (shared) ──────────────────────────────────────────────
+        const GROUP_ICONS = ['🏘','⚔️','🎨','🎵','🏆','🌍','🔬','🎭'];
+        function renderGroups(groups, elId) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            const top6 = groups.slice(0, 6);
+            if (!top6.length) { el.innerHTML = '<div class="group-row"><span class="empty-state">No groups yet</span></div>'; return; }
+            el.innerHTML = top6.map((g, i) => {
+                const urlName = g.name.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+                return `<div class="group-row" onclick="window.location.href='/group.html?name=${encodeURIComponent(urlName)}'">
+                    <div class="group-icon">${GROUP_ICONS[i%GROUP_ICONS.length]}</div>
+                    <span class="group-name">${esc(g.name)}</span>
+                    <span class="group-members">${g.memberCount||0} members</span>
+                </div>`;
+            }).join('');
+        }
+
+        // ── Main init ────────────────────────────────────────────────────
+        let _username = null;
+
+        async function initUI() {
+            try {
+                const res  = await fetch('/api/get-balance');
+                if (!res.ok) { showGuest(); return; }
+                const data = await res.json();
+                if (!data.username) { showGuest(); return; }
+
+                _username = data.username;
+                document.getElementById('loggedInView').style.display = 'block';
+                document.getElementById('heroName').textContent = data.username;
+                document.getElementById('myCoins').textContent = (data.coins || 0).toLocaleString();
+
+                const heroImg = document.getElementById('heroAvatar');
+                if (heroImg) renderAvatar(heroImg, data.username);
+
+                Promise.all([
+                    fetch('/api/get-friends').then(r => r.json()).catch(() => ({})),
+                    fetch('/api/get-groups').then(r => r.json()).catch(() => ([]))
+                ]).then(([friendData, groupData]) => {
+                    const fc = (friendData.friends || []).length;
+                    const gc = Array.isArray(groupData) ? groupData.filter(g => g.isMember).length : 0;
+                    document.getElementById('myFriends').textContent = fc.toLocaleString();
+                    document.getElementById('myGroups').textContent  = gc.toLocaleString();
+                });
+
+                // Claim button state
+                const btn = document.getElementById('claimBtn');
+                if (data.lastClaim && data.lastClaim === new Date().toDateString()) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-check-circle"></i> Claimed';
+                }
+
+                loadFriends();
+                loadTasks();
+
+            } catch { showGuest(); }
+        }
+
+        function showGuest() {
+            document.getElementById('guestView').style.display = 'block';
+            loadGames('gamesPreviewGuest');
+            loadLeaderboardData('leaderboardGuest');
+            loadGroupsData('groupsPreviewGuest');
+        }
+
+        // ── Claim daily ──────────────────────────────────────────────────
+        document.getElementById('claimBtn').addEventListener('click', async function() {
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            try {
+                const res  = await fetch('/api/claim-daily', { method:'POST', headers:{'Content-Type':'application/json'}, body:'{}' });
+                const data = await res.json();
+                if (data.success) {
+                    const coins = (data.coins || 0).toLocaleString();
+                    document.getElementById('myCoins').textContent = coins;
+                    SWL.toast('success', `✨ ${data.message || `+${data.claimed || 10} coins claimed!`}`);
+                    fetch('/api/check-achievements', { method:'POST' }).catch(()=>{});
+                    this.innerHTML = '<i class="fas fa-check-circle"></i> Claimed';
+                    return;
+                } else { SWL.toast('info', data.message || 'Already claimed today'); }
+            } catch { SWL.toast('error', 'Something went wrong'); }
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-gift"></i> Claim Daily';
+        });
+
+        // ── Friends ──────────────────────────────────────────────────────
+        async function loadFriends() {
+            const el = document.getElementById('friendsList');
+            try {
+                const res  = await fetch('/api/get-friends');
+                const data = await res.json();
+                const friends = (data.friends || []).slice(0, 16);
+                if (!friends.length) {
+                    el.innerHTML = '<div class="empty-state">No friends yet — <a href="/users.html">find people</a></div>';
+                    return;
+                }
+                el.innerHTML = friends.map(f => `
+                    <div class="friend-item" onclick="window.location.href='/profile.html?user=${encodeURIComponent(f.username)}'">
+                        <div class="friend-av" id="fring_${esc(f.username)}">
+                            <img id="fav_${esc(f.username)}" width="50" height="50" alt="" style="width:50px;height:50px;display:block;object-fit:cover;">
+                        </div>
+                        <div class="friend-nm">${esc(f.username)}</div>
+                    </div>`).join('');
+
+                friends.forEach(async f => {
+                    const img = document.getElementById(`fav_${f.username}`);
+                    if (img) renderAvatar(img, f.username);
+                });
+            } catch {
+                el.innerHTML = '<div class="empty-state">Could not load friends</div>';
+            }
+        }
+
+        // ── Games ────────────────────────────────────────────────────────
+        async function loadGames(elId) {
+            try {
+                const res  = await fetch('/api/games/list?status=approved&page=0', { credentials: 'include' });
+                const data = await res.json();
+                renderGames((data.games || []).slice(0, 8), elId || 'gamesPreview');
+            } catch {
+                const el = document.getElementById(elId || 'gamesPreview');
+                if (el) el.innerHTML = '<div class="empty-state">Failed to load games</div>';
+            }
+        }
+
+        // ── Leaderboard ──────────────────────────────────────────────────
+        async function loadLeaderboardData(elId) {
+            try {
+                const res   = await fetch('/api/get-leaderboard');
+                const users = await res.json();
+                renderLeaderboard(users, elId || 'leaderboard');
+                const tu = document.getElementById('totalUsers');
+                if (tu) tu.textContent = users.length;
+            } catch {
+                const el = document.getElementById(elId || 'leaderboard');
+                if (el) el.innerHTML = '<div class="lb-item"><span class="empty-state">Failed to load</span></div>';
+            }
+        }
+
+        // ── Groups ───────────────────────────────────────────────────────
+        async function loadGroupsData(elId) {
+            try {
+                const res    = await fetch('/api/get-groups');
+                const groups = await res.json();
+                renderGroups(groups, elId || 'groupsPreview');
+                const tg = document.getElementById('totalGroups');
+                if (tg) tg.textContent = groups.length;
+            } catch {
+                const el = document.getElementById(elId || 'groupsPreview');
+                if (el) el.innerHTML = '<div class="group-row"><span class="empty-state">Failed to load</span></div>';
+            }
+        }
+
+        // ── Daily Tasks ──────────────────────────────────────────────────
+        const TASK_DEFS = [
+            { id: 'login',  icon: '🌅', label: 'Log in today',           reward: 10 },
+            { id: 'post',   icon: '💬', label: 'Post in the forums',      reward: 25 },
+            { id: 'shout',  icon: '📢', label: 'Post a group shout',      reward: 20 },
+            { id: 'play',   icon: '🎮', label: 'Play a game',             reward: 20 },
+            { id: 'friend', icon: '🤝', label: 'Send a friend request',   reward: 15 },
+            { id: 'vote',   icon: '👍', label: 'Vote on a game',          reward: 10 },
+        ];
+
+        async function loadTasks() {
+            try {
+                const res  = await fetch('/api/daily-tasks', { method: 'POST', headers: {'Content-Type':'application/json'}, body: '{}' });
+                const data = await res.json();
+                if (!data.success) return;
+                document.getElementById('tasksSection').style.display = 'block';
+                const completed = data.completed || [];
+                const doneCount = completed.length;
+                const totalReward = TASK_DEFS.filter(t => completed.includes(t.id)).reduce((s,t) => s+t.reward, 0);
+                document.getElementById('tasksDoneLabel').textContent = `${doneCount} / ${TASK_DEFS.length} completed`;
+                document.getElementById('tasksCoinsLabel').textContent = totalReward > 0 ? `+${totalReward} coins earned` : '';
+                document.getElementById('tasksBar').style.width = ((doneCount / TASK_DEFS.length) * 100) + '%';
+                document.getElementById('tasksList').innerHTML = TASK_DEFS.map(t => {
+                    const done = completed.includes(t.id);
+                    return `<div class="task-row${done?' done':''}">
+                        <span class="task-icon">${t.icon}</span>
+                        <span class="task-name">${t.label}</span>
+                        <span class="task-reward">+${t.reward} 🪙</span>
+                        <span class="task-check">${done ? '✓' : ''}</span>
+                    </div>`;
+                }).join('');
+            } catch {}
+        }
+
+        // ── Announcement ─────────────────────────────────────────────────
+        async function loadAnnouncement() {
+            try {
+                const r = await fetch('/api/announcements-list');
+                const d = await r.json();
+                const ann = (d.announcements || [])[0];
+                if (!ann) return;
+                const banner = document.getElementById('annBanner');
+                banner.className = ann.color || 'blue';
+                banner.id = 'annBanner';
+                document.getElementById('annBannerTitle').textContent = ann.title;
+                banner.style.display = 'block';
+            } catch {}
+        }
+
+        // ── Boot ─────────────────────────────────────────────────────────
+        initUI().then(() => {
+            if (_username) {
+                loadGames('gamesPreview');
+                loadLeaderboardData('leaderboard');
+                loadGroupsData('groupsPreview');
+            }
+        });
+        loadAnnouncement();
+
+    })();
+    </script>
+</body>
+</html>

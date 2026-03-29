@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+    <title>Ampehere · Messages</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0 !important; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+    <style>
+        :root {
+            --bg:#060606; --surface:#0c0c0c; --border:#1a1a1a; --border-hi:#252525;
+            --blue:#2563c4; --blue-hi:#3b7de0;
+            --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+            --red:#c0392b; --gold:#f1c40f; --green:#27ae60;
+        }
+        *, *::before, *::after { border-radius: 0 !important; }
+        body { background: #060606 !important; background-image: none !important; }
+        a { color: #2563c4; }
+        a:hover { color: #3b7de0; }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/avatar2d.js"></script>
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:"Exo 2",sans-serif;min-height:100vh;background:#060606;background-image:radial-gradient(ellipse at 20% 10%,rgba(15,15,15,.35) 0%,transparent 50%),radial-gradient(ellipse at 80% 90%,rgba(255,255,255,.04) 0%,transparent 50%);color:#8899aa;padding:5rem 1rem 3rem;}
+        .page-wrap{max-width:700px;margin:0 auto;}
+        h1{font-size:1.5rem;font-weight:900;color:#d0d8e0;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1.5rem;display:flex;align-items:center;gap:.6rem;}
+        .tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;background:rgba(14,26,56,.5);border:1px solid rgba(255,255,255,.04);border-radius: 0;padding:.3rem;}
+        .tab-btn{flex:1;padding:.55rem 1rem;border:none;border-radius: 0;background:transparent;color:#7a8a9a;font-family:"Exo 2",sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:all .15s;}
+        .tab-btn.active{background:rgba(15,15,15,.5);color:#8899aa;border:1px solid rgba(37,99,196,.18);}
+        .compose-btn{display:inline-flex;align-items:center;gap:.5rem;background:linear-gradient(135deg,rgba(15,15,15,.6),rgba(12,12,12,.8));border:1px solid rgba(126,184,212,.3);border-radius: 0;color:#8899aa;font-family:"Exo 2",sans-serif;font-size:.88rem;font-weight:700;padding:.6rem 1.2rem;cursor:pointer;margin-bottom:1.2rem;transition:all .15s;}
+        .compose-btn:hover{background:rgba(15,15,15,.8);border-color:rgba(37,99,196,.5);}
+        .dm-card{background:linear-gradient(145deg,rgba(14,26,56,.8),rgba(10,18,40,.9));border:1px solid rgba(255,255,255,.04);border-radius: 0;padding:1rem 1.2rem;margin-bottom:.6rem;transition:border-color .15s;display:flex;gap:.9rem;align-items:flex-start;}
+        .dm-card:hover{border-color:rgba(126,184,212,.25);}
+        .dm-card.unread{border-left:3px solid #8899aa;}
+        .dm-avatar-wrap{flex-shrink:0;width:44px;height:44px;border-radius:50%;overflow:hidden;border:2px solid rgba(37,99,196,.18);background:#0c0c0c;}
+        .dm-avatar-wrap img{width:44px;height:44px;border-radius:50%;object-fit:cover;display:block;}
+        .dm-content{flex:1;min-width:0;}
+        .dm-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem;}
+        .dm-from{font-size:.82rem;font-weight:800;color:#8899aa;text-transform:uppercase;letter-spacing:.06em;}
+        .dm-time{font-size:.72rem;color:#4a5a6a;}
+        .dm-body{font-size:.9rem;color:#8899aa;line-height:1.5;word-break:break-word;}
+        .dm-status{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-top:.35rem;}
+        .dm-status.pending{color:#ffb347;}
+        .dm-status.approved{color:#2ecc71;}
+        .dm-status.rejected{color:#ee8080;}
+        .dm-actions{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.4rem;}
+        .btn-reply,.btn-report{border:none;font-size:.7rem;font-weight:700;padding:.22rem .65rem;border-radius: 0;cursor:pointer;font-family:'Exo 2',sans-serif;letter-spacing:.04em;transition:all .12s;}
+        .btn-reply{background:rgba(15,15,15,.25);border:1px solid rgba(126,184,212,.25);color:#8899aa;}
+        .btn-reply:hover{background:rgba(15,15,15,.5);}
+        .btn-report{background:rgba(140,40,40,.2);border:1px solid rgba(200,80,80,.25);color:#ee8080;}
+        .btn-report:hover{background:rgba(140,40,40,.4);}
+        .empty{text-align:center;padding:3rem 1rem;color:#4a5a6a;font-size:.9rem;}
+        .empty i{font-size:2rem;margin-bottom:.75rem;display:block;opacity:.4;}
+        .skeleton{height:80px;background:rgba(255,255,255,.04);border-radius: 0;margin-bottom:.6rem;animation:pulse 1.4s ease-in-out infinite;}
+        @keyframes pulse{0%,100%{opacity:.4}50%{opacity:.8}}
+    </style>
+</head>
+<body>
+<script src="/sidebar.js"></script>
+<div class="page-wrap">
+    <h1><i class="fas fa-envelope"></i> Messages</h1>
+
+    <button class="compose-btn" onclick="composeDM()"><i class="fas fa-pen"></i> New Message</button>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('inbox', this)"><i class="fas fa-inbox"></i> Inbox</button>
+        <button class="tab-btn" onclick="switchTab('outbox', this)"><i class="fas fa-paper-plane"></i> Sent</button>
+    </div>
+
+    <div id="dm-list"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+</div>
+
+<script>
+var _sw = { background:'#0c0c0c', color:'#d0d8e0', confirmButtonColor:'#111111', cancelButtonColor:'#8b0000' };
+var _currentBox = 'inbox';
+var _avatarCache = {};
+
+function switchTab(box, btn) {
+    _currentBox = box;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    loadDMs(box);
+}
+
+function fmt(ts) {
+    var d = new Date(ts);
+    return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderAvatar(imgEl, username) {
+    if (!imgEl) return;
+    var defs = _avatarCache[username] || [];
+    if (window.Avatar2D) {
+        Avatar2D.renderImg(imgEl, defs, 44);
+    }
+}
+
+async function fetchAvatars(usernames) {
+    var needed = usernames.filter(u => !_avatarCache.hasOwnProperty(u));
+    if (!needed.length) return;
+    try {
+        var res = await fetch('/api/games/avatar-data?usernames=' + encodeURIComponent(needed.join(',')));
+        var d = await res.json();
+        if (d.success && d.avatars) {
+            Object.keys(d.avatars).forEach(u => { _avatarCache[u] = d.avatars[u]; });
+        }
+        needed.forEach(u => { if (!_avatarCache.hasOwnProperty(u)) _avatarCache[u] = []; });
+    } catch(e) {
+        needed.forEach(u => { _avatarCache[u] = []; });
+    }
+}
+
+async function loadDMs(box) {
+    var list = document.getElementById('dm-list');
+    list.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
+    try {
+        var d = await (await fetch('/api/dm/list?box=' + box)).json();
+        if (!d.success) { list.innerHTML = '<div class="empty"><i class="fas fa-exclamation-circle"></i>Failed to load messages.</div>'; return; }
+        if (!d.dms.length) { list.innerHTML = '<div class="empty"><i class="fas fa-envelope-open"></i>' + (box === 'inbox' ? 'No messages yet.' : 'Nothing sent yet.') + '</div>'; return; }
+
+        var usernames = d.dms.map(dm => box === 'inbox' ? dm.from_username : dm.to_username);
+        await fetchAvatars(usernames);
+
+        list.innerHTML = d.dms.map(function(dm, idx) {
+            var whoUsername = box === 'inbox' ? dm.from_username : dm.to_username;
+            var unread = box === 'inbox' && !dm.read ? ' unread' : '';
+            var dirLabel = box === 'inbox'
+                ? '<span class="dm-from">' + esc(dm.from_username) + '</span>'
+                : '<span class="dm-from"><i class="fas fa-arrow-right" style="font-size:.65rem;opacity:.6;"></i> ' + esc(dm.to_username) + '</span>';
+            var statusHtml = box === 'outbox'
+                ? '<div class="dm-status ' + dm.status + '">' + dm.status + '</div>'
+                : '';
+            var canReport = box === 'inbox' && !dm.from_is_owner;
+            var replyBtn = box === 'inbox'
+                ? '<button class="btn-reply" onclick="replyDM(\'' + esc(whoUsername) + '\')"><i class="fas fa-reply"></i> Reply</button>'
+                : '';
+            var reportBtn = canReport
+                ? '<button class="btn-report" onclick="reportDM(\'' + dm.id + '\',\'' + esc(whoUsername) + '\')"><i class="fas fa-flag"></i> Report</button>'
+                : '';
+            return '<div class="dm-card' + unread + '">'
+                + '<div class="dm-avatar-wrap"><img id="av-' + idx + '" width="44" height="44" alt="' + esc(whoUsername) + '"></div>'
+                + '<div class="dm-content">'
+                +   '<div class="dm-meta">' + dirLabel + '<span class="dm-time">' + fmt(dm.created_at) + '</span></div>'
+                +   '<div class="dm-body">' + esc(dm.message) + '</div>'
+                +   statusHtml
+                +   '<div class="dm-actions">' + replyBtn + reportBtn + '</div>'
+                + '</div></div>';
+        }).join('');
+
+        d.dms.forEach(function(dm, idx) {
+            var whoUsername = box === 'inbox' ? dm.from_username : dm.to_username;
+            renderAvatar(document.getElementById('av-' + idx), whoUsername);
+        });
+
+    } catch(e) {
+        list.innerHTML = '<div class="empty"><i class="fas fa-exclamation-circle"></i>Error loading messages.</div>';
+    }
+}
+
+async function composeDM() {
+    var result = await Swal.fire(Object.assign({
+        title: 'New Message',
+        html: '<input id="swal-dm-to" type="text" placeholder="Username" style="width:100%;padding:.6rem .9rem;background:rgba(255,255,255,.06);border:1px solid rgba(126,184,212,.3);border-radius: 0;color:#d0d8e0;font-family:\'Exo 2\',sans-serif;font-size:.92rem;margin-bottom:.6rem;">'
+            + '<textarea id="swal-dm-msg" maxlength="1000" placeholder="Write your message... (max 1000 chars)" rows="5" style="width:100%;padding:.6rem .9rem;background:rgba(255,255,255,.06);border:1px solid rgba(126,184,212,.3);border-radius: 0;color:#d0d8e0;font-family:\'Exo 2\',sans-serif;font-size:.92rem;resize:vertical;"></textarea>'
+            + '<div style="font-size:.72rem;color:#4a5a6a;margin-top:.3rem;">Messages are reviewed before delivery.</div>',
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: '<i class="fas fa-paper-plane"></i> Send',
+        confirmButtonColor: '#111111',
+        preConfirm: function() {
+            var to  = document.getElementById('swal-dm-to').value.trim();
+            var msg = document.getElementById('swal-dm-msg').value.trim();
+            if (!to)  { Swal.showValidationMessage('Enter a username'); return false; }
+            if (!msg) { Swal.showValidationMessage('Enter a message'); return false; }
+            return { to, msg };
+        }
+    }, _sw));
+    if (!result.isConfirmed) return;
+    var d = await (await fetch('/api/dm/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ toUsername: result.value.to, message: result.value.msg })
+    })).json();
+    if (d.success) {
+        Swal.fire(Object.assign({ icon:'success', title:'Sent!', text:'Your message is pending approval.', timer:2000, showConfirmButton:false }, _sw));
+        if (_currentBox === 'outbox') loadDMs('outbox');
+    } else {
+        Swal.fire(Object.assign({ icon:'error', title:'Error', text: d.error }, _sw));
+    }
+}
+
+async function replyDM(toUsername) {
+    var result = await Swal.fire(Object.assign({
+        title: '↩ Reply to @' + toUsername,
+        html: '<textarea id="swal-dm-msg" maxlength="1000" placeholder="Write your reply... (max 1000 chars)" rows="5" style="width:100%;padding:.6rem .9rem;background:rgba(255,255,255,.06);border:1px solid rgba(126,184,212,.3);border-radius: 0;color:#d0d8e0;font-family:\'Exo 2\',sans-serif;font-size:.92rem;resize:vertical;"></textarea>'
+            + '<div style="font-size:.72rem;color:#4a5a6a;margin-top:.3rem;">Replies are reviewed before delivery.</div>',
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: '<i class="fas fa-paper-plane"></i> Send Reply',
+        confirmButtonColor: '#111111',
+        preConfirm: function() {
+            var msg = document.getElementById('swal-dm-msg').value.trim();
+            if (!msg) { Swal.showValidationMessage('Please write a message'); return false; }
+            return msg;
+        }
+    }, _sw));
+    if (!result.isConfirmed || !result.value) return;
+    var d = await (await fetch('/api/dm/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ toUsername: toUsername, message: result.value })
+    })).json();
+    if (d.success) {
+        Swal.fire(Object.assign({ icon: 'success', title: 'Reply sent!', text: 'Your reply is pending approval.', timer: 2000, showConfirmButton: false }, _sw));
+    } else {
+        Swal.fire(Object.assign({ icon: 'error', title: 'Error', text: d.error }, _sw));
+    }
+}
+
+async function reportDM(dmId, fromUsername) {
+    var result = await Swal.fire(Object.assign({
+        title: 'Report Message',
+        html: '<p style="color:#8a9ab0;font-size:.88rem;margin-bottom:.75rem;">Report this message from <strong style="color:#d0d8e0;">@' + fromUsername + '</strong> for review.</p>'
+            + '<input id="swal-report-reason" type="text" maxlength="200" placeholder="Reason (required)" style="width:100%;padding:.6rem .9rem;background:rgba(255,255,255,.06);border:1px solid rgba(200,80,80,.3);border-radius: 0;color:#d0d8e0;font-family:\'Exo 2\',sans-serif;font-size:.92rem;">',
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: '<i class="fas fa-flag"></i> Report',
+        confirmButtonColor: '#8b0000',
+        preConfirm: function() {
+            var r = document.getElementById('swal-report-reason').value.trim();
+            if (!r) { Swal.showValidationMessage('Please enter a reason'); return false; }
+            return r;
+        }
+    }, _sw));
+    if (!result.isConfirmed) return;
+    var d = await (await fetch('/api/submit-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'dm', targetId: dmId, targetLabel: 'DM from @' + fromUsername, reason: 'other', details: result.value })
+    })).json();
+    if (d.success) {
+        Swal.fire(Object.assign({ icon: 'success', title: 'Reported', text: 'The message has been reported for review.', timer: 2000, showConfirmButton: false }, _sw));
+    } else {
+        Swal.fire(Object.assign({ icon: 'error', title: 'Error', text: d.error || 'Failed to submit report.' }, _sw));
+    }
+}
+
+fetch('/api/get-user').then(r => r.json()).then(function(d) {
+    if (!d.success) { window.location.href = '/login.html'; return; }
+    loadDMs('inbox');
+}).catch(function() { window.location.href = '/login.html'; });
+</script>
+</body>
+</html>

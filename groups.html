@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="logo.png" type="image/png">
+<title>Ampehere · Groups</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+    --navy:#060606;--sky:#8899aa;--silver:#8899aa;
+    --silver-light:#d0d8e0;--silver-dim:#8a95a3;
+    --panel:rgba(12,12,12,.55);--panel-border:rgba(37,99,196,.18);
+}
+@keyframes floatIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+body{
+    overflow-x:hidden;font-family:'Exo 2',sans-serif;min-height:100vh;padding:1rem;
+    background:#060606;
+    background-image:radial-gradient(ellipse at 20% 10%,rgba(15,15,15,.35) 0%,transparent 50%),
+                     radial-gradient(ellipse at 80% 90%,rgba(255,255,255,.04) 0%,transparent 50%);
+    background-attachment:fixed;
+}
+.container{
+    max-width:1100px;margin:0 auto;
+    background:linear-gradient(145deg,rgba(12,12,12,.88),rgba(8,8,8,.94));
+    border:1px solid var(--panel-border);border-radius: 0;padding:2rem;
+    box-shadow:0 24px 64px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);
+    animation:floatIn .45s ease-out;
+}
+
+/* ── Header ── */
+.page-header{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:1.5rem;padding-bottom:1.25rem;
+    border-bottom:1px solid rgba(255,255,255,.05);flex-wrap:wrap;gap:.75rem;
+}
+.page-header h1{
+    font-family:'Exo 2',sans-serif;font-size:1.6rem;font-weight:900;
+    color:#d0d8e0;letter-spacing:.04em;text-shadow:0 2px 20px rgba(37,99,196,.18);
+    display:flex;align-items:center;gap:.6rem;
+}
+.header-actions{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;}
+.btn-create{
+    display:inline-flex;align-items:center;gap:.45rem;
+    background:linear-gradient(135deg,rgba(15,15,15,.7),rgba(12,12,12,.9));
+    border:1px solid rgba(37,99,196,.3);border-radius: 0;
+    color:#8899aa;font-family:'Exo 2',sans-serif;font-size:.82rem;font-weight:800;
+    letter-spacing:.06em;text-transform:uppercase;padding:.5rem 1.1rem;
+    text-decoration:none;cursor:pointer;transition:all .15s;
+}
+.btn-create:hover{background:linear-gradient(135deg,rgba(15,15,15,.95),rgba(12,12,12,1));transform:translateY(-1px);border-color:rgba(126,184,212,.6);}
+
+/* ── Stats bar ── */
+.stats-bar{
+    display:flex;gap:.75rem;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center;
+}
+.stat-pill{
+    display:inline-flex;align-items:center;gap:.45rem;
+    background:rgba(12,12,12,.6);border:1px solid rgba(126,184,212,.18);
+    border-radius: 0;padding:.35rem 1rem;color:#8a95a3;
+    font-family:'Exo 2',sans-serif;font-size:.78rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+}
+.stat-pill span{color:#d0d8e0;}
+
+/* ── Search & sort bar ── */
+.search-bar{
+    display:flex;gap:.6rem;margin-bottom:1.5rem;flex-wrap:wrap;
+}
+.search-bar input{
+    flex:1;min-width:180px;padding:.6rem 1rem;
+    background:rgba(255,255,255,.05);border:1px solid rgba(37,99,196,.18);
+    border-radius: 0;color:#d0d8e0;font-family:'Exo 2',sans-serif;font-size:.9rem;
+    outline:none;transition:border-color .2s;
+}
+.search-bar input:focus{border-color:rgba(37,99,196,.5);box-shadow:0 0 0 3px rgba(126,184,212,.07);}
+.search-bar input::placeholder{color:#5a7090;}
+.sort-btn{
+    display:inline-flex;align-items:center;gap:.4rem;
+    padding:.6rem .9rem;background:rgba(12,12,12,.5);
+    border:1px solid rgba(126,184,212,.18);border-radius: 0;
+    color:#8a95a3;font-family:'Exo 2',sans-serif;font-size:.72rem;font-weight:800;
+    letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:all .15s;
+    white-space:nowrap;
+}
+.sort-btn.active,.sort-btn:hover{background:rgba(15,15,15,.4);color:#8899aa;border-color:rgba(37,99,196,.3);}
+
+/* ── Grid ── */
+.groups-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;
+}
+
+/* ── Card ── */
+.group-card{
+    background:rgba(12,12,12,.55);border:1px solid rgba(126,184,212,.18);
+    border-radius: 0;padding:1.25rem;
+    box-shadow:0 6px 20px rgba(0,0,0,.3);
+    transition:all .18s;position:relative;overflow:hidden;
+    animation:cardIn .35s ease-out both;
+    display:flex;flex-direction:column;gap:.75rem;
+}
+.group-card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,rgba(37,99,196,.3),transparent);
+    opacity:0;transition:opacity .2s;
+}
+.group-card:hover{border-color:rgba(126,184,212,.4);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.45);}
+.group-card:hover::before{opacity:1;}
+
+.card-top{display:flex;align-items:flex-start;gap:.75rem;}
+.group-icon{
+    width:46px;height:46px;border-radius: 0;flex-shrink:0;
+    background:linear-gradient(135deg,rgba(15,15,15,.5),rgba(12,12,12,.8));
+    border:1px solid rgba(37,99,196,.18);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;
+}
+.card-name-row{flex:1;min-width:0;}
+.group-name{
+    font-family:'Exo 2',sans-serif;font-size:1.1rem;font-weight:900;
+    color:#d0d8e0;line-height:1.2;margin-bottom:.3rem;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.card-badges{display:flex;gap:.35rem;flex-wrap:wrap;}
+.private-badge{
+    display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .55rem;
+    background:rgba(139,0,0,.3);border:1px solid rgba(220,60,60,.3);
+    border-radius: 0;color:#ee8080;font-size:.68rem;font-weight:800;
+}
+.member-badge{
+    display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .55rem;
+    background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.25);
+    border-radius: 0;color:#4ade80;font-size:.68rem;font-weight:800;
+}
+
+.group-description{
+    color:#8a95a3;font-size:.83rem;line-height:1.5;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+    font-style:italic;
+}
+
+.card-meta{
+    display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;
+    padding-top:.6rem;border-top:1px solid rgba(126,184,212,.08);
+}
+.meta-item{
+    display:flex;align-items:center;gap:.3rem;
+    color:#8a95a3;font-size:.78rem;font-weight:600;
+}
+.meta-item i{font-size:.7rem;color:#5a7090;}
+.creator-link{
+    display:flex;align-items:center;gap:.35rem;color:#8a95a3;font-size:.78rem;
+    font-weight:600;cursor:pointer;text-decoration:none;transition:color .15s;margin-left:auto;
+}
+.creator-link:hover{color:#8899aa;}
+.creator-link img{width:18px;height:18px;border-radius:50%;border:1px solid rgba(37,99,196,.18);background:#111111;}
+
+.card-actions{display:flex;gap:.5rem;}
+.btn-join{
+    flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;
+    padding:.55rem .9rem;border-radius: 0;cursor:pointer;transition:all .15s;
+    font-family:'Exo 2',sans-serif;font-size:.78rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    background:linear-gradient(135deg,rgba(15,15,15,.5),rgba(12,12,12,.8));
+    border:1px solid rgba(126,184,212,.28);color:#8899aa;
+}
+.btn-join:hover{background:linear-gradient(135deg,rgba(15,15,15,.85),rgba(12,12,12,1));transform:translateY(-1px);}
+.btn-leave{
+    flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;
+    padding:.55rem .9rem;border-radius: 0;cursor:pointer;transition:all .15s;
+    font-family:'Exo 2',sans-serif;font-size:.78rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    background:rgba(95,30,30,.4);border:1px solid rgba(212,126,126,.25);color:#e09090;
+}
+.btn-leave:hover{background:rgba(139,0,0,.6);transform:translateY(-1px);}
+.btn-view{
+    display:flex;align-items:center;justify-content:center;gap:.4rem;
+    padding:.55rem .9rem;border-radius: 0;cursor:pointer;transition:all .15s;
+    font-family:'Exo 2',sans-serif;font-size:.78rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    background:rgba(8,8,8,.5);border:1px solid rgba(126,184,212,.18);color:#8a95a3;
+    text-decoration:none;
+}
+.btn-view:hover{background:rgba(15,15,15,.35);color:#8899aa;border-color:rgba(37,99,196,.3);}
+
+/* ── Empty / Loading ── */
+.empty{
+    grid-column:1/-1;text-align:center;padding:3rem 2rem;
+    background:rgba(12,12,12,.3);border:1px solid rgba(255,255,255,.04);
+    border-radius: 0;color:#8a95a3;font-size:.95rem;
+}
+.empty i{font-size:2rem;display:block;margin-bottom:.75rem;opacity:.4;}
+.loading{text-align:center;padding:3rem;color:#8a95a3;}
+
+/* ── Load more ── */
+.load-more-wrap{text-align:center;margin-top:1.5rem;}
+.btn-load-more{
+    padding:.6rem 1.6rem;
+    background:rgba(15,15,15,.35);border:1px solid rgba(126,184,212,.25);
+    border-radius: 0;color:#8899aa;font-family:'Exo 2',sans-serif;
+    font-size:.8rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+    cursor:pointer;transition:all .15s;
+}
+.btn-load-more:hover{background:rgba(15,15,15,.6);color:#a0aabb;}
+
+/* ── No results ── */
+.no-results{
+    grid-column:1/-1;text-align:center;padding:2.5rem;
+    color:#5a7090;font-size:.9rem;
+}
+
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:rgba(255,255,255,.02);}
+::-webkit-scrollbar-thumb{background:rgba(126,184,212,.25);border-radius: 0;}
+
+@media(max-width:640px){
+    .container{padding:1.25rem;border-radius: 0;}
+    .groups-grid{grid-template-columns:1fr;}
+    .page-header{flex-direction:column;align-items:flex-start;}
+    .search-bar{flex-direction:column;}
+}
+</style>
+<link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0 !important; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="/avatar-renderer.js"></script>
+<script src="/avatar2d.js"></script>
+<script src="/avatar.js"></script>
+</head>
+<body>
+<script src="/sidebar.js"></script>
+<div class="page-container">
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-users"></i> ALL GROUPS</h1>
+        <div class="header-actions">
+            <a href="/" class="btn-create" style="background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.05);color:#8a95a3;"><i class="fas fa-home"></i> HOME</a>
+            <a href="/create-group.html" class="btn-create"><i class="fas fa-plus-circle"></i> CREATE GROUP</a>
+        </div>
+    </div>
+
+    <div class="stats-bar">
+        <div class="stat-pill"><i class="fas fa-layer-group"></i> <span id="totalGroups">—</span> GROUPS</div>
+        <div class="stat-pill"><i class="fas fa-users"></i> <span id="totalMembers">—</span> MEMBERS</div>
+        <div class="stat-pill" id="myGroupsPill" style="display:none;"><i class="fas fa-star"></i> <span id="myGroupsCount">0</span> JOINED</div>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="🔍  Search groups by name or description…" oninput="onSearch()">
+        <button class="sort-btn active" id="sortMembers" onclick="setSort('members')"><i class="fas fa-users"></i> Most Members</button>
+        <button class="sort-btn" id="sortNew" onclick="setSort('new')"><i class="fas fa-clock"></i> Newest</button>
+        <button class="sort-btn" id="sortName" onclick="setSort('name')"><i class="fas fa-font"></i> A–Z</button>
+    </div>
+
+    <div id="loadingSection" class="loading"><i class="fas fa-spinner fa-spin"></i> Loading groups…</div>
+
+    <div id="groupsGrid" class="groups-grid"></div>
+    <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
+        <button class="btn-load-more" id="loadMoreBtn" onclick="renderMoreGroups()">Load More</button>
+    </div>
+</div>
+</div>
+
+<script>
+const Swal=window.Swal;
+let novaId=null;
+let _allGroups=[], _filtered=[], _shown=0, _sort='members';
+const BATCH=12;
+
+async function resolveCurrentUser(){
+    try{
+        const r=await fetch('/api/get-user');
+        if(r.ok){const d=await r.json();if(d.success)novaId=d.user.id;}
+    }catch(e){}
+}
+
+async function loadGroups(){
+    try{
+        const res=await fetch('/api/get-groups');
+        const groups=await res.json();
+        document.getElementById('loadingSection').style.display='none';
+        _allGroups=groups||[];
+        document.getElementById('totalGroups').textContent=_allGroups.length;
+        const totalMembers=_allGroups.reduce((s,g)=>s+g.memberCount,0);
+        document.getElementById('totalMembers').textContent=totalMembers.toLocaleString();
+        const myCount=_allGroups.filter(g=>g.isMember).length;
+        if(myCount>0){
+            document.getElementById('myGroupsCount').textContent=myCount;
+            document.getElementById('myGroupsPill').style.display='inline-flex';
+        }
+        applyFilterSort();
+    }catch(err){
+        console.error(err);
+        document.getElementById('loadingSection').style.display='none';
+        document.getElementById('groupsGrid').innerHTML='<div class="empty"><i class="fas fa-exclamation-triangle"></i>Failed to load groups</div>';
+    }
+}
+
+function setSort(s){
+    _sort=s;
+    document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('sort'+s.charAt(0).toUpperCase()+s.slice(1)).classList.add('active');
+    applyFilterSort();
+}
+
+function onSearch(){applyFilterSort();}
+
+function applyFilterSort(){
+    const q=document.getElementById('searchInput').value.toLowerCase().trim();
+    let list=q
+        ?_allGroups.filter(g=>g.name.toLowerCase().includes(q)||(g.description||'').toLowerCase().includes(q))
+        :[..._allGroups];
+    if(_sort==='members') list.sort((a,b)=>b.memberCount-a.memberCount);
+    else if(_sort==='new') list.sort((a,b)=>b.createdAt-a.createdAt);
+    else if(_sort==='name') list.sort((a,b)=>a.name.localeCompare(b.name));
+    _filtered=list;
+    _shown=0;
+    document.getElementById('groupsGrid').innerHTML='';
+    renderMoreGroups();
+}
+
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+function renderMoreGroups(){
+    const grid=document.getElementById('groupsGrid');
+    const batch=_filtered.slice(_shown,_shown+BATCH);
+    _shown+=batch.length;
+
+    if(!_filtered.length){
+        grid.innerHTML='<div class="no-results">No groups match your search.</div>';
+        document.getElementById('loadMoreWrap').style.display='none';
+        return;
+    }
+
+    batch.forEach((group,i)=>{
+        const urlName=group.urlName||group.name.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+        const card=document.createElement('div');
+        card.className='group-card';
+        card.style.animationDelay=(i*40)+'ms';
+        card.innerHTML=`
+            <div class="card-top">
+                <div class="group-icon">👥</div>
+                <div class="card-name-row">
+                    <div class="group-name" title="${esc(group.name)}">${esc(group.name)}</div>
+                    <div class="card-badges">
+                        ${group.isPrivate?'<span class="private-badge"><i class="fas fa-lock"></i> PRIVATE</span>':''}
+                        ${group.isMember?'<span class="member-badge"><i class="fas fa-check"></i> JOINED</span>':''}
+                    </div>
+                </div>
+            </div>
+            ${group.description?`<div class="group-description">${esc(group.description)}</div>`:''}
+            <div class="card-meta">
+                <span class="meta-item"><i class="fas fa-users"></i> ${group.memberCount.toLocaleString()} member${group.memberCount!==1?'s':''}</span>
+                <span class="meta-item"><i class="fas fa-calendar-alt"></i> ${new Date(group.createdAt).toLocaleDateString()}</span>
+                <a class="creator-link" onclick="event.stopPropagation();window.location.href='/profile.html?user=${encodeURIComponent(group.createdBy)}'">
+                    <img data-avuser="${esc(group.createdBy)}" alt="" width="18" height="18">
+                    ${esc(group.createdBy)}
+                </a>
+            </div>
+            <div class="card-actions">
+                ${group.isMember
+                    ?`<button class="btn-leave" onclick="quickLeave('${esc(group.id)}','${esc(group.name)}',this)"><i class="fas fa-sign-out-alt"></i> LEAVE</button>`
+                    :group.isPrivate
+                    ?`<span style="font-size:.72rem;color:#5a7090;font-weight:700;padding:.55rem .5rem;display:flex;align-items:center;gap:.3rem;"><i class="fas fa-lock" style="font-size:.65rem;"></i> Invite only</span>`
+                    :`<button class="btn-join" onclick="quickJoin('${esc(group.id)}','${esc(group.name)}',this)"><i class="fas fa-sign-in-alt"></i> JOIN</button>`
+                }
+                <a class="btn-view" href="/group.html?name=${encodeURIComponent(urlName)}"><i class="fas fa-eye"></i> VIEW</a>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+
+    // Render avatars
+    if(window.AmpAvatar){
+        document.querySelectorAll('img[data-avuser]').forEach(img=>{
+            if(!img.dataset.rendered)AmpAvatar.render(img,img.dataset.avuser,18);
+            img.dataset.rendered='1';
+        });
+    }else{
+        setTimeout(()=>{
+            if(window.AmpAvatar)document.querySelectorAll('img[data-avuser]').forEach(img=>{if(!img.dataset.rendered){AmpAvatar.render(img,img.dataset.avuser,18);img.dataset.rendered='1';}});
+        },500);
+    }
+
+    // Load more button
+    const wrap=document.getElementById('loadMoreWrap');
+    const btn=document.getElementById('loadMoreBtn');
+    if(_shown<_filtered.length){
+        wrap.style.display='block';
+        btn.textContent=`Load More (${_filtered.length-_shown} remaining)`;
+    }else{
+        wrap.style.display='none';
+    }
+}
+
+async function quickJoin(groupId,groupName,btn){
+    if(!novaId){
+        Swal.fire({icon:'error',title:'Not Logged In',text:'Please login first.',background:'#0c0c0c',color:'#d0d8e0',confirmButtonColor:'#111111'}).then(()=>window.location.href='/login.html');
+        return;
+    }
+    btn.disabled=true;btn.style.opacity='.6';
+    try{
+        const res=await fetch('/api/join-group',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({groupId})});
+        const data=await res.json();
+        if(data.success){
+            Swal.fire({icon:'success',title:'Joined!',text:`You joined ${groupName}`,background:'#0c0c0c',color:'#d0d8e0',timer:2000,showConfirmButton:false});
+            btn.className='btn-leave';
+            btn.innerHTML='<i class="fas fa-sign-out-alt"></i> LEAVE';
+            btn.onclick=e=>quickLeave(groupId,groupName,e.currentTarget);
+            btn.disabled=false;btn.style.opacity='';
+            // Update joined badge
+            const card=btn.closest('.group-card');
+            if(card){
+                const badges=card.querySelector('.card-badges');
+                if(badges&&!badges.querySelector('.member-badge')){
+                    badges.insertAdjacentHTML('beforeend','<span class="member-badge"><i class="fas fa-check"></i> JOINED</span>');
+                }
+            }
+        }else{
+            Swal.fire({icon:'error',title:'Error',text:data.error,background:'#0c0c0c',color:'#d0d8e0'});
+            btn.disabled=false;btn.style.opacity='';
+        }
+    }catch(err){console.error(err);btn.disabled=false;btn.style.opacity='';}
+}
+
+async function quickLeave(groupId,groupName,btn){
+    if(!novaId)return;
+    const{isConfirmed}=await Swal.fire({title:`Leave ${groupName}?`,icon:'question',showCancelButton:true,confirmButtonText:'Leave',cancelButtonText:'Cancel',background:'#0c0c0c',color:'#d0d8e0',confirmButtonColor:'#7f1d1d'});
+    if(!isConfirmed)return;
+    btn.disabled=true;btn.style.opacity='.6';
+    try{
+        const res=await fetch('/api/leave-group',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({groupId})});
+        const data=await res.json();
+        if(data.success){
+            Swal.fire({icon:'success',title:'Left!',text:`You left ${groupName}`,background:'#0c0c0c',color:'#d0d8e0',timer:2000,showConfirmButton:false});
+            btn.className='btn-join';
+            btn.innerHTML='<i class="fas fa-sign-in-alt"></i> JOIN';
+            btn.onclick=e=>quickJoin(groupId,groupName,e.currentTarget);
+            btn.disabled=false;btn.style.opacity='';
+            const card=btn.closest('.group-card');
+            if(card){const mb=card.querySelector('.member-badge');if(mb)mb.remove();}
+        }else{
+            Swal.fire({icon:'error',title:'Error',text:data.error,background:'#0c0c0c',color:'#d0d8e0'});
+            btn.disabled=false;btn.style.opacity='';
+        }
+    }catch(err){console.error(err);btn.disabled=false;btn.style.opacity='';}
+}
+
+resolveCurrentUser().then(loadGroups);
+</script>
+</body>
+</html>

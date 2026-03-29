@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+    <title>Ampehere · Avatar Store</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    :root{--navy:#060606;--card:rgba(10,10,10,0.97);--blue:#1c1c1c;--sky:#8899aa;--silver:#8899aa;--dim:#8a95a3;--gold:#f1c40f;}
+    body{
+            overflow-x: hidden;background:var(--navy);background-image:radial-gradient(ellipse at 20% 10%,rgba(15,15,15,.35) 0%,transparent 50%),radial-gradient(ellipse at 80% 90%,rgba(255,255,255,.04) 0%,transparent 50%);min-height:100vh;font-family:"Exo 2",sans-serif;color:var(--silver);}
+    .page{max-width:1100px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+    /* header */
+    .hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
+    .hdr h1{font-family:"Exo 2",sans-serif;font-weight:900;font-size:1.75rem;color:#d0d8e0;display:flex;align-items:center;gap:.6rem;}
+    .hdr h1 i{color:var(--sky);}
+    .coin-pill{background:rgba(15,15,15,.35);border:1px solid rgba(126,184,212,.3);border-radius: 0;padding:.45rem 1rem;font-family:"Exo 2",sans-serif;font-weight:700;color:var(--gold);display:flex;align-items:center;gap:.4rem;}
+    /* layout */
+    .layout{display:grid;grid-template-columns:280px 1fr;gap:1.5rem;align-items:start;}
+    @media(max-width:780px){.layout{grid-template-columns:1fr;}}
+    /* preview */
+    .preview{background:var(--card);border:1px solid rgba(255,255,255,.05);border-radius: 0;padding:1.25rem;position:sticky;top:1rem;}
+    .panel-label{font-family:"Exo 2",sans-serif;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--sky);margin-bottom:.85rem;}
+    #previewCanvas{width:100%;aspect-ratio:1;border-radius: 0;background:radial-gradient(circle at 40% 35%,rgba(15,15,15,.28),rgba(4,8,20,.95));display:block;cursor:grab;}
+    #previewCanvas:active{cursor:grabbing;}
+    .equipped-section{margin-top:1rem;}
+    .equipped-tags{display:flex;flex-wrap:wrap;gap:5px;min-height:26px;margin-top:.4rem;}
+    .etag{background:rgba(15,15,15,.35);border:1px solid rgba(126,184,212,.25);border-radius: 0;padding:2px 8px;font-size:.67rem;font-weight:600;color:var(--sky);cursor:pointer;transition:all .14s;display:flex;align-items:center;gap:3px;}
+    .etag:hover{background:rgba(200,40,40,.25);border-color:rgba(220,40,40,.4);color:#ff8888;}
+    .none-equipped{font-size:.7rem;color:var(--dim);font-style:italic;}
+    .save-btn{margin-top:.9rem;width:100%;padding:.6rem;background:linear-gradient(135deg,rgba(15,15,15,.65),rgba(12,12,12,.9));border:1px solid rgba(37,99,196,.3);border-radius: 0;color:#a0aabb;font-family:"Exo 2",sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:.4rem;}
+    .save-btn:hover{background:linear-gradient(135deg,rgba(15,15,15,.95),rgba(12,12,12,1));border-color:rgba(126,184,212,.55);color:#e8f4ff;transform:translateY(-1px);}
+    .save-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+    /* shop */
+    .cat-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.1rem;}
+    .tab{padding:.38rem .85rem;background:rgba(255,255,255,.05);border:1px solid rgba(126,184,212,.14);border-radius: 0;font-size:.73rem;font-weight:600;color:var(--dim);cursor:pointer;transition:all .14s;}
+    .tab:hover{background:rgba(255,255,255,.04);color:var(--sky);}
+    .tab.active{background:rgba(15,15,15,.4);border-color:rgba(126,184,212,.4);color:var(--sky);}
+    /* item grid */
+    .items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;}
+    .icard{background:var(--card);border:1px solid rgba(255,255,255,.04);border-radius: 0;padding:.9rem;display:flex;flex-direction:column;gap:.45rem;transition:all .18s;position:relative;overflow:hidden;}
+    .icard:hover{border-color:rgba(126,184,212,.28);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
+    .icard.owned{border-color:rgba(126,184,212,.25);}
+    .icard.eqd{border-color:rgba(126,184,212,.6);box-shadow:0 0 0 2px rgba(126,184,212,.18);}
+    .icard .iprev{width:100%;aspect-ratio:1;background:radial-gradient(circle at 40% 35%,rgba(15,15,15,.28),rgba(4,8,20,.95));border-radius: 0;overflow:hidden;}
+    .icard .iprev canvas{width:100%!important;height:100%!important;}
+    .rarity{position:absolute;top:7px;right:7px;font-size:.52rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;padding:2px 6px;border-radius: 0;background:rgba(0,0,0,.5);}
+    .iname{font-size:.76rem;font-weight:600;color:#d0d8e0;}
+    .icost{font-size:.7rem;color:var(--gold);font-weight:700;display:flex;align-items:center;gap:3px;}
+    .icost.free{color:#80ee99;}
+    .iaction{padding:.38rem;border-radius: 0;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;border:none;transition:all .14s;width:100%;}
+    .iaction.buy{background:linear-gradient(135deg,rgba(15,15,15,.55),rgba(12,12,12,.9));border:1px solid rgba(126,184,212,.28);color:#a8ccdf;}
+    .iaction.buy:hover{background:rgba(15,15,15,.85);color:#e0f0ff;}
+    .iaction.buy:disabled{opacity:.38;cursor:not-allowed;}
+    .iaction.equip{background:rgba(42,152,80,.28);border:1px solid rgba(42,200,80,.28);color:#80ee99;}
+    .iaction.equip:hover{background:rgba(42,152,80,.48);}
+    .iaction.unequip{background:rgba(152,42,42,.28);border:1px solid rgba(200,42,42,.28);color:#ee9999;}
+    .iaction.unequip:hover{background:rgba(152,42,42,.48);}
+    .owned-tick{position:absolute;bottom:7px;left:8px;font-size:.52rem;font-weight:800;text-transform:uppercase;color:#80ee99;letter-spacing:.05em;}
+    /* empty/loading */
+    .loading{text-align:center;padding:3rem;color:var(--dim);}
+    .rarity-common{color:#8a95a3;}
+    .rarity-uncommon{color:#4CAF50;}
+    .rarity-rare{color:#2196F3;}
+    .rarity-epic{color:#9C27B0;}
+    .rarity-legendary{color:#FF9800;}
+    .iaction.sell{background:rgba(180,120,0,.28);border:1px solid rgba(220,160,0,.35);color:#f0c040;margin-top:3px;}
+    .iaction.sell:hover{background:rgba(180,120,0,.5);}
+    .iaction.cancel-sell{background:rgba(139,0,0,.28);border:1px solid rgba(200,60,60,.35);color:#ee8080;margin-top:3px;}
+    .iaction.cancel-sell:hover{background:rgba(139,0,0,.5);}
+    .resale-price{font-size:.62rem;color:#f0c040;font-weight:700;text-align:center;margin-top:2px;}
+    .resale-section{margin-top:2rem;}
+    .resale-section h2{font-family:"Exo 2",sans-serif;font-size:1rem;font-weight:900;color:#a0aabb;text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+    .resale-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;}
+    .resale-card{background:var(--card);border:1px solid rgba(180,120,0,.3);border-radius: 0;padding:.9rem;display:flex;flex-direction:column;gap:.45rem;transition:all .18s;position:relative;}
+    .resale-card:hover{border-color:rgba(220,160,0,.5);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
+    .resale-seller{font-size:.6rem;color:var(--dim);}
+    
+        @media (max-width: 480px) {
+            .layout { grid-template-columns: 1fr !important; }
+            .items-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
+            .category-tabs { overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+            .category-tabs::-webkit-scrollbar { display: none; }
+        }
+    
+        @media (max-width: 780px) {
+            .preview { position: relative !important; top: auto !important; }
+            .category-tabs { overflow-x: auto; white-space: nowrap; scrollbar-width: none; padding-bottom: .25rem; }
+            .category-tabs::-webkit-scrollbar { display: none; }
+            .items-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important; }
+            .item-card { padding: .6rem; }
+            .item-name { font-size: .75rem; }
+        }
+        @media (max-width: 400px) {
+            .items-grid { grid-template-columns: repeat(3, 1fr) !important; }
+        }
+    </style>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0 !important; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+</head>
+<body>
+<script src="/sidebar.js"></script>
+<script src="/avatar-renderer.js"></script>
+    <script src="/avatar2d.js"></script>
+    <script src="/avatar.js"></script>
+<div class="main-content"><div class="page-container">
+    <div class="hdr">
+        <h1><i class="fas fa-cube"></i> Avatar Store</h1>
+        <div class="coin-pill"><img src="/images/coin-icon.png" alt="coin" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:0.2em;position:relative;top:-0.05em;display:inline-block;"><span id="coinCount">—</span></div>
+    </div>
+    <div class="layout" id="mainLayout" style="display:none">
+        <!-- Left: preview -->
+        <div class="preview">
+            <div class="panel-label"><i class="fas fa-eye"></i> Your Avatar</div>
+            <canvas id="previewCanvas"></canvas>
+            <div class="equipped-section">
+                <div class="panel-label" style="margin-top:.9rem;margin-bottom:.3rem">Equipped</div>
+                <div class="equipped-tags" id="equippedTags"><span class="none-equipped">Nothing equipped</span></div>
+            </div>
+            <button class="save-btn" id="saveBtn" onclick="saveAvatar()"><i class="fas fa-check"></i> Save Avatar</button>
+        </div>
+        <!-- Right: shop -->
+        <div>
+            <div class="cat-tabs" id="catTabs">
+                <div class="tab active" data-cat="all" onclick="filterCat('all')">All</div>
+                <div class="tab" data-cat="skin" onclick="filterCat('skin')">🎨 Skins</div>
+                <div class="tab" data-cat="hat" onclick="filterCat('hat')">🎩 Hats</div>
+                <div class="tab" data-cat="effect" onclick="filterCat('effect')">✨ Effects</div>
+                <div class="tab" data-cat="custom_image" onclick="filterCat('custom_image')">🖼️ Custom</div>
+                <div class="tab" data-cat="limited" onclick="filterCat('limited')">⭐ Limiteds</div>
+            </div>
+            <div class="items-grid" id="itemsGrid"><div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading items…</div></div>
+            <div class="resale-section" id="resaleSection" style="display:none">
+                <h2><i class="fas fa-tag"></i> Resale Listings</h2>
+                <div class="resale-grid" id="resaleGrid"></div>
+            </div>
+        </div>
+    </div>
+    <div id="notLoggedIn" style="display:none;text-align:center;padding:4rem;color:var(--dim)">
+        <p style="font-size:1.1rem">🔒 Log in to use the Avatar Store</p>
+    </div>
+</div>
+<script>
+
+let userCoins = 0;
+let ownedItems = new Set();   // Set of item IDs
+let equippedDefs = [];        // Array of { id, name, category, config } — currently equipped
+let allItems = [];            // Full item list from DB
+let currentCat = 'all';
+let previewInstance = null;
+let itemRenderers = {};
+let resaleListings = [];      // Active resale listings
+let currentUsername = '';
+
+const RARITY_COLORS = { common:'#8a95a3', uncommon:'#4CAF50', rare:'#2196F3', epic:'#9C27B0', legendary:'#FF9800' };
+
+async function init() {
+    const [balData, itemData] = await Promise.all([
+        fetch('/api/get-balance').then(r=>r.json()),
+        fetch('/api/avatar/get-items').then(r=>r.json())
+    ]);
+
+    if (!balData.username) {
+        document.getElementById('notLoggedIn').style.display='block';
+        return;
+    }
+    document.getElementById('mainLayout').style.display='grid';
+
+    userCoins = balData.coins || 0;
+    document.getElementById('coinCount').textContent = userCoins.toLocaleString() + ' coins';
+
+    allItems = itemData.items || [];
+
+    // Use stored username or fall back to balance response
+    const username = balData.username;
+    currentUsername = username || '';
+    let cust = {};
+    if (username) {
+        const profData = await fetch(`/api/get-profile?username=${encodeURIComponent(username)}`).then(r=>r.json());
+        cust = profData.user?.customization || {};
+    }
+    ownedItems = new Set(cust.ownedAvatarItems || []);
+
+    const equippedIds = (cust.equippedAvatarItems || []);
+    equippedDefs = equippedIds.map(id => allItems.find(i => i.id === id)).filter(Boolean);
+
+    initPreview();
+    await loadResaleListings();
+    renderShop();
+}
+
+function initPreview() {
+    const cvs = document.getElementById('previewCanvas');
+    const size = cvs.offsetWidth || 260;
+    if (previewInstance) previewInstance.destroy();
+    previewInstance = AvatarRenderer.init(cvs, equippedDefs, { autoRotate:true, interactive:true, size });
+}
+
+function renderShop() {
+    const grid = document.getElementById('itemsGrid');
+    Object.values(itemRenderers).forEach(r => r.destroy && r.destroy());
+    itemRenderers = {};
+    grid.innerHTML = '';
+    window._shopShown = 0;
+    window._shopVisible = currentCat === 'all' ? allItems
+        : currentCat === 'limited' ? allItems.filter(i => i.limited)
+        : allItems.filter(i => i.category === currentCat);
+    if (!window._shopVisible.length) {
+        grid.innerHTML = '<div class="loading">No items in this category yet.</div>';
+        return;
+    }
+    renderMoreShopItems();
+}
+
+function renderMoreShopItems() {
+    const grid = document.getElementById('itemsGrid');
+    const visible = window._shopVisible || [];
+    const batch = visible.slice(window._shopShown, window._shopShown + 10);
+    window._shopShown += batch.length;
+
+    const canvases = [];
+
+    batch.forEach(item => {
+        const owned = ownedItems.has(item.id);
+        const equipped = equippedDefs.some(d => d.id === item.id);
+        const rc = RARITY_COLORS[item.rarity] || '#8a95a3';
+        const isFree = item.cost === 0;
+
+        const card = document.createElement('div');
+        card.className = `icard ${owned?'owned':''} ${equipped?'eqd':''}`;
+        card.id = `card-${item.id}`;
+
+        const prevDiv = document.createElement('div');
+        prevDiv.className = 'iprev';
+        const cvs = document.createElement('canvas');
+        cvs.width = 120; cvs.height = 120;
+        prevDiv.appendChild(cvs);
+        card.appendChild(prevDiv);
+
+        const rarityBadge = document.createElement('span');
+        rarityBadge.className = `rarity rarity-${item.rarity}`;
+        rarityBadge.style.color = rc;
+        rarityBadge.textContent = item.rarity;
+        card.appendChild(rarityBadge);
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'iname';
+        nameEl.textContent = item.name;
+        card.appendChild(nameEl);
+
+        const costEl = document.createElement('div');
+        costEl.className = `icost${isFree ? ' free' : ''}`;
+        costEl.innerHTML = isFree ? '<i class="fas fa-gift"></i> Free' : '<img src="/images/coin-icon.png" alt="coin" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:0.2em;position:relative;top:-0.05em;display:inline-block;"> ' + item.cost.toLocaleString();
+        card.appendChild(costEl);
+
+        if (item.limited) {
+            const limBadge = document.createElement('div');
+            const soldOut = item.stock !== null && item.stock <= 0;
+            limBadge.className = 'limited-badge';
+            limBadge.style.cssText = `font-size:.62rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;border-radius: 0;margin-bottom:3px;text-align:center;${soldOut ? 'background:rgba(139,0,0,.4);color:#ee8080;border:1px solid rgba(220,60,60,.3);' : 'background:rgba(180,120,0,.35);color:#f0c040;border:1px solid rgba(220,160,0,.3);'}`;
+            limBadge.textContent = soldOut ? '✗ SOLD OUT' : (item.stock !== null ? `LIMITED · ${item.stock} left` : 'LIMITED');
+            card.appendChild(limBadge);
+        }
+
+        const soldOut = item.limited && item.stock !== null && item.stock <= 0;
+        const btn = document.createElement('button');
+        if (owned) {
+            btn.className = `iaction ${equipped?'unequip':'equip'}`;
+            btn.textContent = equipped ? 'Unequip' : 'Equip';
+            btn.onclick = () => toggleEquip(item);
+        } else if (soldOut) {
+            // Check for resale listings from other users
+            const cheapest = resaleListings
+                .filter(l => l.item_id === item.id && !l.is_mine)
+                .sort((a, b) => a.price - b.price)[0];
+            if (cheapest) {
+                btn.className = 'iaction buy';
+                btn.textContent = `Buy Resale · ${cheapest.price.toLocaleString()} 🪙`;
+                if (userCoins < cheapest.price) btn.disabled = true;
+                else btn.onclick = () => buyResale(cheapest, item, btn);
+            } else {
+                btn.className = 'iaction buy';
+                btn.textContent = 'Sold Out';
+                btn.disabled = true;
+            }
+        } else {
+            btn.className = 'iaction buy';
+            btn.textContent = 'Buy';
+            if (!isFree && userCoins < item.cost) btn.disabled = true;
+            btn.onclick = () => buyItem(item);
+        }
+        card.appendChild(btn);
+
+        if (owned) {
+            const tick = document.createElement('span');
+            tick.className = 'owned-tick';
+            tick.textContent = '✓ Owned';
+            card.appendChild(tick);
+
+            // Sell button for owned limiteds
+            if (item.limited) {
+                const myListing = resaleListings.find(l => l.item_id === item.id && l.is_mine);
+                const sellBtn = document.createElement('button');
+                if (myListing) {
+                    sellBtn.className = 'iaction cancel-sell';
+                    sellBtn.textContent = `Listed: ${myListing.price.toLocaleString()} 🪙`;
+                    sellBtn.onclick = () => cancelListing(item, myListing.id, sellBtn);
+                } else {
+                    sellBtn.className = 'iaction sell';
+                    sellBtn.textContent = '🏷️ Sell';
+                    sellBtn.onclick = () => listForSale(item, sellBtn);
+                }
+                card.appendChild(sellBtn);
+            }
+        }
+
+        grid.appendChild(card); // card in DOM before renderer init
+        canvases.push({ cvs, item });
+    });
+
+    // Init renderers after all cards are in DOM
+    canvases.forEach(({ cvs, item }) => {
+        itemRenderers[item.id] = AvatarRenderer.init(cvs, [item], { autoRotate:true, interactive:false, size:120 });
+    });
+
+    // Load More button
+    const existing = document.getElementById('shopLoadMore');
+    if (existing) existing.remove();
+    if (window._shopShown < visible.length) {
+        const lmBtn = document.createElement('div');
+        lmBtn.id = 'shopLoadMore';
+        lmBtn.style.cssText = 'grid-column:1/-1;text-align:center;padding:1rem 0;';
+        lmBtn.innerHTML = `<button onclick="renderMoreShopItems()" style="background:rgba(15,15,15,.4);border:1px solid rgba(126,184,212,.25);border-radius: 0;color:#8899aa;font-family:"Exo 2",sans-serif;font-size:.8rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:.55rem 1.4rem;cursor:pointer;">Load More (${visible.length - window._shopShown} remaining)</button>`;
+        grid.appendChild(lmBtn);
+    }
+}
+
+function filterCat(cat) {
+    currentCat = cat;
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.cat === cat));
+    renderShop();
+}
+
+function toggleEquip(item) {
+    const wasEquipped = equippedDefs.some(d => d.id === item.id);
+    if (wasEquipped) {
+        equippedDefs = equippedDefs.filter(d => d.id !== item.id);
+    } else {
+        // One per category slot
+        equippedDefs = equippedDefs.filter(d => d.category !== item.category);
+        equippedDefs.push(item);
+    }
+    previewInstance?.update(equippedDefs);
+    renderEquippedTags();
+    refreshCard(item.id, !wasEquipped);
+    saveAvatar(true); // auto-save silently
+}
+
+function refreshCard(id, nowEquipped) {
+    const card = document.getElementById(`card-${id}`);
+    if (!card) return;
+    card.classList.toggle('eqd', nowEquipped);
+    const btn = card.querySelector('.iaction');
+    if (btn) {
+        btn.className = `iaction ${nowEquipped ? 'unequip' : 'equip'}`;
+        btn.textContent = nowEquipped ? 'Unequip' : 'Equip';
+    }
+}
+
+function renderEquippedTags() {
+    const container = document.getElementById('equippedTags');
+    if (!equippedDefs.length) {
+        container.innerHTML = '<span class="none-equipped">Nothing equipped</span>';
+        return;
+    }
+    container.innerHTML = equippedDefs.map(d =>
+        `<div class="etag" onclick="toggleEquip(allItems.find(i=>i.id==='${d.id}'))">${d.name} <span>✕</span></div>`
+    ).join('');
+}
+
+async function buyItem(item) {
+    if (!item.cost) {
+        // Free item — just claim
+        await doBuy(item);
+        return;
+    }
+    if (userCoins < item.cost) {
+        Swal.fire({ toast:true, position:'top-end', icon:'error', title:'Not enough coins!', background:'#0c0c0c', color:'#d0d8e0', showConfirmButton:false, timer:2500 });
+        return;
+    }
+    const { isConfirmed } = await Swal.fire({
+        title: `Buy ${item.name}?`,
+        html: `Cost: <strong style="color:#f1c40f">${item.cost.toLocaleString()} coins</strong><br>Balance after: ${(userCoins-item.cost).toLocaleString()} coins`,
+        icon: 'question', showCancelButton:true,
+        confirmButtonText:'Buy', cancelButtonText:'Cancel',
+        background:'#0c0c0c', color:'#d0d8e0', confirmButtonColor:'#1c1c1c'
+    });
+    if (!isConfirmed) return;
+    await doBuy(item);
+}
+
+async function doBuy(item) {
+    try {
+        const res = await fetch('/api/avatar/buy-item', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ itemId: item.id })
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Purchase failed');
+
+        userCoins = data.newBalance;
+        document.getElementById('coinCount').textContent = userCoins.toLocaleString() + ' coins';
+        ownedItems.add(item.id);
+
+        // Auto-equip after purchase
+        toggleEquip(item);
+
+        // Refresh card to show equip button
+        const card = document.getElementById(`card-${item.id}`);
+        if (card) {
+            card.classList.add('owned');
+            // Remove buy button, replace with equip
+            const btn = card.querySelector('.iaction');
+            if (btn) { btn.className = 'iaction equip'; btn.textContent = 'Equip'; btn.onclick = () => toggleEquip(item); }
+            const tick = document.createElement('span');
+            tick.className = 'owned-tick'; tick.textContent = '✓ Owned';
+            card.appendChild(tick);
+        }
+
+        Swal.fire({ toast:true, position:'top-end', icon:'success', title:`${item.name} unlocked!`, background:'#0c0c0c', color:'#d0d8e0', showConfirmButton:false, timer:2000 });
+    } catch(e) {
+        Swal.fire({ toast:true, position:'top-end', icon:'error', title:e.message||'Purchase failed', background:'#0c0c0c', color:'#d0d8e0', showConfirmButton:false, timer:3000 });
+    }
+}
+
+async function saveAvatar(silent = false) {
+    const btn = document.getElementById('saveBtn');
+    if (!silent) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+    }
+    try {
+        // Just send the avatar fields — save-customization merges with existing data server-side
+        const res = await fetch('/api/save-customization', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+                customization: {
+                    ownedAvatarItems: [...ownedItems],
+                    equippedAvatarItems: equippedDefs.map(d => d.id)
+                }
+            })
+        }).then(r=>r.json());
+
+        if (!res.success) throw new Error(res.error || 'Save failed');
+        // Refresh sidebar avatar to reflect new equipped items
+        if (window.refreshSidebarAvatar) window.refreshSidebarAvatar(equippedDefs.map(d => d.id));
+        if (window.AmpAvatar && window.currentUsername) window.AmpAvatar.invalidate(window.currentUsername);
+
+        if (!silent) {
+            Swal.fire({ toast:true, position:'top-end', icon:'success', title:'Avatar saved!', background:'#0c0c0c', color:'#d0d8e0', showConfirmButton:false, timer:2000 });
+        }
+    } catch(e) {
+        if (!silent) {
+            Swal.fire({ toast:true, position:'top-end', icon:'error', title: e.message || 'Save failed', background:'#0c0c0c', color:'#d0d8e0', showConfirmButton:false, timer:2500 });
+        }
+    } finally {
+        if (!silent) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Save Avatar';
+        }
+    }
+}
+
+async function loadResaleListings() {
+    try {
+        // Fetch all listings with item + seller info via get-items (items already loaded)
+        // We need a resale listings endpoint — use a simple fetch to get-balance for username
+        // then query listings. For now, fetch from a dedicated endpoint we'll build inline.
+        const res = await fetch('/api/avatar/get-resale-listings').then(r => r.json()).catch(() => ({ listings: [] }));
+        resaleListings = (res.listings || []).map(l => ({
+            ...l,
+            is_mine: l.seller_username === currentUsername
+        }));
+        renderResaleListings();
+    } catch(e) {
+        resaleListings = [];
+    }
+}
+
+let _resaleShown = 0;
+const RESALE_PAGE = 10;
+
+function renderResaleListings(append = false) {
+    const section = document.getElementById('resaleSection');
+    const grid = document.getElementById('resaleGrid');
+
+    // Only show listings for items the current user does NOT own, and not their own listings
+    const publicListings = resaleListings.filter(l => !l.is_mine && !ownedItems.has(l.item_id));
+    const myListings = resaleListings.filter(l => l.is_mine);
+
+    if (publicListings.length === 0 && myListings.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+    section.style.display = 'block';
+
+    if (!append) {
+        _resaleShown = 0;
+        grid.innerHTML = '';
+        // Own listings summary
+        if (myListings.length > 0) {
+            const myHdr = document.createElement('p');
+            myHdr.style.cssText = 'font-size:.7rem;color:#8899aa;margin-bottom:.75rem;';
+            myHdr.textContent = `You have ${myListings.length} active listing${myListings.length > 1 ? 's' : ''} — manage them from the item cards above.`;
+            grid.appendChild(myHdr);
+        }
+        if (publicListings.length === 0) return;
+    }
+
+    // Remove existing load-more button if present
+    const existing = document.getElementById('resale-load-more');
+    if (existing) existing.remove();
+
+    const batch = publicListings.slice(_resaleShown, _resaleShown + RESALE_PAGE);
+    _resaleShown += batch.length;
+
+    batch.forEach(listing => {
+        const item = allItems.find(i => i.id === listing.item_id);
+        if (!item) return;
+        const card = document.createElement('div');
+        card.className = 'resale-card';
+        const cvs = document.createElement('canvas');
+        cvs.width = 120; cvs.height = 120;
+        cvs.style.cssText = 'width:100%;aspect-ratio:1;border-radius: 0;background:radial-gradient(circle at 40% 35%,rgba(15,15,15,.28),rgba(4,8,20,.95));display:block;';
+        card.appendChild(cvs);
+        const name = document.createElement('div');
+        name.className = 'iname';
+        name.textContent = item.name;
+        card.appendChild(name);
+        const seller = document.createElement('div');
+        seller.className = 'resale-seller';
+        seller.textContent = `Seller: ${listing.seller_username}`;
+        card.appendChild(seller);
+        const price = document.createElement('div');
+        price.className = 'icost';
+        price.innerHTML = `<img src="/images/coin-icon.png" alt="coin" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:0.2em;position:relative;top:-0.05em;display:inline-block;"> ${listing.price.toLocaleString()}`;
+        card.appendChild(price);
+        const btn = document.createElement('button');
+        btn.className = 'iaction buy';
+        if (userCoins < listing.price) {
+            btn.textContent = 'Buy';
+            btn.disabled = true;
+            btn.title = 'Not enough coins';
+        } else {
+            btn.textContent = 'Buy';
+            btn.onclick = () => buyResale(listing, item, btn);
+        }
+        card.appendChild(btn);
+        grid.appendChild(card);
+        AvatarRenderer.init(cvs, [item], { autoRotate: true, interactive: false, size: 120 });
+    });
+
+    // Load more button if there are more
+    if (_resaleShown < publicListings.length) {
+        const loadMore = document.createElement('button');
+        loadMore.id = 'resale-load-more';
+        loadMore.style.cssText = 'margin-top:1rem;width:100%;padding:.5rem;background:rgba(15,15,15,.3);border:1px solid rgba(37,99,196,.18);border-radius: 0;color:#8899aa;font-family:"Exo 2",sans-serif;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;';
+        loadMore.textContent = `Load More (${publicListings.length - _resaleShown} remaining)`;
+        loadMore.onclick = () => renderResaleListings(true);
+        grid.appendChild(loadMore);
+    }
+}
+
+async function listForSale(item, btn) {
+    const { value: priceStr } = await Swal.fire({
+        title: `Sell ${item.name}`,
+        html: `<p style="color:#8899aa;margin-bottom:.8rem;font-size:.85rem">Set your resale price (1 – 500,000 coins)</p>
+               <input id="swal-price" type="number" min="1" max="500000" class="swal2-input" placeholder="Price in coins"
+                style="background:rgba(8,8,8,.8);border:1px solid rgba(126,184,212,.25);color:#d0d8e0;border-radius: 0;">`,
+        showCancelButton: true,
+        confirmButtonText: 'List for Sale',
+        cancelButtonText: 'Cancel',
+        background: '#0c0c0c', color: '#d0d8e0', confirmButtonColor: '#1c1c1c',
+        preConfirm: () => {
+            const v = parseInt(document.getElementById('swal-price').value);
+            if (!v || v < 1) { Swal.showValidationMessage('Enter a price of at least 1'); return false; }
+            if (v > 500000) { Swal.showValidationMessage('Max price is 500,000 coins'); return false; }
+            return v;
+        }
+    });
+    if (!priceStr) return;
+    btn.disabled = true;
+    btn.textContent = '…';
+    try {
+        const res = await fetch('/api/avatar/list-for-sale', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ itemId: item.id, price: priceStr })
+        }).then(r => r.json());
+        if (!res.success) throw new Error(res.error || 'Failed to list');
+        btn.className = 'iaction cancel-sell';
+        btn.textContent = `Listed: ${priceStr.toLocaleString()} 🪙`;
+        btn.disabled = false;
+        // Stash listing id for cancel — reload listings
+        await loadResaleListings();
+        const myListing = resaleListings.find(l => l.item_id === item.id && l.is_mine);
+        if (myListing) btn.onclick = () => cancelListing(item, myListing.id, btn);
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Listed for resale!', background: '#0c0c0c', color: '#d0d8e0', showConfirmButton: false, timer: 2000 });
+    } catch(e) {
+        btn.disabled = false;
+        btn.className = 'iaction sell';
+        btn.textContent = '🏷️ Sell';
+        Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: e.message || 'Failed', background: '#0c0c0c', color: '#d0d8e0', showConfirmButton: false, timer: 3000 });
+    }
+}
+
+async function cancelListing(item, listingId, btn) {
+    const { isConfirmed } = await Swal.fire({
+        title: 'Cancel listing?',
+        text: `Remove ${item.name} from resale?`,
+        icon: 'question', showCancelButton: true,
+        confirmButtonText: 'Yes, cancel', cancelButtonText: 'Keep listed',
+        background: '#0c0c0c', color: '#d0d8e0', confirmButtonColor: '#7f1d1d'
+    });
+    if (!isConfirmed) return;
+    btn.disabled = true;
+    try {
+        const res = await fetch('/api/avatar/list-for-sale', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ itemId: item.id, cancel: true })
+        }).then(r => r.json());
+        if (!res.success) throw new Error(res.error || 'Failed');
+        btn.className = 'iaction sell';
+        btn.textContent = '🏷️ Sell';
+        btn.disabled = false;
+        btn.onclick = () => listForSale(item, btn);
+        await loadResaleListings();
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Listing cancelled', background: '#0c0c0c', color: '#d0d8e0', showConfirmButton: false, timer: 2000 });
+    } catch(e) {
+        btn.disabled = false;
+        Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: e.message || 'Failed', background: '#0c0c0c', color: '#d0d8e0', showConfirmButton: false, timer: 3000 });
+    }
+}
+
+async function buyResale(listing, item, btn) {
+    const { isConfirmed } = await Swal.fire({
+        title: `Buy ${item.name}?`,
+        html: `Price: <strong style="color:#f1c40f">${listing.price.toLocaleString()} coins</strong><br>From: ${listing.seller_username}<br>Balance after: ${(userCoins - listing.price).toLocaleString()} coins`,
+        icon: 'question', showCancelButton: true,
+        confirmButtonText: 'Buy', cancelButtonText: 'Cancel',
+        background: '#0c0c0c', color: '#d0d8e0', confirmButtonColor: '#1c1c1c'
+    });
+    if (!isConfirmed) return;
+    btn.disabled = true;
+    btn.textContent = '…';
+    try {
+        const res = await fetch('/api/avatar/buy-resale', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ listingId: listing.id })
+        }).then(r => r.json());
+        if (!res.success) throw new Error(res.error || 'Purchase failed');
+        userCoins = res.newBalance;
+        document.getElementById('coinCount').textContent = userCoins.toLocaleString() + ' coins';
+        ownedItems.add(item.id);
+        // Update the main store card
+        const card = document.getElementById(`card-${item.id}`);
+        if (card) {
+            card.classList.add('owned');
+            const mainBtn = card.querySelector('.iaction');
+            if (mainBtn) { mainBtn.className = 'iaction equip'; mainBtn.textContent = 'Equip'; mainBtn.disabled = false; mainBtn.onclick = () => toggleEquip(item); }
+            const tick = document.createElement('span');
+            tick.className = 'owned-tick'; tick.textContent = '✓ Owned';
+            card.appendChild(tick);
+        }
+        await loadResaleListings();
+        // Re-render the card's buy button in case more resale listings exist
+        const cardAfter = document.getElementById(`card-${item.id}`);
+        if (cardAfter) {
+            const mainBtn = cardAfter.querySelector('.iaction');
+            if (mainBtn) { mainBtn.className = 'iaction equip'; mainBtn.textContent = 'Equip'; mainBtn.disabled = false; mainBtn.onclick = () => toggleEquip(item); }
+        }
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: `${item.name} acquired!`, background: '#0c0c0c', color: '#d0d8e0', showConfirmButton: false, timer: 2000 });
+    } catch(e) {
+        btn.disabled = false;
+        btn.textContent = 'Buy';
+        Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: e.message || 'Purchase failed', background: '#0c0c0c', color: '#d0d8e0', showConfirmButton: false, timer: 3000 });
+    }
+}
+
+init();
+</script>
+</body>
+</html>

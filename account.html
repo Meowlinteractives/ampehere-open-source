@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+    <title>Ampehere · Account</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0 !important; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/avatar-renderer.js"></script>
+    <script src="/avatar2d.js"></script>
+    <script src="/avatar.js"></script>
+    <style>
+        .main-content { padding: 1.5rem 1.5rem 1.5rem 0; }
+
+        /* ── Profile card ── */
+        .profile-card {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            padding: 1.25rem;
+            background: rgba(8,8,8,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 0;
+            margin-bottom: 1.5rem;
+        }
+        .profile-avatar {
+            width: 80px; height: 80px;
+            flex-shrink: 0;
+        }
+        .profile-avatar img {
+            border-radius: 50%;
+            border: 2px solid rgba(126,184,212,0.3);
+            background: #111111;
+            display: block;
+        }
+        .profile-info { flex: 1; min-width: 0; }
+        .profile-name {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #d0d8e0;
+            margin-bottom: 0.25rem;
+        }
+        .profile-meta { font-size: 0.82rem; color: #8899aa; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+        .profile-meta span { display: flex; align-items: center; gap: 0.3rem; }
+        #badgesContainer { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem; }
+
+        /* ── Stats row ── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-card {
+            background: rgba(8,8,8,0.5);
+            border: 1px solid rgba(126,184,212,0.13);
+            border-radius: 0;
+            padding: 1rem;
+            text-align: center;
+        }
+        .stat-value {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #d0d8e0;
+        }
+        .stat-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #8899aa;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-top: 0.2rem;
+        }
+
+        /* ── Form sections ── */
+        .form-group { margin-bottom: 1rem; }
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #8899aa;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        /* ── Danger zone ── */
+        .danger-section {
+            background: rgba(139,0,0,0.12);
+            border: 1px solid rgba(220,60,60,0.25);
+            border-radius: 0;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .danger-section h2 { color: #ee8080; }
+        .danger-section h2 i { color: #ee8080; }
+        .danger-list {
+            margin: 0.75rem 0;
+            padding-left: 1rem;
+            color: #c08080;
+            font-size: 0.85rem;
+        }
+        .danger-list li { margin-bottom: 0.3rem; list-style: none; display: flex; align-items: center; gap: 0.5rem; }
+        .danger-list li i { color: #ee8080; width: 14px; }
+
+        /* ── Footer links ── */
+        .footer-nav {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            padding-top: 1.25rem;
+            border-top: 1px solid rgba(255,255,255,0.04);
+        }
+        .footer-nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: #8899aa !important;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+        .footer-nav a.danger-link { color: #ee8080 !important; }
+
+        /* ── Message feedback ── */
+        .msg-box {
+            padding: 0.65rem 1rem;
+            border-radius: 0;
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
+            display: none;
+        }
+        .msg-box.error { background: rgba(139,0,0,0.2); border: 1px solid rgba(220,60,60,0.3); color: #ee8080; }
+        .msg-box.success { background: rgba(68,160,68,0.2); border: 1px solid rgba(68,160,68,0.35); color: #80ee80; }
+
+        @media(max-width:600px) { .stats-row { grid-template-columns: repeat(3,1fr); gap: 0.5rem; } }
+    
+        @media (max-width: 600px) {
+            .page-container { padding: 0 .5rem; }
+            .stats-row { grid-template-columns: repeat(2, 1fr) !important; }
+            .section-card { padding: 1.1rem; border-radius: 0; }
+            .settings-row { flex-direction: column; gap: .5rem; }
+            .settings-row input, .settings-row button { width: 100%; }
+            .danger-actions { flex-direction: column; gap: .5rem; }
+            .danger-actions button { width: 100%; }
+        }
+            body { overflow-x: hidden; }
+    
+        @media (max-width: 480px) {
+            #qrCanvas { width: 160px !important; height: 160px !important; }
+            .section-title { font-size: .85rem; }
+            .setting-row { flex-direction: column; gap: .5rem; }
+            .setting-row input, .setting-row button { width: 100%; }
+            .stats-row { grid-template-columns: 1fr 1fr !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-container" style="max-width:640px;">
+
+            <!-- Header -->
+            <div class="page-header">
+                <h1><i class="fas fa-cog"></i> Account</h1>
+                <a href="/" class="back-btn"><i class="fas fa-home"></i> Home</a>
+            </div>
+
+            <!-- Loading -->
+            <div id="loadingSection" class="loading-spinner">
+                <i class="fas fa-spinner fa-spin" style="font-size:1.5rem;color:#8899aa;"></i>
+                <p style="margin-top:0.75rem;color:#5a6880;">Loading account…</p>
+            </div>
+
+            <!-- Account content -->
+            <div id="accountSection" style="display:none;">
+
+                <!-- Profile card -->
+                <div class="profile-card">
+                    <div class="profile-avatar">
+                        <img id="accountAvatarImg" width="80" height="80" style="display:block;width:80px;height:80px;border-radius:50%;" alt="">
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="displayUsername">—</div>
+                        <div class="profile-meta">
+                            <span><i class="fas fa-calendar-alt"></i> <span id="displayCreated">—</span></span>
+                            <span id="ampereWrap" style="display:none;"><span class="pill" style="padding:0.15rem 0.5rem;font-size:0.7rem;"><img src="/images/ampere-plus-icon.png" alt="ampere+" style="width:1.1em;height:1.1em;object-fit:contain;vertical-align:middle;margin-right:0.2em;position:relative;top:-0.05em;display:inline-block;"> Ampere+</span></span>
+                        </div>
+                        <div id="badgesContainer"></div>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-value" id="displayCoins">0</div>
+                        <div class="stat-label"><img src="/images/coin-icon.png" alt="coin" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:0.2em;position:relative;top:-0.05em;display:inline-block;"> Coins</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="displayStreak">0</div>
+                        <div class="stat-label"><i class="fas fa-fire"></i> Streak</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="displayShouts">0</div>
+                        <div class="stat-label"><i class="fas fa-bullhorn"></i> Shouts</div>
+                    </div>
+                </div>
+
+                <!-- Warning notice (shown only if user has warnings) -->
+                <div id="warningNotice" style="display:none;background:rgba(180,90,0,.15);border:1px solid rgba(255,165,0,.35);border-radius: 0;padding:1rem 1.25rem;margin-top:.75rem;">
+                    <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem;">
+                        <i class="fas fa-exclamation-triangle" style="color:#ffb347;font-size:1.1rem;"></i>
+                        <span style="font-weight:800;color:#ffb347;font-size:.95rem;letter-spacing:.04em;">ACCOUNT WARNING</span>
+                        <span id="warningBadge" style="background:rgba(255,165,0,.25);border:1px solid rgba(255,165,0,.4);border-radius: 0;padding:1px 10px;font-size:.75rem;font-weight:900;color:#ffb347;margin-left:auto;">0/3</span>
+                    </div>
+                    <p style="color:#c09060;font-size:.83rem;margin:0;line-height:1.5;">Your account has received a formal warning. At 3 warnings your account will be automatically locked. Please review the community guidelines.</p>
+                </div>
+
+                <!-- Change Password -->
+                <div class="section">
+                    <div class="section-head">
+                        <h2><i class="fas fa-key"></i> Change Password</h2>
+                    </div>
+                    <div class="form-group">
+                        <label>Current Password</label>
+                        <input type="password" id="currentPassword" placeholder="Enter current password" autocomplete="current-password">
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" id="newPassword" placeholder="At least 6 characters" autocomplete="new-password">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <input type="password" id="confirmNewPassword" placeholder="Repeat new password" autocomplete="new-password">
+                    </div>
+                    <button class="btn btn-primary" onclick="changePassword()">
+                        <i class="fas fa-key"></i> Update Password
+                    </button>
+                    <div id="pwSuccess" class="msg-box success"></div>
+                    <div id="pwError" class="msg-box error"></div>
+                </div>
+
+                <!-- Two-Factor Authentication -->
+                <div class="section" id="twoFaSection">
+                    <div class="section-head">
+                        <h2><i class="fas fa-shield-alt"></i> Two-Factor Authentication</h2>
+                    </div>
+
+                    <!-- Status row -->
+                    <div id="twoFaStatus" style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
+                        <span id="twoFaBadge" class="pill" style="font-size:.8rem;"></span>
+                        <span id="twoFaDesc" style="font-size:.85rem;color:#8a95a3;"></span>
+                    </div>
+
+                    <!-- Enable flow -->
+                    <div id="twoFaEnableFlow" style="display:none;">
+                        <!-- Step A: show QR -->
+                        <div id="twoFaStepQR" style="display:none;">
+                            <p style="font-size:.85rem;color:#8a95a3;margin-bottom:1rem;line-height:1.6;">
+                                Scan the QR code with <strong style="color:#8899aa;">Google Authenticator</strong>,
+                                <strong style="color:#8899aa;">Authy</strong>, or any TOTP app.
+                                Then enter the 6-digit code below to confirm.
+                            </p>
+                            <div style="text-align:center;margin-bottom:1rem;">
+                                <canvas id="qrCanvas" width="200" height="200"
+                                        style="border-radius: 0;background:#fff;padding:8px;display:inline-block;"></canvas>
+                            </div>
+                            <div style="background:rgba(8,8,8,.5);border:1px solid rgba(255,255,255,.05);border-radius: 0;padding:.65rem .9rem;margin-bottom:1rem;word-break:break-all;">
+                                <span style="font-size:.72rem;color:#5a7090;display:block;margin-bottom:.25rem;text-transform:uppercase;letter-spacing:.07em;">Manual entry key</span>
+                                <code id="twoFaSecretDisplay" style="color:#8899aa;font-size:.85rem;letter-spacing:.1em;"></code>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm Code from App</label>
+                                <input type="text" id="twoFaConfirmCode" placeholder="123456"
+                                       maxlength="6" inputmode="numeric" autocomplete="one-time-code"
+                                       style="font-size:1.4rem;letter-spacing:.4em;text-align:center;">
+                            </div>
+                            <button class="btn btn-primary" onclick="confirmTwoFaEnable()">
+                                <i class="fas fa-check-circle"></i> Enable 2FA
+                            </button>
+                            <button class="btn btn-ghost" style="margin-top:.5rem;" onclick="cancelTwoFaSetup()">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Buttons (shown based on state) -->
+                    <div id="twoFaActions">
+                        <button class="btn btn-primary" id="twoFaEnableBtn" style="display:none;" onclick="startTwoFaSetup()">
+                            <i class="fas fa-shield-alt"></i> Enable 2FA
+                        </button>
+                        <div id="twoFaDisableArea" style="display:none;">
+                            <div class="form-group" style="margin-top:.75rem;">
+                                <label>Confirm Password to Disable 2FA</label>
+                                <input type="password" id="twoFaDisablePassword" placeholder="Your current password">
+                            </div>
+                            <button class="btn btn-danger" onclick="disableTwoFa()">
+                                <i class="fas fa-times-circle"></i> Disable 2FA
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="twoFaMsg" class="msg-box"></div>
+                </div>
+
+                <!-- Blocked Users -->
+                <div class="section">
+                    <div class="section-head">
+                        <h2><i class="fas fa-ban"></i> Blocked Users</h2>
+                    </div>
+                    <div id="blockedList" style="margin-bottom:1rem;">
+                        <div style="color:#4a5a6a;font-size:.85rem;">Loading...</div>
+                    </div>
+                    <div style="display:flex;gap:.5rem;align-items:center;">
+                        <input type="text" id="blockUsername" placeholder="Username to block" style="flex:1;">
+                        <button class="btn" onclick="blockUser()" style="background:rgba(139,0,0,.25);border:1px solid rgba(200,80,80,.3);color:#ee8080;white-space:nowrap;"><i class="fas fa-ban"></i> Block</button>
+                    </div>
+                    <div id="blockMsg" class="msg-box" style="margin-top:.5rem;"></div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="danger-section">
+                    <div class="section-head" style="margin-bottom:0.75rem;">
+                        <h2><i class="fas fa-skull-crossbones"></i> Danger Zone</h2>
+                    </div>
+                    <ul class="danger-list">
+                        <li><i class="fas fa-times-circle"></i> Your username will be freed</li>
+                        <li><img src="/images/coin-icon.png" alt="coin" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:0.2em;position:relative;top:-0.05em;display:inline-block;"> All coins will be lost</li>
+                        <li><i class="fas fa-bullhorn"></i> All shouts deleted</li>
+                        <li><i class="fas fa-users"></i> Removed from all groups</li>
+                        <li><i class="fas fa-undo-alt"></i> Cannot be undone</li>
+                    </ul>
+                    <div class="form-group">
+                        <label>Confirm Password to Delete</label>
+                        <input type="password" id="deletePassword" placeholder="Enter your password">
+                    </div>
+                    <button class="btn btn-danger" onclick="confirmDelete()">
+                        <i class="fas fa-trash-alt"></i> Permanently Delete Account
+                    </button>
+                    <div id="deleteError" class="msg-box error"></div>
+                </div>
+
+                <!-- Footer nav -->
+                <div class="footer-nav">
+                    <a href="/"><i class="fas fa-home"></i> Home</a>
+                    <a href="#" id="footerProfileLink"><i class="fas fa-user"></i> Profile</a>
+                    <a href="/groups.html"><i class="fas fa-users"></i> Groups</a>
+                    <a href="/avatar-store.html"><i class="fas fa-cube"></i> Avatar Store</a>
+                    <a href="#" class="danger-link" onclick="doLogout();return false;"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="/sidebar.js"></script>
+    <script>
+    'use strict';
+
+
+
+    async function doLogout() {
+        try { await fetch('/api/logout', { method: 'POST' }); } catch {}
+        window.location.href = '/login.html';
+    }
+
+    async function loadAccount() {
+        try {
+            const [balRes, userRes] = await Promise.all([
+                fetch('/api/get-balance'),
+                fetch('/api/get-user')
+            ]);
+            if (!balRes.ok) { doLogout(); return; }
+
+            const bal  = await balRes.json();
+            const udat = await userRes.json();
+            if (bal.locked) { window.location.href = '/locked-account.html'; return; }
+
+            document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('accountSection').style.display = 'block';
+
+            const u        = udat.user;
+            const username = bal.username;
+
+            // Fill info
+            const el = id => document.getElementById(id);
+            if (el('displayUsername')) el('displayUsername').textContent = username || '—';
+            if (el('displayCoins'))    el('displayCoins').textContent    = (bal.coins || 0).toLocaleString();
+            if (el('displayStreak'))   el('displayStreak').textContent   = bal.streak || 0;
+            if (el('displayCreated'))  el('displayCreated').textContent  = u?.created ? new Date(u.created).toLocaleDateString() : '—';
+
+            // Profile link
+            const pl = el('footerProfileLink');
+            if (pl && username) pl.href = '/profile.html?user=' + encodeURIComponent(username);
+
+            // Ampere+
+            if (u?.ampere_plus?.active) {
+                const aw = el('ampereWrap');
+                if (aw) aw.style.display = 'inline-flex';
+            }
+
+            // Badges
+            const bc = el('badgesContainer');
+            if (bc && u?.badges?.length) {
+                bc.innerHTML = u.badges.map(b =>
+                    `<span class="pill" style="font-size:0.7rem;">${b}</span>`
+                ).join('');
+            }
+
+            // Shouts
+            if (username) {
+                try {
+                    const sr = await fetch(`/api/get-user-shouts?username=${encodeURIComponent(username)}`);
+                    const sd = await sr.json();
+                    if (el('displayShouts')) el('displayShouts').textContent = (sd.shouts || []).length;
+                } catch {}
+            }
+
+            // Warnings — show notice if user has any (owners never have warnings)
+            if (!u?.is_owner && typeof u?.warningCount === 'number' && u.warningCount > 0) {
+                const wn = el('warningNotice');
+                const wb = el('warningBadge');
+                if (wn) wn.style.display = 'block';
+                if (wb) wb.textContent = u.warningCount + '/3';
+            }
+
+            // Render avatar with correct skin color
+            (async () => {
+                try {
+                    const img = el('accountAvatarImg');
+                    if (!img) return;
+                    Avatar2D.renderImg(img, [], 80);
+                    const allItems    = ((await fetch('/api/avatar/get-items').then(r=>r.json())).items) || [];
+                    const equippedIds = u?.customization?.equippedAvatarItems || [];
+                    const defs        = equippedIds.map(id => allItems.find(i => i.id === id)).filter(Boolean);
+                    const hasSkin     = defs.some(d => d.category === 'skin');
+                    if (!hasSkin) { const ds = allItems.find(i => i.category === 'skin' && i.is_default); if (ds) defs.push(ds); }
+                    Avatar2D.renderImg(img, defs, 80);
+                } catch(e) { console.warn('Avatar error:', e); }
+            })();
+
+            // 2FA status — get-user returns has_2fa flag
+            show2FaState(!!(u?.has_2fa));
+
+        } catch(e) {
+            console.error('loadAccount error:', e);
+            doLogout();
+        }
+    }
+
+    async function changePassword() {
+        const el = id => document.getElementById(id);
+        const errDiv = el('pwError');
+        const okDiv  = el('pwSuccess');
+        [errDiv, okDiv].forEach(d => { if (d) { d.style.display = 'none'; d.textContent = ''; } });
+
+        const cur  = el('currentPassword')?.value;
+        const nw   = el('newPassword')?.value;
+        const conf = el('confirmNewPassword')?.value;
+
+        if (!cur || !nw || !conf) {
+            if (errDiv) { errDiv.textContent = 'Please fill in all fields.'; errDiv.style.display = 'block'; } return;
+        }
+        if (nw.length < 6) {
+            if (errDiv) { errDiv.textContent = 'New password must be at least 6 characters.'; errDiv.style.display = 'block'; } return;
+        }
+        if (nw !== conf) {
+            if (errDiv) { errDiv.textContent = 'New passwords do not match.'; errDiv.style.display = 'block'; } return;
+        }
+        if (nw === cur) {
+            if (errDiv) { errDiv.textContent = 'New password must be different from current.'; errDiv.style.display = 'block'; } return;
+        }
+
+        try {
+            const res  = await fetch('/api/change-password', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ currentPassword: cur, newPassword: nw })
+            });
+            const data = await res.json();
+            if (data.success) {
+                Swal.fire({ icon:'success', title:'Password updated', text:'Please log in again.', background:'#0c0c0c', color:'#d0d8e0', confirmButtonColor:'#1c1c1c' })
+                    .then(() => doLogout());
+            } else {
+                if (errDiv) { errDiv.textContent = data.error || 'Failed.'; errDiv.style.display = 'block'; }
+            }
+        } catch { if (errDiv) { errDiv.textContent = 'Network error.'; errDiv.style.display = 'block'; } }
+    }
+
+    async function deleteAccount(password) {
+        const errDiv = document.getElementById('deleteError');
+        const btn    = document.querySelector('.btn-danger');
+        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting…'; }
+        try {
+            const res  = await fetch('/api/delete-account', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+            const data = await res.json();
+            if (data.success) { doLogout(); }
+            else {
+                if (errDiv) { errDiv.textContent = data.error || 'Failed.'; errDiv.style.display = 'block'; }
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-trash-alt"></i> Permanently Delete Account'; }
+            }
+        } catch {
+            if (errDiv) { errDiv.textContent = 'Network error.'; errDiv.style.display = 'block'; }
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-trash-alt"></i> Permanently Delete Account'; }
+        }
+    }
+
+    function confirmDelete() {
+        const pw  = document.getElementById('deletePassword')?.value;
+        const err = document.getElementById('deleteError');
+        if (!pw) { if (err) { err.textContent = 'Enter your password.'; err.style.display = 'block'; } return; }
+        Swal.fire({
+            title: 'Delete your account?',
+            text: 'This cannot be undone.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it',
+            confirmButtonColor: '#8b0000',
+            cancelButtonColor: '#1c1c1c',
+            background: '#0c0c0c', color: '#d0d8e0'
+        }).then(r => { if (r.isConfirmed) deleteAccount(pw); });
+    }
+
+    // ── 2FA functions ────────────────────────────────────────────────
+    let _twoFaEnabled = false;
+
+    function show2FaState(enabled) {
+        _twoFaEnabled = enabled;
+        const badge    = document.getElementById('twoFaBadge');
+        const desc     = document.getElementById('twoFaDesc');
+        const enableBtn  = document.getElementById('twoFaEnableBtn');
+        const disableArea = document.getElementById('twoFaDisableArea');
+        const enableFlow = document.getElementById('twoFaEnableFlow');
+
+        if (enabled) {
+            badge.className = 'pill success';
+            badge.innerHTML = '<i class="fas fa-check-circle"></i> Enabled';
+            desc.textContent = 'Your account is protected with an authenticator app.';
+            enableBtn.style.display = 'none';
+            disableArea.style.display = 'block';
+            enableFlow.style.display = 'none';
+        } else {
+            badge.className = 'pill danger';
+            badge.innerHTML = '<i class="fas fa-times-circle"></i> Disabled';
+            desc.textContent = 'Add an extra layer of security — no phone number required.';
+            enableBtn.style.display = 'block';
+            disableArea.style.display = 'none';
+            enableFlow.style.display = 'none';
+        }
+    }
+
+    async function startTwoFaSetup() {
+        const msg = document.getElementById('twoFaMsg');
+        msg.style.display = 'none';
+        try {
+            const res  = await fetch('/api/2fa/setup', { method: 'POST' });
+            const data = await res.json();
+            if (!data.success) { showTwoFaMsg(data.error, 'error'); return; }
+
+            // Show QR step
+            document.getElementById('twoFaEnableFlow').style.display = 'block';
+            document.getElementById('twoFaStepQR').style.display = 'block';
+            document.getElementById('twoFaEnableBtn').style.display = 'none';
+
+            // Display secret text
+            document.getElementById('twoFaSecretDisplay').textContent = data.secret;
+
+            // Render QR code using qrcodejs
+            const container = document.getElementById('qrCanvas').parentElement;
+            // Replace canvas with a fresh div for qrcodejs
+            const qrDiv = document.createElement('div');
+            qrDiv.id = 'qrCodeDiv';
+            qrDiv.style.cssText = 'display:inline-block;background:#fff;padding:8px;border-radius: 0;';
+            const canvas = document.getElementById('qrCanvas');
+            canvas.replaceWith(qrDiv);
+
+            new QRCode(qrDiv, {
+                text: data.otpauth,
+                width: 200, height: 200,
+                colorDark: '#000', colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            document.getElementById('twoFaConfirmCode').focus();
+        } catch(e) { showTwoFaMsg('Network error. Please try again.', 'error'); }
+    }
+
+    async function confirmTwoFaEnable() {
+        const code = document.getElementById('twoFaConfirmCode').value.trim();
+        if (!/^\d{6}$/.test(code)) { showTwoFaMsg('Enter the 6-digit code from your app.', 'error'); return; }
+        try {
+            const res  = await fetch('/api/2fa/verify', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showTwoFaMsg('2FA enabled! Your account is now protected.', 'success');
+                show2FaState(true);
+            } else {
+                showTwoFaMsg(data.error || 'Verification failed.', 'error');
+            }
+        } catch(e) { showTwoFaMsg('Network error.', 'error'); }
+    }
+
+    function cancelTwoFaSetup() {
+        document.getElementById('twoFaEnableFlow').style.display = 'none';
+        document.getElementById('twoFaStepQR').style.display = 'none';
+        document.getElementById('twoFaConfirmCode').value = '';
+        show2FaState(false);
+    }
+
+    async function disableTwoFa() {
+        const pw = document.getElementById('twoFaDisablePassword').value;
+        if (!pw) { showTwoFaMsg('Enter your password to disable 2FA.', 'error'); return; }
+        try {
+            const res  = await fetch('/api/2fa/disable', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: pw })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showTwoFaMsg('2FA has been disabled.', 'success');
+                document.getElementById('twoFaDisablePassword').value = '';
+                show2FaState(false);
+            } else {
+                showTwoFaMsg(data.error || 'Failed.', 'error');
+            }
+        } catch(e) { showTwoFaMsg('Network error.', 'error'); }
+    }
+
+    function showTwoFaMsg(text, type) {
+        const el = document.getElementById('twoFaMsg');
+        el.textContent = text;
+        el.className = `msg-box ${type}`;
+        el.style.display = 'block';
+    }
+
+    loadAccount();
+    loadBlocked();
+
+    async function loadBlocked() {
+        try {
+            var d = await (await fetch('/api/get-blocked')).json();
+            var list = document.getElementById('blockedList');
+            if (!d.success || !d.blocked.length) {
+                list.innerHTML = '<div style="color:#4a5a6a;font-size:.85rem;">No blocked users.</div>';
+                return;
+            }
+            list.innerHTML = d.blocked.map(function(b) {
+                return '<div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .7rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.04);border-radius: 0;margin-bottom:.4rem;">'
+                    + '<span style="color:#8899aa;font-size:.88rem;font-weight:700;">@' + esc(b.username) + '</span>'
+                    + '<button onclick="unblockUser(\'' + esc(b.username) + '\')" style="background:rgba(0,160,80,.12);border:1px solid rgba(0,220,100,.25);color:#60e090;font-size:.75rem;font-weight:700;padding:.3rem .7rem;border-radius: 0;cursor:pointer;font-family:\'Exo 2\',sans-serif;"><i class="fas fa-unlock"></i> Unblock</button>'
+                    + '</div>';
+            }).join('');
+        } catch(e) {}
+    }
+
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    async function blockUser() {
+        var username = document.getElementById('blockUsername').value.trim();
+        var msg = document.getElementById('blockMsg');
+        msg.style.display = 'none';
+        if (!username) { msg.textContent = 'Enter a username.'; msg.className = 'msg-box error'; msg.style.display = 'block'; return; }
+        var d = await (await fetch('/api/block-user', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username })
+        })).json();
+        if (d.success) {
+            document.getElementById('blockUsername').value = '';
+            msg.textContent = '@' + username + ' blocked.';
+            msg.className = 'msg-box success';
+            msg.style.display = 'block';
+            loadBlocked();
+        } else {
+            msg.textContent = d.error || 'Failed.';
+            msg.className = 'msg-box error';
+            msg.style.display = 'block';
+        }
+    }
+
+    async function unblockUser(username) {
+        var d = await (await fetch('/api/unblock-user', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username })
+        })).json();
+        if (d.success) loadBlocked();
+    }
+    </script>
+</body>
+</html>

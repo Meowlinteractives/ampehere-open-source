@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+    <title>Ampehere · Create Group</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            overflow-x: hidden;
+            font-family:'Exo 2',sans-serif;
+            background:#060606;
+            background-image:
+                radial-gradient(ellipse at 20% 10%,rgba(15,15,15,.35) 0%,transparent 50%),
+                radial-gradient(ellipse at 80% 90%,rgba(126,184,212,.10) 0%,transparent 50%);
+            min-height:100vh; display:flex; align-items:center; justify-content:center;
+            padding:2rem 1rem; color:#d0d8e0;
+        }
+        .card {
+            background:linear-gradient(145deg,rgba(20,40,80,.95),rgba(8,8,8,.98));
+            border:1px solid rgba(126,184,212,.22); border-radius: 0;
+            padding:2.5rem 2rem; width:100%; max-width:520px;
+            box-shadow:0 24px 64px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06);
+            animation:floatIn .5s cubic-bezier(.22,1,.36,1) both;
+        }
+        @keyframes floatIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        .card-header {
+            display:flex; align-items:center; justify-content:space-between;
+            margin-bottom:2rem; padding-bottom:1.25rem;
+            border-bottom:1px solid rgba(255,255,255,.04);
+        }
+        .card-title {
+            font-family:'Exo 2',sans-serif; font-size:1.5rem; font-weight:900;
+            text-transform:uppercase; letter-spacing:.06em; color:#d0d8e0;
+            display:flex; align-items:center; gap:.6rem;
+        }
+        .card-title i { color:#8899aa; }
+        .back-btn {
+            background:rgba(12,12,12,.5); border:1px solid rgba(37,99,196,.18);
+            border-radius: 0; color:#8ab8d0; text-decoration:none;
+            padding:.45rem 1rem; font-family:'Exo 2',sans-serif; font-size:.72rem;
+            font-weight:800; text-transform:uppercase; letter-spacing:.06em;
+            transition:all .15s; display:flex; align-items:center; gap:.4rem;
+        }
+        .back-btn:hover { background:rgba(15,15,15,.6); border-color:rgba(37,99,196,.4); color:#d8eeff; }
+        .cost-notice {
+            background:rgba(15,15,15,.2); border:1px solid rgba(126,184,212,.18);
+            border-radius: 0; padding:.85rem 1rem; margin-bottom:1.75rem;
+            font-size:.82rem; color:#8899aa; display:flex; align-items:center; gap:.6rem;
+        }
+        .cost-notice i { font-size:1rem; flex-shrink:0; }
+        #userBalance { color:#f1c40f; font-weight:700; }
+        .field { margin-bottom:1.4rem; }
+        label {
+            display:block; font-family:'Exo 2',sans-serif; font-size:.65rem;
+            font-weight:900; text-transform:uppercase; letter-spacing:.1em;
+            color:rgba(126,184,212,.6); margin-bottom:.5rem;
+        }
+        input[type="text"] {
+            width:100%; background:rgba(8,8,8,.7);
+            border:1px solid rgba(126,184,212,.22); border-radius: 0;
+            color:#d0d8e0; font-family:'Exo 2',sans-serif; font-size:.95rem;
+            padding:.8rem 1rem; transition:border-color .15s,box-shadow .15s; outline:none;
+        }
+        input[type="text"]:focus { border-color:rgba(126,184,212,.55); box-shadow:0 0 0 3px rgba(126,184,212,.08); }
+        input[type="text"]::placeholder { color:rgba(126,184,212,.25); }
+        .char-count { font-size:.68rem; color:rgba(37,99,196,.3); text-align:right; margin-top:.35rem; }
+        .char-count.warn { color:#f0c040; }
+        .char-count.over { color:#ef4444; }
+        .url-preview {
+            background:rgba(8,8,8,.5); border:1px solid rgba(126,184,212,.14);
+            border-radius: 0; padding:.5rem .8rem; margin-top:.5rem;
+            font-family:monospace; font-size:.75rem; color:rgba(37,99,196,.5);
+        }
+        .url-preview span { color:#8899aa; }
+        .rules {
+            background:rgba(8,8,8,.4); border:1px solid rgba(255,255,255,.04);
+            border-radius: 0; padding:1rem 1.1rem; margin-bottom:1.75rem;
+        }
+        .rules-title {
+            font-family:'Exo 2',sans-serif; font-size:.62rem; font-weight:900;
+            text-transform:uppercase; letter-spacing:.1em; color:rgba(37,99,196,.4);
+            margin-bottom:.6rem; display:flex; align-items:center; gap:.4rem;
+        }
+        .rules ul { list-style:none; }
+        .rules li {
+            font-size:.78rem; color:#5a7a9a; padding:.22rem 0;
+            display:flex; align-items:center; gap:.5rem;
+        }
+        .rules li::before { content:'·'; color:rgba(126,184,212,.3); font-size:1.1rem; }
+        .submit-btn {
+            width:100%; padding:.9rem;
+            background:linear-gradient(135deg,rgba(15,15,15,.65),rgba(25,50,110,.9));
+            border:1px solid rgba(37,99,196,.3); border-radius: 0;
+            color:#c8e4ff; font-family:'Exo 2',sans-serif; font-weight:900;
+            font-size:.9rem; text-transform:uppercase; letter-spacing:.08em;
+            cursor:pointer; transition:all .15s;
+            display:flex; align-items:center; justify-content:center; gap:.5rem;
+            box-shadow:0 4px 20px rgba(0,0,0,.3);
+        }
+        .submit-btn:hover:not(:disabled) {
+            background:linear-gradient(135deg,rgba(55,100,190,.85),rgba(35,68,148,1));
+            border-color:rgba(126,184,212,.6); transform:translateY(-1px);
+            box-shadow:0 6px 24px rgba(0,0,0,.4);
+        }
+        .submit-btn:disabled { opacity:.4; cursor:not-allowed; }
+        .approval-note {
+            text-align:center; font-size:.7rem; color:rgba(126,184,212,.3);
+            margin-top:.9rem; display:flex; align-items:center; justify-content:center; gap:.4rem;
+        }
+    
+        @media (max-width: 500px) {
+            .container { padding: 1.25rem 1rem; border-radius: 0; }
+            h1 { font-size: 1.3rem; }
+        }
+    </style>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0 !important; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+</head>
+<body>
+<script src="/sidebar.js"></script>
+<div class="main-content" style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
+<div class="card">
+    <div class="card-header">
+        <div class="card-title"><i class="fas fa-layer-group"></i> Create Group</div>
+        <a href="/groups.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    <div class="cost-notice">
+        <img src="/images/coin-icon.png" alt="coin" style="width:1.1em;height:1.1em;object-fit:contain;vertical-align:middle;margin-right:0.2em;position:relative;top:-0.05em;display:inline-block;">
+        <span>Creating a group costs <strong>25 coins</strong>. Your balance: <span id="userBalance">—</span></span>
+    </div>
+    <div class="field">
+        <label for="groupName">Group Name</label>
+        <input type="text" id="groupName" maxlength="30" placeholder="Enter group name…" oninput="onNameInput()">
+        <div id="nameError" style="display:none;color:#e05555;font-size:0.75rem;margin-top:4px;font-family:'Exo 2',sans-serif;font-weight:700;"></div>
+        <div class="char-count" id="charCount">0 / 30</div>
+        <div class="url-preview">ampehere.pages.dev/group.html?name=<span id="urlPreview">…</span></div>
+    </div>
+    <div class="rules">
+        <div class="rules-title"><i class="fas fa-clipboard-list"></i> Guidelines</div>
+        <ul>
+            <li>Name must be 3–30 characters</li>
+            <li>Letters, numbers, spaces and hyphens only</li>
+            <li>Group names must be unique</li>
+            <li>Groups require admin approval before appearing</li>
+            <li>No offensive or misleading names</li>
+        </ul>
+    </div>
+    <button class="submit-btn" id="submitBtn" onclick="createGroup()" disabled>
+        <i class="fas fa-plus-circle"></i> Create Group
+    </button>
+    <div class="approval-note"><i class="fas fa-clock"></i> All groups need admin approval before appearing</div>
+</div>
+</div>
+<script>
+let userCoins = 0;
+async function init() {
+    try {
+        const res = await fetch('/api/get-balance').then(r => r.json());
+        if (!res.username) { window.location.href = '/login.html'; return; }
+        userCoins = res.coins || 0;
+        document.getElementById('userBalance').textContent = userCoins.toLocaleString() + ' coins';
+        updateSubmitBtn();
+    } catch(e) { console.error(e); }
+}
+function isValidGroupName(val) {
+    return /^[a-zA-Z0-9 '\-]*$/.test(val);
+}
+function onNameInput() {
+    const val = document.getElementById('groupName').value;
+    const len = val.length;
+    const cc = document.getElementById('charCount');
+    cc.textContent = len + ' / 30';
+    cc.className = 'char-count' + (len > 25 ? ' warn' : '') + (len >= 30 ? ' over' : '');
+    const urlName = val.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    document.getElementById('urlPreview').textContent = urlName || '…';
+    const errEl = document.getElementById('nameError');
+    if (val.length > 0 && !isValidGroupName(val)) {
+        errEl.textContent = "Only letters, numbers, spaces, hyphens and apostrophes allowed.";
+        errEl.style.display = 'block';
+    } else {
+        errEl.style.display = 'none';
+    }
+    updateSubmitBtn();
+}
+function updateSubmitBtn() {
+    const val = document.getElementById('groupName').value.trim();
+    document.getElementById('submitBtn').disabled = !(val.length >= 3 && val.length <= 30 && userCoins >= 10 && isValidGroupName(val));
+}
+async function createGroup() {
+    const name = document.getElementById('groupName').value.trim();
+    if (!name || name.length < 3) return;
+    if (userCoins < 25) {
+        Swal.fire({ icon:'warning', title:'Not Enough Coins', text:'You need 25 coins to create a group.', background:'#0c0c0c', color:'#d0d8e0', confirmButtonColor:'#111111' });
+        return;
+    }
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating…';
+    try {
+        const res = await fetch('/api/create-group', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ groupName: name })
+        }).then(r => r.json());
+        if (!res.success) throw new Error(res.error || 'Failed to create group');
+        await Swal.fire({
+            icon:'success', title:'Group Created!',
+            html:'<p style="color:#8899aa">Your group <strong style="color:#a0aabb">' + name + '</strong> is pending approval.</p><p style="font-size:.8rem;color:#4a6a8a;margin-top:.5rem">It\'ll appear in the groups list once approved.</p>',
+            background:'#0c0c0c', color:'#d0d8e0', confirmButtonColor:'#111111', confirmButtonText:'View Groups'
+        });
+        window.location.href = '/groups.html';
+    } catch(e) {
+        Swal.fire({ icon:'error', title:'Failed', text:e.message, background:'#0c0c0c', color:'#d0d8e0', confirmButtonColor:'#111111' });
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-plus-circle"></i> Create Group';
+    }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('groupName').addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !document.getElementById('submitBtn').disabled) createGroup();
+    });
+    init();
+});
+</script>
+</body>
+</html>

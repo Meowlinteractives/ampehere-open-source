@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <link rel="icon" href="logo.png" type="image/png">
+    <title>Ampehere · Create Topic</title>
+    
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        @keyframes floatIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        body {
+            overflow-x: hidden;
+            background: #060606;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(126,184,212,0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(126,184,212,0.08) 0%, transparent 20%),
+                linear-gradient(45deg, #111111 1px, transparent 1px),
+                linear-gradient(-45deg, #111111 1px, transparent 1px);
+            background-size: 30px 30px, 30px 30px, 30px 30px, 30px 30px;
+            font-family: 'Exo 2', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: rgba(14, 30, 60, 0.92);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(126,184,212,0.28);
+            padding: 2rem;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.55), ;
+            animation: floatIn 0.6s ease-out;
+            border-radius: 0;
+}
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 1rem;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            color: #d0d8e0;
+            text-transform: uppercase;
+            text-shadow: 0 2px 20px rgba(126,184,212,0.25);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .back-button {
+            background: rgba(12,12,12,0.5);
+            color: #8899aa;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(37,99,196,0.18);
+            border-radius: 0;
+            font-weight: 900;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .back-button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        
+        .info-box {
+            background: rgba(12,12,12,0.5);
+            color: #8899aa;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(126,184,212,0.25);
+            border-radius: 0;
+            text-align: center;
+            font-weight: 900;
+        }
+        
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            color: #8a95a3;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+        
+        select, input, textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid rgba(37,99,196,0.2);
+            border-radius: 0;
+            background: rgba(8,8,8,0.6);
+            color: #d0d8e0;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        select {
+            cursor: pointer;
+        }
+        
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: rgba(126,184,212,0.55);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        
+        .char-counter {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #8a95a3;
+            margin-top: 0.3rem;
+        }
+        
+        .requirements {
+            background: #1a3060;
+            border: 1px solid rgba(126,184,212,0.28);
+            border-radius: 0;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+        
+        .requirements h3 {
+            color: #d0d8e0;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .requirements ul {
+            margin-left: 1.8rem;
+            color: #8a95a3;
+        }
+        
+        .requirements li {
+            margin-bottom: 0.3rem;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        button {
+            flex: 1;
+            padding: 1rem;
+            background: rgba(12,12,12,0.5);
+            border: 1px solid rgba(126,184,212,0.25);
+            border-radius: 0;
+            color: #8899aa;
+            font-family: 'Exo 2', sans-serif;
+            font-weight: 900;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        button:hover {
+            background: rgba(15,15,15,0.65);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+        }
+        
+        button.secondary {
+            background: rgba(8,8,8,0.6);
+            color: #8a95a3;
+            border-color: rgba(37,99,196,0.18);
+        }
+        
+        .warning {
+            color: #e05555;
+            font-weight: 900;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .pending-badge {
+            background: rgba(139,0,0,0.3);
+            color: #ee8080;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            border: 1px solid rgba(200,60,60,0.4);
+            border-radius: 0;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+                border-radius: 0;
+}
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+
+    <!-- Ampehere Global Theme -->
+    <style>
+      :root {
+        --amp-navy: #060606;
+        --amp-navy-card: rgba(12,12,12,0.92);
+        --amp-navy-mid: #162544;
+        --amp-blue: #1c1c1c;
+        --amp-sky: #8899aa;
+        --amp-sky-light: #8899aa;
+        --amp-silver: #8899aa;
+        --amp-silver-light: #d0d8e0;
+        --amp-silver-dim: #8a95a3;
+      }
+      body {
+        background: var(--amp-navy) !important;
+        background-image: radial-gradient(ellipse at 20% 10%, rgba(15,15,15,0.35) 0%, transparent 50%),
+                          radial-gradient(ellipse at 80% 90%, rgba(126,184,212,0.10) 0%, transparent 50%) !important;
+        background-attachment: fixed !important;
+        color: var(--amp-silver-light) !important;
+        font-family: 'Exo 2', sans-serif !important;
+      }
+      /* Container glass cards */
+      .container, .card, .page-wrap > .card, .panel, .box, .section-card,
+      .profile-container, .group-card, .topic-card, .post-card, .modal-box {
+        background: linear-gradient(145deg, rgba(12,12,12,0.88), rgba(8,8,8,0.94)) !important;
+        border: 1px solid rgba(37,99,196,0.2) !important;
+        border-radius: 0;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5),  !important;
+        backdrop-filter: blur(16px) !important;
+      }
+      /* Headings */
+      h1, h2, h3 { font-family: 'Exo 2', sans-serif !important; color: var(--amp-silver-light) !important; }
+      h1 { text-shadow: 0 2px 20px rgba(37,99,196,0.18) !important; }
+      /* Links */
+      a { color: var(--amp-sky) !important; }
+      /* Inputs */
+      input[type="text"], input[type="password"], input[type="email"], textarea, select {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(126,184,212,0.25) !important;
+        border-radius: 0;
+        color: var(--amp-silver-light) !important;
+        font-family: 'Exo 2', sans-serif !important;
+      }
+      input:focus, textarea:focus, select:focus {
+        border-color: rgba(126,184,212,0.55) !important;
+        box-shadow: 0 0 0 3px rgba(255,255,255,0.04) !important;
+        outline: none !important;
+      }
+      /* Buttons */
+      button, .btn, .button, input[type="submit"], input[type="button"] {
+        border-radius: 0;
+        font-family: 'Exo 2', sans-serif !important;
+      }
+      /* Scrollbar */
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+      ::-webkit-scrollbar-thumb { background: rgba(126,184,212,0.3); border-radius: 0; }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(37,99,196,0.5); }
+    </style>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+    /* === THEME OVERRIDE === */
+    :root {
+        --bg:#060606; --surface:#0c0c0c; --surface2:#0a0a0a;
+        --border:#1a1a1a; --border-hi:#252525;
+        --blue:#2563c4; --blue-hi:#3b7de0;
+        --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677;
+        --red:#c0392b; --red-hover:#e74c3c; --red-dark:#922b21;
+        --gold:#f1c40f; --green:#27ae60;
+        --accent:#c0392b; --accent2:#8899aa;
+    }
+    *, *::before, *::after { border-radius: 0; }
+    body { background: #060606 !important; background-image: none !important; }
+    a { color: #2563c4 !important; }
+    a:hover { color: #3b7de0 !important; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/avatar-renderer.js"></script>
+</head>
+<body>
+    <div class="page-container">
+        <div class="header">
+            <h1><i class="fas fa-plus-circle"></i> NEW TOPIC</h1>
+            <a href="/forums.html" class="back-button"><i class="fas fa-arrow-left"></i> BACK</a>
+        </div>
+        
+        <div class="info-box">
+            <i class="fas fa-clock"></i> All topics need admin approval before appearing
+        </div>
+
+        <div class="requirements">
+            <h3><i class="fas fa-clipboard-list"></i> GUIDELINES</h3>
+            <ul>
+                <li>Title: 5-100 characters</li>
+                <li>Content: 10-5000 characters</li>
+                <li>Be respectful to others</li>
+                <li>No spam or self-promotion</li>
+                <li>Stay on topic in each category</li>
+            </ul>
+        </div>
+        
+        <div class="input-group">
+            <label><i class="fas fa-tag"></i> CATEGORY</label>
+            <select id="categorySelect">
+                <option value="">Loading categories...</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <label><i class="fas fa-heading"></i> TITLE</label>
+            <input type="text" id="topicTitle" placeholder="Enter topic title" maxlength="100">
+            <div class="char-counter"><span id="titleCount">0</span>/100</div>
+        </div>
+        
+        <div class="input-group">
+            <label><i class="fas fa-align-left"></i> CONTENT</label>
+            <textarea id="topicContent" placeholder="Write your topic content here..." maxlength="5000"></textarea>
+            <div class="char-counter"><span id="contentCount">0</span>/5000</div>
+        </div>
+        
+        <div class="button-group">
+            <button onclick="createTopic()">
+                <i class="fas fa-paper-plane"></i> CREATE TOPIC
+            </button>
+            <button class="secondary" onclick="window.location.href='/forums.html'">
+                <i class="fas fa-times"></i> CANCEL
+            </button>
+        </div>
+        
+        <div id="message" class="warning" style="display: none;"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/sidebar.js"></script>
+    <script>
+        const Swal = window.Swal;
+        
+        
+        
+        // Get category from URL if pre-selected
+        const urlParams = new URLSearchParams(window.location.search);
+        const preselectedCategory = urlParams.get('category');
+
+        // Character counters
+        document.getElementById('topicTitle').addEventListener('input', function() {
+            document.getElementById('titleCount').textContent = this.value.length;
+        });
+        
+        document.getElementById('topicContent').addEventListener('input', function() {
+            document.getElementById('contentCount').textContent = this.value.length;
+        });
+
+        // Load categories
+        async function loadCategories() {
+            try {
+                const res = await fetch('/api/get-forum-categories');
+                const data = await res.json();
+                
+                const select = document.getElementById('categorySelect');
+                
+                if (data.success && data.categories) {
+                    let options = '<option value="">Select a category...</option>';
+                    data.categories.forEach(cat => {
+                        const selected = (cat.id === preselectedCategory) ? 'selected' : '';
+                        options += `<option value="${cat.id}" ${selected}>${cat.icon || '📢'} ${cat.name}</option>`;
+                    });
+                    select.innerHTML = options;
+                }
+            } catch (err) {
+                console.error('Load categories error:', err);
+            }
+        }
+
+        async function createTopic() {
+            const categoryId = document.getElementById('categorySelect').value;
+            const title = document.getElementById('topicTitle').value.trim();
+            const content = document.getElementById('topicContent').value.trim();
+            const messageDiv = document.getElementById('message');
+
+            if (!categoryId) {
+                messageDiv.style.display = 'block';
+                messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Select a category';
+                return;
+            }
+
+            if (title.length < 5 || title.length > 100) {
+                messageDiv.style.display = 'block';
+                messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Title must be 5-100 characters';
+                return;
+            }
+
+            if (content.length < 10 || content.length > 5000) {
+                messageDiv.style.display = 'block';
+                messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Content must be 10-5000 characters';
+                return;
+            }
+
+            messageDiv.style.display = 'none';
+            
+            const createBtn = document.querySelector('button');
+            const originalText = createBtn.innerHTML;
+            createBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> CREATING...';
+            createBtn.disabled = true;
+
+            try {
+                const res = await fetch('/api/create-forum-topic', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        categoryId,
+                        title,
+                        content
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Topic Created!',
+                        html: `
+                            <p><strong>${title}</strong></p>
+                            <p style="color: #060606;"><i class="fas fa-clock"></i> Pending admin approval</p>
+                            <p>You'll be notified when it's approved</p>
+                        `,
+                        background:'#0c0c0c',
+                        color:'#d0d8e0',
+                        confirmButtonColor: '#111111',
+                        timer: 3000
+                    });
+                    // Mark 'post' daily task as complete
+                    fetch('/api/complete-task', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskId: 'post' }) }).catch(() => {});
+                    window.location.href = '/forums.html';
+                } else {
+                    messageDiv.style.display = 'block';
+                    messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + (data.error || 'Creation failed');
+                    createBtn.innerHTML = originalText;
+                    createBtn.disabled = false;
+                }
+            } catch (err) {
+                messageDiv.style.display = 'block';
+                messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Network error';
+                createBtn.innerHTML = originalText;
+                createBtn.disabled = false;
+            }
+        }
+
+        loadCategories();
+    </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/logo.png" type="image/png">
+    <title>Ampehere · Site Locked</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg:#060606; --surface:#0c0c0c; --border:#1a1a1a; --blue:#2563c4; --text:#d0d8e0; --text-muted:#8899aa; --text-dim:#556677; --gold:#f1c40f; }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; border-radius:0 !important; }
+        body { font-family:'Exo 2',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem; text-align:center; }
+        .icon { font-size:2.5rem; margin-bottom:1rem; }
+        .label { font-size:.6rem; font-weight:800; text-transform:uppercase; letter-spacing:.15em; color:var(--text-dim); margin-bottom:.35rem; }
+        .title { font-size:1.4rem; font-weight:900; color:var(--text); text-transform:uppercase; letter-spacing:.05em; margin-bottom:.5rem; }
+        .desc { font-size:.82rem; color:var(--text-dim); max-width:380px; line-height:1.7; margin-bottom:1.75rem; }
+        .btn { display:inline-flex; align-items:center; gap:.4rem; padding:.55rem 1.2rem; font-family:'Exo 2',sans-serif; font-size:.75rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; text-decoration:none; border:1px solid var(--border); color:var(--text-muted); background:var(--surface); cursor:pointer; transition:border-color .12s, color .12s; }
+        .btn:hover { border-color:var(--blue); color:var(--text); }
+        .footer { margin-top:2.5rem; font-size:.65rem; color:var(--text-dim); }
+        .countdown { font-size:.72rem; color:var(--text-dim); margin-top:1.5rem; }
+    </style>
+</head>
+<body>
+    <div class="icon">🔒</div>
+    <div class="label">Status</div>
+    <div class="title">Site Temporarily Locked</div>
+    <p class="desc">Ampehere is currently locked to all visitors. This is usually temporary — check back soon or join our Discord for updates.</p>
+    <button class="btn" onclick="location.reload()">↻ Try Again</button>
+    <div class="countdown">Auto-refreshing in <span id="cd">30</span>s</div>
+    <div class="footer">© 2026 Ampehere</div>
+<script>
+let s = 30;
+const el = document.getElementById('cd');
+setInterval(() => { s--; el.textContent = s; if (s <= 0) location.reload(); }, 1000);
+</script>
+</body>
+</html>
